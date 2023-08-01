@@ -3,7 +3,7 @@
 
 int main() {
     try {
-        ConverterJSON::GetRequests();
+        ConverterJSON::GetTextDocuments();
     }
     catch (std::exception &ex) {
         std::cerr << ex.what() << std::endl;

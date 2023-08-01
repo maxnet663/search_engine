@@ -1,8 +1,9 @@
 #include "converter_json.h"
+#include "file_helper.h"
+
 #include <filesystem>
 #include <system_error>
 #include <fstream>
-#include <sstream>
 #include <iostream>
 
 //Constants
@@ -22,9 +23,9 @@ std::vector<std::string> ConverterJSON::GetTextDocuments() {
     textDocuments.reserve(filesList.size());
 
     for (const auto &file : filesList) {
-        if (isFileExist(file)) {
+        if (FileHelper::isFileExist(file)) {
             try {
-                textDocuments.push_back(getFileText(file));
+                textDocuments.push_back(FileHelper::getFileText(file));
             }
             catch (std::length_error &ex) {
                 std::cerr << ex.what() << std::endl;
@@ -46,7 +47,7 @@ std::vector<std::string> ConverterJSON::GetRequests()  {
     requests.reserve(jsonFile["requests"].size());
     for (const auto &i : jsonFile["requests"]) {
         std::string buf = to_string(i);
-        formatString(buf);
+        FileHelper::formatString(buf);
         requests.push_back(std::move(buf));
     }
     return requests;
@@ -58,7 +59,7 @@ void ConverterJSON::putAnswers(
 }
 
 bool ConverterJSON::checkConfigFile() {
-    if (isFileExist(JsonsDirectoryPath.string() + configFileName)) {
+    if (FileHelper::isFileExist(JsonsDirectoryPath.string() + configFileName)) {
         return true;
     }
     throw std::filesystem::filesystem_error("Config file is missing"
@@ -96,7 +97,7 @@ nlohmann::json ConverterJSON::getConfigJson() {
 }
 
 bool ConverterJSON::checkRequestsFile() {
-    if (isFileExist(JsonsDirectoryPath.string() + requestsFileName)) {
+    if (FileHelper::isFileExist(JsonsDirectoryPath.string() + requestsFileName)) {
         return true;
     }
     throw std::filesystem::filesystem_error("Requests file is missing"
@@ -114,7 +115,7 @@ bool ConverterJSON::checkRequestsProperties(const nlohmann::json &jsonFile) {
                                     + std::to_string(MAX_REQUESTS_NUMBER));
     }
     for (const auto &i: jsonFile["requests"]) {
-        if (wordsCounter(to_string(i)) > MAX_REQUEST_WORDS_NUMBER)
+        if (FileHelper::wordsCounter(to_string(i)) > MAX_REQUEST_WORDS_NUMBER)
             throw std::invalid_argument(std::string("One of Request's words number greater than ")
                                         + std::to_string(MAX_REQUEST_WORDS_NUMBER));
     }
@@ -132,98 +133,6 @@ nlohmann::json ConverterJSON::getRequestsJson() {
     return jsonFile;
 }
 
-std::string ConverterJSON::getFileText(const std::string &filename) {
-    std::ifstream ifs(filename);
-
-    //check words number in file
-    if (std::distance(std::istream_iterator<std::string>(ifs)
-            , std::istream_iterator<std::string>()) > MAX_WORDS_NUMBER) {
-        throw std::length_error(std::string("number of words in file ")
-                                + filename  + std::string(" greater than ")
-                                + std::to_string(MAX_WORDS_NUMBER));
-    }
-
-    // back to the start of file
-    ifs.clear();
-    ifs.seekg(0);
-
-    std::string buf; // buffer for word processing
-    std::string text;//storage for text
-    text.reserve(std::filesystem::file_size(filename));
-    while (ifs) { // read one word at a time
-        ifs >> buf;
-
-        //check word's length
-        if (buf.length() > MAX_WORD_LENGTH) {
-            throw std::length_error(std::string("one of words from file:")
-                                    + filename
-                                    + std::string( " has length greater than ")
-                                    + std::to_string(MAX_WORD_LENGTH));
-        }
-
-        //put the word to the storage
-        text += buf + " ";
-    }
-    ifs.close();
-    text.pop_back(); // delete last space
-    formatString(text);
-    return text; // returns formated string
-}
-
-bool ConverterJSON::isFileExist(const std::string &path) {
-    return std::filesystem::exists(path);
-}
-
-void ConverterJSON::formatString(std::string &s)  {
-    if (s.length() == 0) {
-        return;
-    }
-    //delete punctuation marks
-    s.erase(std::remove_if(s.begin()
-                                , s.end()
-                                , [](char &ch){
-                                return std::ispunct(ch); })
-            , s.end());
-
-    //lowercase letters
-    for (auto &ch : s) {
-        if (isupper(ch)) {
-            ch = tolower(ch);
-        }
-    }
-
-    //delete extra spaces
-    auto back = s.begin();
-    auto front = s.begin();
-    while (*front == ' ') {
-        ++front;
-    };
-    while (*front) {
-        if (*front != ' ' || *(front - 1) != ' ') {
-            *back++ = *front;
-        }
-        front++;
-    }
-    *back = 0;
-    s.resize(back - s.begin());
-}
-
-int ConverterJSON::wordsCounter(const std::string &s) {
-    bool is_word = false;
-    int words_counter = 0;
-    for (const auto &ch: s) {
-        if (!isalnum(ch) && is_word) {
-            words_counter++;
-            is_word = false;
-            continue;
-        }
-        if (isalnum(ch)) {
-            is_word = true;
-            continue;
-        }
-    }
-    return words_counter + is_word;
-}
 
 
 
