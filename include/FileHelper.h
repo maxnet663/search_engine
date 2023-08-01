@@ -1,0 +1,4 @@
+#ifndef SEARCH_ENGINE
+#define SEARCH_ENGINE
+
+#endif //SEARCH_ENGINE
