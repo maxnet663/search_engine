@@ -116,3 +116,12 @@ void FileHelper::deleteExtraSpaces(std::string &s) {
     if (*(s.end() -1) == ' ')
         s.pop_back();
 }
+
+void FileHelper::writeJsonToFile(const nlohmann::json &jsonText, const std::string &path) {
+    if (isFileExist(path)) {
+        remove(path.data());
+    }
+    std::ofstream dest(path, std::ios::out);
+    dest << jsonText;
+    dest.close();
+}

@@ -1,5 +1,7 @@
 #ifndef SEARCH_ENGINE
 #define SEARCH_ENGINE
+
+#include "nlohmann/json.hpp"
 #include <string>
 
 /*
@@ -54,5 +56,13 @@ public:
      * @param s reference to string
      */
     static void deleteExtraSpaces(std::string &s);
+
+    /**
+     * if file path exists overwriting it by file,
+     * create new file int path otherwise
+     * @param file file to write
+     * @param path path to new file
+     */
+    static void writeJsonToFile(const nlohmann::json &jsonText, const std::string &path);
 };
 #endif //SEARCH_ENGINE

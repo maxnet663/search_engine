@@ -1,31 +1,9 @@
 #ifndef CONVERTER_JSON_H
 #define CONVERTER_JSON_H
 
-#include "nlohmann/json.hpp"
-#include <exception>
-#include <string>
-#include <utility>
+#include "nlohmann/json.hpp" // json
 
-
-// Custom exception class for throws in config checker
-//class ConfigError : std::exception {
-//public:
-//    enum class ErrorCode {
-//        CONFIG_ERROR = -10,
-//        NAME_ERROR = -11,
-//        VERSION_ERROR = -12,
-//        MAX_RESPONSES_ERROR = -13
-//    };
-//    ConfigError(std::string msg, ErrorCode err) : message(std::move(msg)), errCode(err) {}
-//    ConfigError(const ConfigError &other) : message(other.message), errCode(other.errCode) {}
-//    ~ConfigError() override {}
-//
-//    const char* what() const noexcept override { return message.c_str(); }
-//    const ErrorCode getErrCode() const noexcept { return  errCode; }
-//private:
-//    const std::string message;
-//    const ErrorCode errCode;
-//};
+#include <string> // string
 
 // Class for working with files
 class ConverterJSON {

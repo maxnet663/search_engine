@@ -1,9 +1,8 @@
 #include "converter_json.h"
 #include "file_helper.h"
 
-#include <filesystem>
-#include <system_error>
-#include <fstream>
+#include <filesystem> //path
+#include <fstream> //ifs, ofs
 #include <iostream>
 
 //Constants
@@ -16,6 +15,7 @@
 static const std::filesystem::path JsonsDirectoryPath("../JSONs/");
 static const std::string configFileName = "config.json";
 static const std::string requestsFileName = "requests.json";
+static const std::string resultsFileName = "results.json";
 
 std::vector<std::string> ConverterJSON::GetTextDocuments() {
     auto filesList = getConfigJson()["files"];
@@ -55,7 +55,34 @@ std::vector<std::string> ConverterJSON::GetRequests()  {
 
 void ConverterJSON::putAnswers(
         std::vector<std::vector<std::pair<int, float>>> answers) {
-
+    nlohmann::json jsonFile;
+    for (size_t i = 0; i < answers.size(); ++i) {
+        std::string request = "request";
+        std::string number(std::to_string(i + 1));
+        number.insert(0, std::string(4 - number.length(), '0'));
+        request.append(number);
+        if (answers[i].empty()) {
+            jsonFile["answers"][request]["result"] = !answers[i].empty();
+        } else {
+            if (answers[i].size() == 1) {
+                jsonFile["answers"][request]["result"] = !answers.empty();
+                jsonFile["answers"][request]["docid"] = answers[i].begin()->first;
+                jsonFile["answers"][request]["rank"] = answers[i].begin()->second;
+            } else {
+                jsonFile["answers"][request]["result"] = !answers[i].empty();
+                for (const auto &j: answers[i]) {
+                    nlohmann::json newField;
+                    newField = {
+                            {"docid", j.first},
+                            {"rank",  j.second}
+                    };
+                    jsonFile["answers"][request]["relevance"].push_back(newField);
+                }
+            }
+        }
+    }
+    FileHelper::writeJsonToFile(jsonFile
+                                , JsonsDirectoryPath.string() + resultsFileName);
 }
 
 bool ConverterJSON::checkConfigFile() {
