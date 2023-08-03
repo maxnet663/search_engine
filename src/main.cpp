@@ -4,12 +4,16 @@
 
 int main() {
     try {
-//        std::vector<std::vector<std::pair<int, float>>> vec;
-//        vec = { { {1, 3.4}, {2, 0.3}}, {}, {{2, 8.5}}};
+        std::vector<std::vector<std::pair<int, float>>> vec;
+        vec = { { {1, 3.4}, {2, 0.3}}, {}, {{2, 8.5}}};
 //        ConverterJSON::putAnswers(vec);
-        ConverterJSON::GetTextDocuments();
+        auto res = ConverterJSON::GetTextDocuments();
+        auto res2 = ConverterJSON::GetRequests();
+        auto res3 = ConverterJSON::GetResponsesLimit();
+        ConverterJSON::putAnswers(vec);
     }
     catch (std::exception &ex) {
         std::cerr << ex.what() << std::endl;
     }
+    return 0;
 }

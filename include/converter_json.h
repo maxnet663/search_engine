@@ -3,11 +3,13 @@
 
 #include "nlohmann/json.hpp" // json
 
+#include <filesystem> //path
 #include <string> // string
 
-// Class for working with files
+// Class for working with json files
 class ConverterJSON {
 public:
+
     ConverterJSON() = default;
 
     /**
@@ -36,7 +38,6 @@ public:
     static void putAnswers(std::vector<std::vector<std::pair<int, float>>> answers);
 
 private:
-
     /**
      * check if config.json exists
      * @return true if config.json exists throws runtime_error otherwise

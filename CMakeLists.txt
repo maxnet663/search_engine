@@ -4,6 +4,14 @@ project (search_engine VERSION 1.0)
 
 set(CMAKE_CXX_STANDARD 17)
 
+if (WIN32)
+    set (SOURCES ${SOURCES} win_pipe.cpp)
+elseif (UNIX)
+    set (SOURCES ${SOURCES} posix_pipe.cpp)
+endif()
+
+add_compile_definitions(PROJECT_ROOT_PATH="${PROJECT_SOURCE_DIR}")
+
 set(PROJECT_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/include")
 
 set(JSON_BuildTests OFF CACHE INTERNAL "")
@@ -45,4 +53,3 @@ include(GoogleTest)
 gtest_discover_tests(search_engine)
 
 add_subdirectory(test)
-
