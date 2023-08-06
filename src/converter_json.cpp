@@ -1,16 +1,11 @@
 #include "converter_json.h"
-#include "custom_limits.h"
+#include "project_constants.h"
 #include "file_helper.h"
 
 #include <fstream> // ifs, ofs
 #include <iostream> // cerr
 #include <regex> // regex, regex_match
 
-//path to json files
-static const std::filesystem::path jsonsDirectoryPath = FileHelper::findPath("JSONs");
-static const std::string configFileName = "config.json";
-static const std::string requestsFileName = "requests.json";
-static const std::string resultsFileName = "results.json";
 
 std::vector<std::string> ConverterJSON::GetTextDocuments() {
 
@@ -24,8 +19,9 @@ std::vector<std::string> ConverterJSON::GetTextDocuments() {
 
     for (const auto &file : documentsList) {
 
-        //get the path to the file
-        auto pathToFile = FileHelper::findPath(file);
+//        auto tmp = FileHelper::getFileName(file);
+        auto pathToFile =
+                std::string(RESOURCES_DIR) + FileHelper::getFileName(file);
 
         if (std::filesystem::exists(pathToFile)) {
             try {
@@ -120,21 +116,20 @@ void ConverterJSON::putAnswers(
     }
 
     // write to the file
-    FileHelper::writeJsonToFile(jsonFile
-                                , jsonsDirectoryPath.string() + resultsFileName);
+    FileHelper::writeJsonToFile(jsonFile, JSONS_DIR RESULTS_FILE_NAME);
 }
 
 bool ConverterJSON::checkConfigFile() {
 
     // return true if file exist
-    if (std::filesystem::exists(jsonsDirectoryPath.string() + configFileName)) {
+    if (std::filesystem::exists(JSONS_DIR CONFIG_FILE_NAME)) {
         return true;
     }
 
     // throws otherwise
     throw std::filesystem::filesystem_error("Config file is missing"
-                                      , jsonsDirectoryPath
-                                      , configFileName
+                                      , JSONS_DIR
+                                      , CONFIG_FILE_NAME
                                       , std::make_error_code(std::errc::no_such_file_or_directory));
 }
 
@@ -164,7 +159,7 @@ nlohmann::json ConverterJSON::getConfigJson() {
     checkConfigFile();
 
     // make a json
-    std::ifstream jsonReader(jsonsDirectoryPath.string() + configFileName);
+    std::ifstream jsonReader(JSONS_DIR CONFIG_FILE_NAME);
     nlohmann::json jsonFile;
     jsonReader >> jsonFile;
     jsonReader.close();
@@ -178,14 +173,14 @@ nlohmann::json ConverterJSON::getConfigJson() {
 bool ConverterJSON::checkRequestsFile() {
 
     // return true is file exists
-    if (std::filesystem::exists(jsonsDirectoryPath.string() + requestsFileName)) {
+    if (std::filesystem::exists(JSONS_DIR REQUESTS_FILE_NAME)) {
         return true;
     }
 
     // throws otherwise
     throw std::filesystem::filesystem_error("Requests file is missing"
-                    , jsonsDirectoryPath
-                    , requestsFileName
+                    , JSONS_DIR
+                    , REQUESTS_FILE_NAME
                     , std::make_error_code(std::errc::no_such_file_or_directory));
 }
 
@@ -217,7 +212,7 @@ nlohmann::json ConverterJSON::getRequestsJson() {
     checkRequestsFile(); // throws if requests does not exist
 
     // make a json
-    std::ifstream jsonReader(jsonsDirectoryPath.string() + requestsFileName);
+    std::ifstream jsonReader(JSONS_DIR REQUESTS_FILE_NAME);
     nlohmann::json jsonFile;
     jsonReader >> jsonFile;
     jsonReader.close();

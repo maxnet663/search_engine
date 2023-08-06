@@ -13,7 +13,7 @@ using nlohmann::json;
 
 #include <algorithm>
 
-TEST_CASE("tests on very large JSONs")
+TEST_CASE("tests on very large JSONs_test")
 {
     SECTION("issue #1419 - Segmentation fault (stack overflow) due to unbounded recursion")
     {

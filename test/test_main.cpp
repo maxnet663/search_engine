@@ -1,6 +1,4 @@
-//#include "file_helper.h"
 #include "file_helper.cpp"
-//#include "converter_json.h"
 #include "converter_json.cpp"
 #include "gtest/gtest.h"
 
@@ -14,7 +12,7 @@ TEST(ConverterJSONTest, GetTextDocumentsTest) {
             "milk water salt",
             "milk apple banana",
             "culture house documents doctors",
-            "hello world do fffffffffffffff"
+            "hello world do ffffffffffffffffff"
             };
     auto real_result = ConverterJSON::GetTextDocuments();
     ASSERT_EQ(expected_result, real_result);
@@ -41,7 +39,7 @@ TEST(ConverterJSONTest, putAnswersTest) {
     test_vec = { { {1, 3.4}, {2, 0.3}}, {}, {{2, 8.5}}};
     ConverterJSON::putAnswers(test_vec);
     bool expected =
-            std::filesystem::exists(FileHelper::findPath("JSONs/results.json"));
+            std::filesystem::exists(JSONS_DIR RESULTS_FILE_NAME);
     ASSERT_TRUE(expected);
 }
 

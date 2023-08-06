@@ -5,6 +5,7 @@
 
 #include <string> // string
 
+
 /*
  * Class with a functions for working with files
  * and formatting strings for later writing or
@@ -15,10 +16,10 @@ class FileHelper {
 public:
 
     /**
- * writes the contents of the file to ss
- * @param ss in: empty string stream. out:contents of the file
- * @param filename string containing path of file
- */
+    * writes the contents of the file to ss
+    * @param ss in: empty string stream. out:contents of the file
+    * @param filename string containing path of file
+    */
     static std::string getFileText(const std::string &filename);
 
     /**
@@ -69,5 +70,13 @@ public:
      * if returns directory add '/' to end of path
      */
     static std::string findPath(std::string name);
+
+    /**
+     * receives a path to a file or directory as input, returns its name
+     * example:s ="/project/logs/config.txt", getFileName(s) returns config.txt
+     * @param s path to file or directory
+     * @return the name of directory or file
+     */
+    static  std::string getFileName(std::string s);
 };
 #endif //SEARCH_ENGINE

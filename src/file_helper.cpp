@@ -1,8 +1,8 @@
 #include "file_helper.h"
-#include "custom_limits.h"
+#include "project_constants.h"
 
 #include <filesystem> //path directory_iterator current_path
-#include <fstream>  // ifstream ofstream
+#include <fstream>  // fstream
 #include <regex> //regex regex_match
 
 std::string FileHelper::getFileText(const std::string &filename) {
@@ -97,19 +97,14 @@ int FileHelper::wordsCounter(const std::string &s) {
 
 void FileHelper::toLowerCase(std::string &s) {
 
-    for (auto &ch : s) {
-        if (isupper(ch)) {
-            ch = tolower(ch);
-        }
-    }
+    std::for_each(s.begin(), s.end(), [](char &ch){ ch = tolower(ch); });
 
 }
 
 void FileHelper::deletePunctuationMarks(std::string &s) {
     s.erase(std::remove_if(s.begin()
                     , s.end()
-                    , [](char &ch){
-                        return std::ispunct(ch); })
+                    , [](char &ch){return std::ispunct(ch); })
             , s.end());
 }
 
@@ -160,24 +155,10 @@ void FileHelper::writeJsonToFile(const nlohmann::json &jsonText, const std::stri
 
 }
 
+// useless
 std::string FileHelper::findPath(std::string name) {
 
-    //format name
-    // pointers to the beginning of the string
-    auto walk = name.begin();
-
-    // skip unnecessary symbols such as '../../'
-    while(!isalpha(*walk)) {
-        walk++;
-    }
-
-    // remove them
-    name.erase(name.begin(), walk);
-
-    // if last ch is slashed
-    if (name.back() == '/' || name.back() == '\\') {
-        name.pop_back();
-    }
+    name = getFileName(name);
 
     // returns empty string if name is incorrect
     if (name.empty()) {
@@ -201,4 +182,26 @@ std::string FileHelper::findPath(std::string name) {
     // return empty string if func could not find the path
     // founded path is a directory adds slash to the end
     return is_directory(found) ? found.string() + "/" :  found.string();
+}
+
+std::string FileHelper::getFileName(std::string s) {
+
+    //format name
+    // pointers to the end of the string
+    auto walk = s.end() - 1;
+
+    // if its directory
+    if (*walk == '/' || *walk == '\\') {
+        walk--;
+    }
+
+    // search for the first slash
+    while(*walk != '/' && *walk != '\\' && walk != s.begin()) {
+        walk--;
+    }
+
+    // remove them
+    s.erase(s.begin(), walk + 1);
+
+    return s;
 }

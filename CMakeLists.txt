@@ -4,19 +4,22 @@ project (search_engine VERSION 1.0)
 
 set(CMAKE_CXX_STANDARD 17)
 
-if (WIN32)
-    set (SOURCES ${SOURCES} win_pipe.cpp)
-elseif (UNIX)
-    set (SOURCES ${SOURCES} posix_pipe.cpp)
-endif()
-
 add_compile_definitions(PROJECT_ROOT_PATH="${PROJECT_SOURCE_DIR}")
+
+add_compile_definitions(PROJECT_JSONS_DIR="${PROJECT_SOURCE_DIR}/JSONs/")
+
+add_compile_definitions(PROJECT_RESOURCES_DIR="${PROJECT_SOURCE_DIR}/resources/")
+
+add_compile_definitions(TEST_JSONS_DIR="${PROJECT_SOURCE_DIR}/test/JSONs_test/")
+
+add_compile_definitions(TEST_RESOURCES_DIR="${PROJECT_SOURCE_DIR}/test/resources_test/")
 
 set(PROJECT_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/include")
 
 set(JSON_BuildTests OFF CACHE INTERNAL "")
 
 set(NLOHMANN_JSON_DIR "${PROJECT_SOURCE_DIR}/nlohmann_json")
+
 
 add_executable(search_engine ${PROJECT_SOURCE_DIR}/src/main.cpp)
 
@@ -53,3 +56,4 @@ include(GoogleTest)
 gtest_discover_tests(search_engine)
 
 add_subdirectory(test)
+
