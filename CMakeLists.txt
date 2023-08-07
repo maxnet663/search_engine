@@ -16,22 +16,19 @@ add_compile_definitions(TEST_RESOURCES_DIR="${PROJECT_SOURCE_DIR}/test/resources
 
 set(PROJECT_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/include")
 
-set(JSON_BuildTests OFF CACHE INTERNAL "")
+include(FetchContent)
 
-set(NLOHMANN_JSON_DIR "${PROJECT_SOURCE_DIR}/nlohmann_json")
+FetchContent_Declare(json URL https://github.com/nlohmann/json/releases/download/v3.11.2/json.tar.xz)
 
+FetchContent_MakeAvailable(json)
 
 add_executable(search_engine ${PROJECT_SOURCE_DIR}/src/main.cpp)
-
-add_subdirectory(nlohmann_json)
 
 add_subdirectory(src)
 
 target_include_directories(search_engine PUBLIC ${PROJECT_INCLUDE_DIR})
 
 target_link_libraries(search_engine PRIVATE engine_lib)
-
-include(FetchContent)
 
 FetchContent_Declare(
         googletest
