@@ -2,7 +2,8 @@ add_executable(test_main test_main.cpp)
 
 target_compile_definitions(test_main PUBLIC TEST)
 
-target_include_directories(test_main
+target_include_directories(
+        test_main
         PUBLIC
         "${PROJECT_SOURCE_DIR}/src"
         ${PROJECT_INCLUDE_DIR}
