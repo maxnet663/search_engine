@@ -1,5 +1,5 @@
-#ifndef CUSTOM_LIMITS_H
-#define CUSTOM_LIMITS_H
+#ifndef PROJECT_LIMITS_H
+#define PROJECT_LIMITS_H
 
 //Constants
 #define MAX_WORDS_NUMBER 1000
@@ -11,6 +11,8 @@
 #define REQUESTS_FILE_NAME "requests.json"
 #define RESULTS_FILE_NAME "results.json"
 
+
+// select paths to directories depending on the current build target
 #ifdef TEST
 #define JSONS_DIR TEST_JSONS_DIR
 #define RESOURCES_DIR TEST_RESOURCES_DIR
@@ -19,4 +21,4 @@
 #define RESOURCES_DIR PROJECT_RESOURCES_DIR
 #endif
 
-#endif //CUSTOM_LIMITS_H
+#endif //PROJECT_LIMITS_H
