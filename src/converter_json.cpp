@@ -19,7 +19,6 @@ std::vector<std::string> ConverterJSON::GetTextDocuments() {
 
     for (const auto &file : documentsList) {
 
-//        auto tmp = FileHelper::getFileName(file);
         auto pathToFile =
                 std::string(RESOURCES_DIR) + FileHelper::getFileName(file);
 
@@ -27,6 +26,7 @@ std::vector<std::string> ConverterJSON::GetTextDocuments() {
             try {
                 textDocuments.push_back(FileHelper::getFileText(pathToFile));
             }
+            // todo why length error? std::filesystem::filesystem_error?
             catch (std::length_error &ex) { // catch the exception but don't break the execution
                 std::cerr << ex.what() << std::endl; // warning
             }
