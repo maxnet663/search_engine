@@ -1,10 +1,10 @@
 #ifndef INVERTED_INDEX_H
 #define INVERTED_INDEX_H
 
-#include "converter_json.h" // ConverterJSON
-
 #include <vector> // vector
 #include <map> // map
+#include <unordered_set>
+#include <string> // string
 
 // a record with the document number and
 // the number of occurrences of a certain word in it
@@ -16,15 +16,35 @@ struct Entry {
     bool operator==(const Entry &other) const {
         return (doc_id == other.doc_id && count == other.count);
     }
+
+    // post increment operator
+    bool operator++(int) { count++; }
 };
 
 class InvertedIndex {
 
-    // document content list
+    /**
+     * document content list
+     */
     std::vector<std::string> docs;
 
-    // frequency dictionary
+    /**
+     * frequency dictionary
+     */
     std::map<std::string, std::vector<Entry>> freq_dictionary;
+
+    /**
+     * set of unique words in current database of documents
+     */
+    std::unordered_set<std::string> unique_words;
+
+    /**
+     * count occurrences of the word in doc's text
+     * @param text text of document
+     * @param word a word to count
+     * @return number of occurrences word in text
+     */
+    size_t countOccurrences(const std::string &text, const std::string &word);
 
 public:
 
@@ -47,6 +67,7 @@ public:
      * @return a list with word frequency
      */
     std::vector<Entry> GetWordCount(const std::string &word);
+
 };
 
 #endif //INVERTED_INDEX_H
