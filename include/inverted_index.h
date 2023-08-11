@@ -3,8 +3,8 @@
 
 #include <vector> // vector
 #include <map> // map
-#include <unordered_set>
 #include <string> // string
+#include <mutex> // mutex
 
 // a record with the document number and
 // the number of occurrences of a certain word in it
@@ -18,7 +18,7 @@ struct Entry {
     }
 
     // post increment operator
-    bool operator++(int) { count++; }
+    size_t operator++(int) { return count++; }
 };
 
 class InvertedIndex {
@@ -34,9 +34,9 @@ class InvertedIndex {
     std::map<std::string, std::vector<Entry>> freq_dictionary;
 
     /**
-     * set of unique words in current database of documents
+     * mutex to manage access to freq_dictionary
      */
-    std::unordered_set<std::string> unique_words;
+    std::mutex dict_acces;
 
     /**
      * count occurrences of the word in doc's text
@@ -45,6 +45,12 @@ class InvertedIndex {
      * @return number of occurrences word in text
      */
     size_t countOccurrences(const std::string &text, const std::string &word);
+
+    /**
+     * fill freq_dictionary by the unique words from the text
+     * @param text file's text to get unique words
+     */
+    void addUniqueWords(const std::string &text);
 
 public:
 
