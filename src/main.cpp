@@ -1,6 +1,7 @@
 #include <iostream>
 #include "converter_json.h"
 #include <vector>
+#include "inverted_index.h"
 
 int main() {
     try {
@@ -15,5 +16,8 @@ int main() {
     catch (std::exception &ex) {
         std::cerr << ex.what() << std::endl;
     }
+
+    InvertedIndex idx;
+    idx.UpdateDocumentBase(ConverterJSON::GetTextDocuments());
     return 0;
 }
