@@ -60,6 +60,14 @@ public:
     InvertedIndex() = default;
 
     /**
+     * needed because the mutex class has had its copy
+     * constructor removed, so we can't use the default copy constructor
+     * @param other another instance of InvertedIndex class
+     */
+    InvertedIndex(const InvertedIndex &other)
+        : docs(other.docs), freq_dictionary(other.freq_dictionary) {};
+
+    /**
      * update or fill in the database of documents
      * on which we will then search
      * @param input_docs document's content
