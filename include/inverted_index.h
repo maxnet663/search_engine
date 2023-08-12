@@ -52,6 +52,14 @@ class InvertedIndex {
      */
     void addUniqueWords(const std::string &text);
 
+    /**
+     * searches for occurrences of a word in array docs of document texts
+     * and prepares a frequency for the word
+     * @param word
+     * @return frequency of the word
+     */
+    std::vector<Entry> getWordFrequency(const std::string &word);
+
 public:
 
     /**
@@ -80,7 +88,7 @@ public:
      * @param word the word whose occurrence frequency is to be determined
      * @return a list with word frequency
      */
-    std::vector<Entry> GetWordCount(const std::string &word);
+    std::vector<Entry> getWordCount(const std::string &word);
 
 };
 

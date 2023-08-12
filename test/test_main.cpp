@@ -55,7 +55,7 @@ void TestInvertedIndexFunctionality(
     idx.UpdateDocumentBase(docs);
 
     for (auto &request : requests) {
-        std::vector<Entry> word_count = idx.GetWordCount(request);
+        std::vector<Entry> word_count = idx.getWordCount(request);
         result.push_back((word_count));
     }
 

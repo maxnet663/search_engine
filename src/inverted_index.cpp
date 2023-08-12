@@ -2,36 +2,7 @@
 #include <thread>
 #include <sstream>
 
-void InvertedIndex::UpdateDocumentBase(std::vector<std::string> input_docs) {
-
-    // clear old data if it necessary
-    if (!docs.empty()) {
-        docs.clear();
-    }
-    if (!freq_dictionary.empty()) {
-        freq_dictionary.clear();
-    }
-
-    // we no longer need input_docs
-    docs = std::move(input_docs);
-
-    // starts threads
-    std::vector<std::thread> threads(docs.size());
-    for (size_t i = 0; i < docs.size(); ++i) {
-
-        // access to lines from docs is carried out by
-        // constant reference, so there will be no race
-        threads[i] = std::thread(&InvertedIndex::addUniqueWords, this, std::ref(docs[i]));
-    }
-
-    // waits for threads
-    for (auto &th : threads) {
-        th.join();
-    }
-
-}
-
-std::vector<Entry> InvertedIndex::GetWordCount(const std::string &word) {
+std::vector<Entry> InvertedIndex::getWordFrequency(const std::string &word) {
 
     // result data
     std::vector<Entry> result;
@@ -109,7 +80,7 @@ void InvertedIndex::addUniqueWords(const std::string &text) {
 
             // the function accepts a word by constant reference,
             // and also accesses the docs array read-only, so it is safe
-            auto wordCount = GetWordCount(word);
+            auto wordCount = getWordFrequency(word);
 
             // when adding a new word, we lock the dictionary again
             // and prevent the race
@@ -118,4 +89,40 @@ void InvertedIndex::addUniqueWords(const std::string &text) {
             target = std::move(wordCount);
         }
     }
+}
+
+void InvertedIndex::UpdateDocumentBase(std::vector<std::string> input_docs) {
+
+    // clear old data if it necessary
+    if (!docs.empty()) {
+        docs.clear();
+    }
+    if (!freq_dictionary.empty()) {
+        freq_dictionary.clear();
+    }
+
+    // we no longer need input_docs
+    docs = std::move(input_docs);
+
+    // starts threads
+    std::vector<std::thread> threads(docs.size());
+    for (size_t i = 0; i < docs.size(); ++i) {
+
+        // access to lines from docs is carried out by
+        // constant reference, so there will be no race
+        threads[i] = std::thread(&InvertedIndex::addUniqueWords, this, std::ref(docs[i]));
+    }
+
+    // waits for threads
+    for (auto &th : threads) {
+        th.join();
+    }
+
+}
+
+std::vector<Entry> InvertedIndex::getWordCount(const std::string &word) {
+    if (!freq_dictionary.empty())
+        return freq_dictionary[word];
+    else
+        return { };
 }
