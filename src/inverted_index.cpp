@@ -117,12 +117,9 @@ void InvertedIndex::UpdateDocumentBase(std::vector<std::string> input_docs) {
     for (auto &th : threads) {
         th.join();
     }
-
 }
 
 std::vector<Entry> InvertedIndex::getWordCount(const std::string &word) {
-    if (!freq_dictionary.empty())
-        return freq_dictionary[word];
-    else
-        return { };
+    return
+        freq_dictionary.empty() ? std::vector<Entry>() : freq_dictionary[word];
 }
