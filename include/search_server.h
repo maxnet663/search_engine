@@ -24,14 +24,15 @@ class SearchServer {
     std::vector<size_t> getRelevantDocs(
             const std::vector<std::string> &unique_queries);
 
-    std::vector<Entry> getCommonDocs(
-            const std::vector<Entry> &first, const std::vector<Entry> &second);
+    std::vector<Entry> getCommonDocs(const std::vector<Entry> &first
+                                     , const std::vector<Entry> &second);
 
     std::vector<size_t> getDocsRelevance(
             const std::vector<size_t> &docs
             , const std::vector<std::string> &queries);
 
-    size_t EntrySum(std::vector<Entry>::iterator begin, std::vector<Entry>::iterator end);
+    size_t EntrySum(std::vector<Entry>::iterator begin
+                    , std::vector<Entry>::iterator end);
 
 public:
 

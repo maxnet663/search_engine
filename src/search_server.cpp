@@ -13,7 +13,7 @@ std::vector<std::vector<RelativeIndex>> SearchServer::search(
         std::vector<std::string> uniqueQueries = getUniqueWords(query);
         sortQueries(uniqueQueries.begin(), uniqueQueries.end());
         auto relevantDocs = getRelevantDocs(uniqueQueries);
-        if (relevantDocs.empty()){
+        if (relevantDocs.empty()) {
             searchResults.emplace_back();
         } else {
             auto docsRelevance =
