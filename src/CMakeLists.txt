@@ -3,6 +3,7 @@ add_library(
         converter_json.cpp
         file_helper.cpp
         inverted_index.cpp
+        search_server.cpp
 )
 
 target_include_directories(engine_lib PUBLIC ${PROJECT_INCLUDE_DIR} ${NLOHMANN_JSON_DIR})
