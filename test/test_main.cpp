@@ -122,7 +122,7 @@ TEST(TestCaseSearchServer, TestSimple) {
 TEST(TestCaseSearchServer, TestTop5) {
     const std::vector<std::string> docs = {
             "london is the capital of great britain",
-            "paris is the capital of of france",
+            "paris is the capital of france",
             "berlin is the capital of germany",
             "rome is the capital of italy",
             "madrid is the capital of spain",
@@ -132,8 +132,8 @@ TEST(TestCaseSearchServer, TestTop5) {
             "kiev is the capital of ukraine",
             "minsk is the capital of belarus",
             "astana is the capital of kazakhstan",
-            "beijing is the capital if china",
-            "tokyo is the capital if japan",
+            "beijing is the capital of china",
+            "tokyo is the capital of japan",
             "bangkok is the capital of thailand",
             "welcome to moscow the capital of russia the third rome",
             "amsterdam is the capital of netherlands",
@@ -142,7 +142,7 @@ TEST(TestCaseSearchServer, TestTop5) {
             "stockholm is the capital of sweden",
             "riga is the capital of latvia",
             "tallinn is the capital of estonia",
-            "warsaw is the capital of poland"
+            "warsaw is the capital of poland",
     };
     const std::vector<std::string> request = {"moscow is the capital of russia"};
     const std::vector<std::vector<RelativeIndex>> expected = {
@@ -154,14 +154,10 @@ TEST(TestCaseSearchServer, TestTop5) {
                     {2, 0.666666687}
             }
     };
-
     InvertedIndex idx;
     idx.UpdateDocumentBase(docs);
-
     SearchServer srv(idx);
-
     std::vector<std::vector<RelativeIndex>> result = srv.search(request);
-
     ASSERT_EQ(result, expected);
 }
 
