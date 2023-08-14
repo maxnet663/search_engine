@@ -7,35 +7,56 @@
 std::vector<std::vector<RelativeIndex>> SearchServer::search(
         const std::vector<std::string> &queries_input) {
 
+    // result data
     std::vector<std::vector<RelativeIndex>> searchResults;
 
+    // loop through each query
     for (const auto &query : queries_input) {
+
+        // make a list of unique words
         std::vector<std::string> uniqueQueries = getUniqueWords(query);
+
+        // sorts words in order of increasing frequency of occurrence
         sortQueries(uniqueQueries.begin(), uniqueQueries.end());
+
+        // get list of relevant docs
         auto relevantDocs = getRelevantDocs(uniqueQueries);
+
+        // if in the end there is not a single document left add empty list
         if (relevantDocs.empty()) {
+
             searchResults.emplace_back();
+
         } else {
-            auto docsRelevance =
+
+            // get a list of documents and relevancy
+            auto answers =
                     getDocsRelevance(relevantDocs, uniqueQueries);
-            auto maxRelevance = std::max_element(
-                    docsRelevance.begin()
-                    , docsRelevance.end()
-            );
-            std::vector<RelativeIndex> result(relevantDocs.size());
+
+            // sorts documents in descending order of relevance
+            sortRelevantDocs(answers);
+
+            // get maxRelevance
+            auto maxRelevance = answers[0].relevance;
+
+            // form result
+            std::vector<RelativeIndex> results(relevantDocs.size());
+
             for (size_t i = 0; i < relevantDocs.size(); ++i) {
-                result[i] = {
-                        relevantDocs[i]
-                        , (float) docsRelevance[i] / (float) *maxRelevance
+                results[i] = {
+                        answers[i].doc_id,
+                        (float) answers[i].relevance / (float) maxRelevance
                 };
             }
-            searchResults.push_back(result);
+            searchResults.push_back(results);
         }
     }
     return searchResults;
 }
 
 std::vector<std::string> SearchServer::getUniqueWords(const std::string &text) {
+
+    // set of unique words from requests
     std::unordered_set<std::string> uniqueRequests;
     std::stringstream data(text);
     std::string buf;
@@ -58,8 +79,15 @@ void SearchServer::sortQueries(std::vector<std::string>::iterator begin
     std::sort(begin, end, addition);
 }
 
-size_t SearchServer::EntrySum(std::vector<Entry>::iterator begin
-        , std::vector<Entry>::iterator end) {
+void SearchServer::sortRelevantDocs(std::vector<DocRelevance> &answers) {
+    std::sort(answers.begin()
+              , answers.end()
+              , [](const DocRelevance &x, const DocRelevance &y)
+              { return x.relevance > y.relevance; });
+}
+
+size_t SearchServer::EntrySum(const std::vector<Entry>::iterator begin
+                              , const std::vector<Entry>::iterator end) {
     return std::accumulate(
             begin
             , end
@@ -86,6 +114,7 @@ std::vector<size_t> SearchServer::getRelevantDocs(
         currentQuery++;
     }
 
+    //returns list of relevant documents
     std::vector<size_t> results(relevantDocs.size());
     for (size_t i = 0; i < relevantDocs.size(); ++i) {
         results[i] = relevantDocs[i].doc_id;
@@ -95,12 +124,18 @@ std::vector<size_t> SearchServer::getRelevantDocs(
 
 std::vector<Entry> SearchServer::getCommonDocs(
         const std::vector<Entry> &first, const std::vector<Entry> &second) {
+
+    //result data
     std::vector<Entry> result;
+
     for (auto &doc : first) {
         auto found = std::find_if(
                 second.begin()
                 , second.end()
                 , [&](const Entry &entry){return doc.doc_id == entry.doc_id;});
+
+        // if two lists have common document
+        // add the document to result
         if (found != second.end()) {
             result.push_back(doc);
         }
@@ -108,22 +143,31 @@ std::vector<Entry> SearchServer::getCommonDocs(
     return result;
 }
 
-std::vector<size_t> SearchServer::getDocsRelevance(
+std::vector<DocRelevance> SearchServer::getDocsRelevance(
         const std::vector<size_t> &docs
         , const std::vector<std::string> &queries) {
 
-    std::vector<size_t> docsRelevance;
+    //result data
+    std::vector<DocRelevance> docsRelevance;
+
+    // get relevance for each doc from docs
     for (const auto &doc : docs) {
+
         size_t relevance = 0;
+
         for (const auto &query: queries) {
+
             auto queryDocs = _index.getWordCount(query);
+
             for (const auto &entry : queryDocs) {
+                //if query occurs in doc increase relevance
                 if (entry.doc_id == doc) {
                     relevance += entry.count;
                 }
+
             }
         }
-        docsRelevance.push_back(relevance);
+        docsRelevance.push_back( {doc, relevance} );
     }
     return docsRelevance;
 }
