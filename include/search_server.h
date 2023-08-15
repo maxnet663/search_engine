@@ -10,6 +10,11 @@ struct DocRelevance {
     size_t doc_id;
     size_t relevance;
 
+    DocRelevance() : doc_id(0), relevance(0) {}
+
+    explicit DocRelevance(const std::pair<size_t, size_t> &pair)
+        : doc_id(pair.first), relevance(pair.second) {}
+
     bool operator>(const DocRelevance &right) const {
         return relevance == right.relevance ?
             doc_id < right.doc_id : relevance > right.relevance;
@@ -45,40 +50,27 @@ class SearchServer {
                      , std::vector<std::string>::iterator end);
 
     /**
-     * By the first, rarest word from the list, finds all documents in which
-     * word occurs. Next, it looks for matches between the next word and
-     * this list of documents. So by each next word.
+     * generates a list of relevant documents and counts
+     * relevance index for each document
      * @param unique_queries list of unique requests
-     * @return a list of documents in which all words from unique_queries occur
+     * @return list of relevant documents
      */
-    std::vector<size_t> getRelevantDocs(
+    std::vector<DocRelevance> getRelevantDocs(
             const std::vector<std::string> &unique_queries);
 
     /**
-     * function is used as a helper in getRelevantDocs
-     * searches for common documents in two lists
-     * @param first list of docs
-     * @param second list of docs
-     * @return list of common docs
-     */
-    std::vector<Entry> getCommonDocs(const std::vector<Entry> &first
-                                     , const std::vector<Entry> &second);
-
-    /**
-     * Gets a list with document IDs and their relevance
+     * get a relevance index of doc relatively the query
      * @param docs list of documents
-     * @param queries list of queries
+     * @param unique_queries list of queries
      * @return list with document IDs and their relevance
      */
-    std::vector<DocRelevance> getDocsRelevance(
-            const std::vector<size_t> &docs
-            , const std::vector<std::string> &queries);
+    size_t getDocRelevance(const size_t &docId, const std::string &query);
 
     /**
      * helper function summing counts from all entries in range [begin, end)
      * @param begin start of the list to sum
      * @param end end of the list to sum
-     * @return summ of all count from all entries in the range
+     * @return sum of all count from all entries in the range
      */
     size_t EntrySum(const std::vector<Entry>::iterator begin
                     , const std::vector<Entry>::iterator end);
@@ -86,12 +78,11 @@ class SearchServer {
 public:
 
     /**
-     *
      * @param idx a reference to the class is passed to the class constructor
      * InvertedIndex, so that SearchServer can find out
      * the frequency of words found in request
      */
-    SearchServer(InvertedIndex &idx) : _index(idx) {};
+    explicit SearchServer(InvertedIndex &idx) : _index(idx) {};
 
     /**
      * Search query processing method

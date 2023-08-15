@@ -1,5 +1,6 @@
 #include "search_server.h"
 #include <unordered_set>
+#include <unordered_map>
 #include <algorithm>
 #include <numeric>
 #include <sstream>
@@ -30,14 +31,15 @@ std::vector<std::vector<RelativeIndex>> SearchServer::search(
         } else {
 
             // get a list of documents and relevancy
-            auto answers =
-                    getDocsRelevance(relevantDocs, uniqueQueries);
+            auto answers = getRelevantDocs(uniqueQueries);
 
             // sorts documents in descending order of relevance
             std::sort(answers.begin(), answers.end(), std::greater());
 
+            #ifdef TEST
             if (answers.size() > 5)
                 answers.resize(5);
+            #endif
 
             // get maxRelevance
             auto maxRelevance = answers[0].relevance;
@@ -89,73 +91,35 @@ size_t SearchServer::EntrySum(const std::vector<Entry>::iterator begin
             , end
             , 0
             , [](const size_t &num, const Entry &entry) {
-                return num + entry.count;
-            });
+                return num + entry.count; }
+            );
 }
 
-std::vector<size_t> SearchServer::getRelevantDocs(
+std::vector<DocRelevance> SearchServer::getRelevantDocs(
         const std::vector<std::string> &unique_queries) {
-// todo choose another container for faster search in it
-    std::vector<size_t> result;
+
+    std::unordered_map<size_t, size_t> result;
     for (const auto &query : unique_queries) {
         auto queryFreq = _index.getWordCount(query);
         for (const auto &entry : queryFreq) {
-            auto found = std::find_if(result.begin()
-                    , result.end()
-                    , [&](const size_t &docId){return entry.doc_id == docId;});
-            if ( found == result.end())
-                result.push_back(entry.doc_id);
-        }
-    }
-    return result;
-}
-
-std::vector<Entry> SearchServer::getCommonDocs(
-        const std::vector<Entry> &first, const std::vector<Entry> &second) {
-
-    //result data
-    std::vector<Entry> result;
-
-    for (auto &doc : first) {
-        auto found = std::find_if(
-                second.begin()
-                , second.end()
-                , [&](const Entry &entry){return doc.doc_id == entry.doc_id;});
-
-        // if two lists have common document
-        // add the document to result
-        if (found != second.end()) {
-            result.push_back(doc);
-        }
-    }
-    return result;
-}
-
-std::vector<DocRelevance> SearchServer::getDocsRelevance(
-        const std::vector<size_t> &docs
-        , const std::vector<std::string> &queries) {
-
-    //result data
-    std::vector<DocRelevance> docsRelevance;
-
-    // get relevance for each doc from docs
-    for (const auto &doc : docs) {
-
-        size_t relevance = 0;
-
-        for (const auto &query: queries) {
-
-            auto queryDocs = _index.getWordCount(query);
-
-            for (const auto &entry : queryDocs) {
-                //if query occurs in doc increase relevance
-                if (entry.doc_id == doc) {
-                    relevance += entry.count;
-                }
-
+            if (result.find(entry.doc_id) == result.end()) {
+                result[entry.doc_id] = getDocRelevance(entry.doc_id, query);
+            } else {
+                result[entry.doc_id] += getDocRelevance(entry.doc_id, query);
             }
         }
-        docsRelevance.push_back( {doc, relevance} );
     }
-    return docsRelevance;
+    return { result.begin(), result.end() };
+}
+
+size_t SearchServer::getDocRelevance(const size_t &docId
+                                           , const std::string &query) {
+
+    auto queryFreq = _index.getWordCount(query);
+    auto found = std::find_if(
+            queryFreq.begin()
+            , queryFreq.end()
+            , [&](const Entry &entry){return entry.doc_id == docId;}
+            );
+    return found == queryFreq.end() ? 0 : found->count;
 }
