@@ -90,8 +90,8 @@ size_t SearchServer::EntrySum(const std::vector<Entry>::iterator begin
             begin
             , end
             , 0
-            , [](const size_t &num, const Entry &entry) {
-                return num + entry.count; }
+            , [](const size_t &num, const Entry &entry)
+            { return num + entry.count; }
             );
 }
 
