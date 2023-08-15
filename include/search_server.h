@@ -11,7 +11,8 @@ struct DocRelevance {
     size_t relevance;
 
     bool operator>(const DocRelevance &right) const {
-        return relevance == right.relevance ? doc_id < right.doc_id : relevance > right.relevance;
+        return relevance == right.relevance ?
+            doc_id < right.doc_id : relevance > right.relevance;
     }
 };
 
@@ -42,12 +43,6 @@ class SearchServer {
      */
     void sortQueries(std::vector<std::string>::iterator begin
                      , std::vector<std::string>::iterator end);
-
-    /**
-     * sorts the list of documents in descending order of relevance
-     * @param answers List of documents and their relevances
-     */
-    void sortRelevantDocs(std::vector<DocRelevance> &answers);
 
     /**
      * By the first, rarest word from the list, finds all documents in which

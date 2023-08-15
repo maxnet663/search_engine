@@ -34,7 +34,7 @@ std::vector<std::vector<RelativeIndex>> SearchServer::search(
                     getDocsRelevance(relevantDocs, uniqueQueries);
 
             // sorts documents in descending order of relevance
-            sortRelevantDocs(answers);
+            std::sort(answers.begin(), answers.end(), std::greater());
 
             if (answers.size() > 5)
                 answers.resize(5);
@@ -72,20 +72,14 @@ std::vector<std::string> SearchServer::getUniqueWords(const std::string &text) {
 
 void SearchServer::sortQueries(std::vector<std::string>::iterator begin
         , std::vector<std::string>::iterator end) {
-    auto addition = [&](const std::string &x, const std::string &y) {
-        auto x_freq = _index.getWordCount(x);
-        auto y_freq = _index.getWordCount(y);
-        auto x_sum = EntrySum(x_freq.begin(), x_freq.end());
-        auto y_sum = EntrySum(y_freq.begin(), y_freq.end());
-        return x_sum < y_sum;
+    auto countSumComp = [&](const std::string &x, const std::string &y) {
+        auto xFreq = _index.getWordCount(x);
+        auto yFreq = _index.getWordCount(y);
+        auto xCountSum = EntrySum(xFreq.begin(), xFreq.end());
+        auto yCountSum = EntrySum(yFreq.begin(), yFreq.end());
+        return xCountSum < yCountSum;
     };
-    std::sort(begin, end, addition);
-}
-
-void SearchServer::sortRelevantDocs(std::vector<DocRelevance> &answers) {
-    std::sort(answers.begin()
-              , answers.end()
-              , std::greater());
+    std::sort(begin, end, countSumComp);
 }
 
 size_t SearchServer::EntrySum(const std::vector<Entry>::iterator begin
@@ -94,7 +88,7 @@ size_t SearchServer::EntrySum(const std::vector<Entry>::iterator begin
             begin
             , end
             , 0
-            , [](size_t num, const Entry &entry) {
+            , [](const size_t &num, const Entry &entry) {
                 return num + entry.count;
             });
 }
