@@ -3,7 +3,6 @@
 
 #include <filesystem> //path directory_iterator current_path
 #include <fstream>  // fstream
-#include <regex> //regex regex_match
 
 std::string FileHelper::getFileText(const std::string &filename) {
 
@@ -105,7 +104,7 @@ void FileHelper::toLowerCase(std::string &s) {
 void FileHelper::deletePunctuationMarks(std::string &s) {
     s.erase(std::remove_if(s.begin()
                     , s.end()
-                    , [](char &ch){return std::ispunct(ch); })
+                    , [](char &ch){return std::ispunct(ch);})
             , s.end());
 }
 
