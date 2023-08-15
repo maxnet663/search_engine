@@ -13,6 +13,7 @@ std::string FileHelper::getFileText(const std::string &filename) {
     //check words number in file
     if (std::distance(std::istream_iterator<std::string>(ifs)
             , std::istream_iterator<std::string>()) > MAX_WORDS_NUMBER) {
+
         throw std::length_error(std::string("number of words in file ")
                                 + filename  + std::string(" greater than ")
                                 + std::to_string(MAX_WORDS_NUMBER));
@@ -117,7 +118,7 @@ void FileHelper::deleteExtraSpaces(std::string &s) {
     // search first non space ch
     while (*front == ' ') {
         ++front;
-    };
+    }
 
     while (*front) {
 
@@ -138,7 +139,6 @@ void FileHelper::deleteExtraSpaces(std::string &s) {
     if (*(s.end() - 1) == ' ') {
         s.pop_back();
     }
-
 }
 
 void FileHelper::writeJsonToFile(const nlohmann::json &jsonText, const std::string &path) {
@@ -153,35 +153,6 @@ void FileHelper::writeJsonToFile(const nlohmann::json &jsonText, const std::stri
     dest << jsonText;
     dest.close();
 
-}
-
-// useless
-std::string FileHelper::findPath(std::string name) {
-
-    name = getFileName(name);
-
-    // returns empty string if name is incorrect
-    if (name.empty()) {
-        return {};
-    }
-
-    // PROJECT_ROOT_PATH is a macros contains path to
-    //project root directory
-    std::filesystem::path rootPath = PROJECT_ROOT_PATH;
-
-    // result
-    std::filesystem::path found;
-
-    // get iterator to search in root directory
-    std::filesystem::recursive_directory_iterator content(rootPath);
-    for (const auto &curPath: content) {
-        if (std::regex_match(curPath.path().string(), std::regex(".*" + name)))
-            found = curPath.path();
-    }
-
-    // return empty string if func could not find the path
-    // founded path is a directory adds slash to the end
-    return is_directory(found) ? found.string() + "/" :  found.string();
 }
 
 std::string FileHelper::getFileName(std::string s) {

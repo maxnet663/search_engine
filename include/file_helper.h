@@ -63,15 +63,6 @@ public:
     static void writeJsonToFile(const nlohmann::json &jsonText, const std::string &path);
 
     /**
-     * searches for a path to a file or directory
-     * named as name in !!root directory of project!!
-     * @param name of the file or directory
-     * @return path to the file or directory
-     * if returns directory add '/' to end of path
-     */
-    static std::string findPath(std::string name);
-
-    /**
      * receives a path to a file or directory as input, returns its name
      * example:s ="/project/logs/config.txt", getFileName(s) returns config.txt
      * @param s path to file or directory
