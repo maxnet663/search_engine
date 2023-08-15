@@ -4,8 +4,6 @@
 
 #include <fstream> // ifs, ofs
 #include <iostream> // cerr
-#include <regex> // regex, regex_match
-
 
 std::vector<std::string> ConverterJSON::GetTextDocuments() {
 
@@ -19,19 +17,18 @@ std::vector<std::string> ConverterJSON::GetTextDocuments() {
 
     for (const auto &file : documentsList) {
 
-        auto pathToFile =
+        auto filePath =
                 std::string(RESOURCES_DIR) + FileHelper::getFileName(file);
 
-        if (std::filesystem::exists(pathToFile)) {
+        if (std::filesystem::exists(filePath)) {
             try {
-                textDocuments.push_back(FileHelper::getFileText(pathToFile));
+                textDocuments.push_back(FileHelper::getFileText(filePath));
             }
-            // todo why length error? std::filesystem::filesystem_error?
             catch (std::length_error &ex) { // catch the exception but don't break the execution
                 std::cerr << ex.what() << std::endl; // warning
             }
         } else {
-            std::cerr << pathToFile << "does not exist\n";
+            std::cerr << filePath << "does not exist\n";
         }
     }
 
@@ -98,6 +95,9 @@ void ConverterJSON::putAnswers(
                 jsonFile["answers"][request]["result"] = !answers[i].empty();
 
                 // relevance field is represented as an array
+                if (answers.size() > 5) {
+                    answers.resize(GetResponsesLimit());
+                }
                 for (const auto &j: answers[i]) {
 
                     // element of relevance array
