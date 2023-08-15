@@ -36,13 +36,16 @@ std::vector<std::vector<RelativeIndex>> SearchServer::search(
             // sorts documents in descending order of relevance
             sortRelevantDocs(answers);
 
+            if (answers.size() > 5)
+                answers.resize(5);
+
             // get maxRelevance
             auto maxRelevance = answers[0].relevance;
 
             // form result
-            std::vector<RelativeIndex> results(relevantDocs.size());
+            std::vector<RelativeIndex> results(answers.size());
 
-            for (size_t i = 0; i < relevantDocs.size(); ++i) {
+            for (size_t i = 0; i < results.size(); ++i) {
                 results[i] = {
                         answers[i].doc_id,
                         (float) answers[i].relevance / (float) maxRelevance
@@ -82,8 +85,7 @@ void SearchServer::sortQueries(std::vector<std::string>::iterator begin
 void SearchServer::sortRelevantDocs(std::vector<DocRelevance> &answers) {
     std::sort(answers.begin()
               , answers.end()
-              , [](const DocRelevance &x, const DocRelevance &y)
-              { return x.relevance > y.relevance; });
+              , std::greater());
 }
 
 size_t SearchServer::EntrySum(const std::vector<Entry>::iterator begin
@@ -99,27 +101,19 @@ size_t SearchServer::EntrySum(const std::vector<Entry>::iterator begin
 
 std::vector<size_t> SearchServer::getRelevantDocs(
         const std::vector<std::string> &unique_queries) {
-
-    // we form a list of relevant documents according to the data
-    // from the freq_dict for the rarest query
-    auto relevantDocs = _index.getWordCount(*unique_queries.begin());
-
-    // start round the queries from second query
-    auto currentQuery = unique_queries.begin() + 1;
-    while(currentQuery != unique_queries.end() && !relevantDocs.empty()) {
-
-        // form list of relevant docs for current query
-        auto queryDocs = _index.getWordCount(*currentQuery);
-        relevantDocs = getCommonDocs(relevantDocs, queryDocs);
-        currentQuery++;
+// todo choose another container for faster search in it
+    std::vector<size_t> result;
+    for (const auto &query : unique_queries) {
+        auto queryFreq = _index.getWordCount(query);
+        for (const auto &entry : queryFreq) {
+            auto found = std::find_if(result.begin()
+                    , result.end()
+                    , [&](const size_t &docId){return entry.doc_id == docId;});
+            if ( found == result.end())
+                result.push_back(entry.doc_id);
+        }
     }
-
-    //returns list of relevant documents
-    std::vector<size_t> results(relevantDocs.size());
-    for (size_t i = 0; i < relevantDocs.size(); ++i) {
-        results[i] = relevantDocs[i].doc_id;
-    }
-    return results;
+    return result;
 }
 
 std::vector<Entry> SearchServer::getCommonDocs(

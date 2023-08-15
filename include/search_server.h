@@ -9,6 +9,10 @@
 struct DocRelevance {
     size_t doc_id;
     size_t relevance;
+
+    bool operator>(const DocRelevance &right) const {
+        return relevance == right.relevance ? doc_id < right.doc_id : relevance > right.relevance;
+    }
 };
 
 struct RelativeIndex {
