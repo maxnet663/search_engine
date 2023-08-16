@@ -1,4 +1,4 @@
-#include "file_helper.h"
+#include "custom_functions.h"
 #include "project_constants.h"
 
 #include <filesystem> //path directory_iterator current_path
@@ -181,4 +181,39 @@ std::string custom::getFileName(std::string s) {
     s.erase(s.begin(), walk + 1);
 
     return s;
+}
+
+size_t custom::countOccurrences(const std::string &text, const std::string &word) {
+
+    // the current index with which we will bypass the string
+    size_t walk = 0;
+
+    // counter of occurrences
+    size_t occur_counter = 0;
+
+    // while we can detect occurrence
+    while (walk <= text.length() - word.length()) {
+
+        // get the index of occurrence's start
+        auto occur_begin = text.find(word, walk);
+
+        // if there is not any occurrence return
+        if (occur_begin == std::string::npos)
+            return occur_counter;
+
+        // get the index of occurrence's end
+        auto occur_end = occur_begin + word.length();
+
+        // if the occurrence is a single word, not part of a word
+        if ( (occur_begin == 0 || text[occur_begin - 1] == ' ')
+             && (text[occur_end] == ' ' || occur_end == text.length())) {
+
+            occur_counter++;
+        }
+
+        // move the current index
+        walk = occur_end;
+    }
+
+    return occur_counter;
 }

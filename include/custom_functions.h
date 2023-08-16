@@ -68,5 +68,13 @@ namespace custom {
      * @return the name of directory or file
      */
     std::string getFileName(std::string s);
+
+    /**
+     * count occurrences of the word in text
+     * @param text text
+     * @param word a word to count
+     * @return number of occurrences word in text
+     */
+    size_t countOccurrences(const std::string &text, const std::string &word);
 }
 #endif //SEARCH_ENGINE
