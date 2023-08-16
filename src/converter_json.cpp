@@ -59,7 +59,7 @@ std::vector<std::string> ConverterJSON::GetRequests() {
 }
 
 void ConverterJSON::putAnswers(
-        std::vector<std::vector<std::pair<int, float>>> answers) {
+        std::vector<std::vector<RelativeIndex>> answers) {
 
     // result json to write in results.json
     nlohmann::json jsonFile;
@@ -86,8 +86,8 @@ void ConverterJSON::putAnswers(
             //if only one answer is found
             if (answers[i].size() == 1) {
                 jsonFile["answers"][request]["result"] = !answers.empty();
-                jsonFile["answers"][request]["docid"] = answers[i].begin()->first;
-                jsonFile["answers"][request]["rank"] = answers[i].begin()->second;
+                jsonFile["answers"][request]["docid"] = answers[i].begin()->doc_id;
+                jsonFile["answers"][request]["rank"] = answers[i].begin()->rank;
 
             } else {
 
@@ -104,8 +104,8 @@ void ConverterJSON::putAnswers(
                     nlohmann::json newField;
 
                     newField = {
-                            {"docid", j.first},
-                            {"rank",  j.second}
+                            {"docid", j.doc_id},
+                            {"rank",  j.rank}
                     };
 
                     // add at the end
