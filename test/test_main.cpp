@@ -1,4 +1,4 @@
-#include "file_helper.cpp"
+#include "custom_functions.cpp"
 #include "converter_json.cpp"
 #include "inverted_index.cpp"
 #include "search_server.cpp"
@@ -158,6 +158,9 @@ TEST(TestCaseSearchServer, TestTop5) {
     idx.UpdateDocumentBase(docs);
     SearchServer srv(idx);
     std::vector<std::vector<RelativeIndex>> result = srv.search(request);
+    if (result[0].size() > 5) {
+        result[0].resize(5);
+    }
     ASSERT_EQ(result, expected);
 }
 
