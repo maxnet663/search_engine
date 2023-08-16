@@ -4,14 +4,14 @@
 #include <filesystem> //path directory_iterator current_path
 #include <fstream>  // fstream
 
-std::string FileHelper::getFileText(const std::string &filename) {
+std::string custom::getFileText(const std::string &file_name) {
 
     // open stream for reading
-    std::ifstream ifs(filename);
+    std::ifstream ifs(file_name);
 
     if (!ifs.is_open()) {
         throw std::filesystem::filesystem_error("Could not open the file"
-                , filename
+                , file_name
                 , std::make_error_code(std::errc::no_such_file_or_directory));
     }
 
@@ -20,7 +20,7 @@ std::string FileHelper::getFileText(const std::string &filename) {
             , std::istream_iterator<std::string>()) > MAX_WORDS_NUMBER) {
 
         throw std::length_error(std::string("number of words in file ")
-                                + filename  + std::string(" greater than ")
+                                + file_name + std::string(" greater than ")
                                 + std::to_string(MAX_WORDS_NUMBER));
     }
 
@@ -32,7 +32,7 @@ std::string FileHelper::getFileText(const std::string &filename) {
     std::string text;//storage for text
 
     // reserve memory
-    text.reserve(std::filesystem::file_size(filename));
+    text.reserve(std::filesystem::file_size(file_name));
 
     // read one word at a time
     while (ifs >> buf) {
@@ -40,7 +40,7 @@ std::string FileHelper::getFileText(const std::string &filename) {
         //check word's length
         if (buf.length() > MAX_WORD_LENGTH) {
             throw std::length_error(std::string("one of words from file:")
-                                    + filename
+                                    + file_name
                                     + std::string( " has length greater than ")
                                     + std::to_string(MAX_WORD_LENGTH));
         }
@@ -58,7 +58,7 @@ std::string FileHelper::getFileText(const std::string &filename) {
     return text;
 }
 
-void FileHelper::formatString(std::string &s)  {
+void custom::formatString(std::string &s)  {
 
     if (s.length() == 0) {
         return;
@@ -73,7 +73,7 @@ void FileHelper::formatString(std::string &s)  {
     deleteExtraSpaces(s);
 }
 
-int FileHelper::wordsCounter(const std::string &s) {
+int custom::wordsCounter(const std::string &s) {
 
     // flag
     bool is_word = false;
@@ -101,20 +101,20 @@ int FileHelper::wordsCounter(const std::string &s) {
     return words_counter + is_word;
 }
 
-void FileHelper::toLowerCase(std::string &s) {
+void custom::toLowerCase(std::string &s) {
 
     std::for_each(s.begin(), s.end(), [](char &ch){ ch = tolower(ch); });
 
 }
 
-void FileHelper::deletePunctuationMarks(std::string &s) {
+void custom::deletePunctuationMarks(std::string &s) {
     s.erase(std::remove_if(s.begin()
                     , s.end()
                     , [](char &ch){return std::ispunct(ch);})
             , s.end());
 }
 
-void FileHelper::deleteExtraSpaces(std::string &s) {
+void custom::deleteExtraSpaces(std::string &s) {
 
     // use two pointers
     auto back = s.begin();
@@ -146,7 +146,8 @@ void FileHelper::deleteExtraSpaces(std::string &s) {
     }
 }
 
-void FileHelper::writeJsonToFile(const nlohmann::json &jsonText, const std::string &path) {
+void custom::writeJsonToFile(const nlohmann::json &json_text
+                             , const std::string &path) {
 
     // if file already exists we should remove it
     if (std::filesystem::exists(path)) {
@@ -155,12 +156,12 @@ void FileHelper::writeJsonToFile(const nlohmann::json &jsonText, const std::stri
 
     // open stream for writing
     std::ofstream dest(path, std::ios::out);
-    dest << jsonText;
+    dest << json_text;
     dest.close();
 
 }
 
-std::string FileHelper::getFileName(std::string s) {
+std::string custom::getFileName(std::string s) {
 
     //format name
     // pointers to the end of the string
