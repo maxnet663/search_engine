@@ -1,23 +1,10 @@
 #include "search_server.h"
 
+#include "custom_functions.h"
+
 #include <algorithm>
 #include <numeric>
 #include <sstream>
-#include <unordered_set>
-#include <unordered_map>
-
-std::vector<std::string> SearchServer::getUniqueWords(const std::string &text) {
-
-    // set of unique words from requests
-    std::unordered_set<std::string> uniqueRequests;
-    std::stringstream data(text);
-    std::string buf;
-    while (data >> buf) {
-        uniqueRequests.insert(buf);
-    }
-
-    return { uniqueRequests.begin(), uniqueRequests.end() };
-}
 
 inline void SearchServer::sortQueries(std::vector<std::string>::iterator begin
         , std::vector<std::string>::iterator end) {
@@ -33,8 +20,8 @@ inline void SearchServer::sortQueries(std::vector<std::string>::iterator begin
     std::sort(begin, end, countSumComp);
 }
 
-inline size_t SearchServer::EntrySum(const std::vector<Entry>::iterator begin
-                              , const std::vector<Entry>::iterator end) {
+inline size_t SearchServer::EntrySum(std::vector<Entry>::iterator begin
+                                     , std::vector<Entry>::iterator end) {
     return std::accumulate(
             begin
             , end
@@ -61,53 +48,48 @@ std::vector<DocRelevance> SearchServer::getRelevantDocs(
     return { result.begin(), result.end() };
 }
 
-size_t SearchServer::getDocRelevance(const size_t &docId
+size_t SearchServer::getDocRelevance(const size_t &doc_id
                                            , const std::string &query) {
 
-    auto queryFreq = _index.getWordCount(query);
+    auto query_freq = _index.getWordCount(query);
     auto found = std::find_if(
-            queryFreq.begin()
-            , queryFreq.end()
-            , [&](const Entry &entry){return entry.doc_id == docId;}
+            query_freq.begin()
+            , query_freq.end()
+            , [&](const Entry &entry){return entry.doc_id == doc_id;}
             );
-    return found == queryFreq.end() ? 0 : found->count;
+    return found == query_freq.end() ? 0 : found->count;
 }
 
 std::vector<std::vector<RelativeIndex>> SearchServer::search(
         const std::vector<std::string> &queries_input) {
 
     // result data
-    std::vector<std::vector<RelativeIndex>> searchResults;
+    std::vector<std::vector<RelativeIndex>> search_results;
 
     // loop through each query
     for (const auto &query : queries_input) {
 
         // make a list of unique words
-        std::vector<std::string> uniqueQueries = getUniqueWords(query);
+        std::vector<std::string> unique_queries = custom::getUniqueWords(query);
 
         // sorts words in order of increasing frequency of occurrence
-        sortQueries(uniqueQueries.begin(), uniqueQueries.end());
+        sortQueries(unique_queries.begin(), unique_queries.end());
 
         // get list of relevant docs
-        auto relevantDocs = getRelevantDocs(uniqueQueries);
+        auto relevant_docs = getRelevantDocs(unique_queries);
 
         // if in the end there is not a single document left add empty list
-        if (relevantDocs.empty()) {
+        if (relevant_docs.empty()) {
 
-            searchResults.emplace_back();
+            search_results.emplace_back();
 
         } else {
 
             // get a list of documents and relevancy
-            auto answers = getRelevantDocs(uniqueQueries);
+            auto answers = getRelevantDocs(unique_queries);
 
             // sorts documents in descending order of relevance
             std::sort(answers.begin(), answers.end(), std::greater());
-
-#ifdef TEST
-            if (answers.size() > 5)
-                answers.resize(5);
-#endif
 
             // get maxRelevance
             auto maxRelevance = answers[0].relevance;
@@ -121,8 +103,8 @@ std::vector<std::vector<RelativeIndex>> SearchServer::search(
                         (float) answers[i].relevance / (float) maxRelevance
                 };
             }
-            searchResults.push_back(results);
+            search_results.push_back(results);
         }
     }
-    return searchResults;
+    return search_results;
 }

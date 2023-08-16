@@ -37,13 +37,6 @@ class SearchServer {
     InvertedIndex _index;
 
     /**
-     * the function generates a list of unique words from the text
-     * @param text string of one or more words
-     * @return list of unique words
-     */
-    std::vector<std::string> getUniqueWords(const std::string &text);
-
-    /**
      * Sorts requests in order of increasing frequency of their occurrence
      * @param begin the beginning of a query consisting of unique words
      * @param end the end of a query consisting of unique words
@@ -57,8 +50,8 @@ class SearchServer {
      * @param end end of the list to sum
      * @return sum of all count from all entries in the range
      */
-    inline size_t EntrySum(const std::vector<Entry>::iterator begin
-            , const std::vector<Entry>::iterator end);
+    inline size_t EntrySum(std::vector<Entry>::iterator begin
+                           , std::vector<Entry>::iterator end);
 
     /**
      * generates a list of relevant documents and counts
@@ -75,7 +68,7 @@ class SearchServer {
      * @param unique_queries list of queries
      * @return list with document IDs and their relevance
      */
-    size_t getDocRelevance(const size_t &docId, const std::string &query);
+    size_t getDocRelevance(const size_t &doc_id, const std::string &query);
 
 public:
 
