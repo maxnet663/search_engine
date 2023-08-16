@@ -1,7 +1,7 @@
 add_library(
         engine_lib
         converter_json.cpp
-        file_helper.cpp
+        custom_functions.cpp
         inverted_index.cpp
         search_server.cpp
 )
