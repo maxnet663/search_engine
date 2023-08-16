@@ -12,7 +12,7 @@ inline void SearchServer::sortQueries(std::vector<std::string>::iterator begin
     auto countSumComp = [&](const std::string &x, const std::string &y) {
         auto xFreq = _index.getWordCount(x);
         auto yFreq = _index.getWordCount(y);
-        auto xCountSum = EntrySum(xFreq.begin(), xFreq.end());
+        auto xCountSum = EntrySum(xFreq.begin(), xFreq.end()); // sum up count
         auto yCountSum = EntrySum(yFreq.begin(), yFreq.end());
         return xCountSum < yCountSum;
     };
@@ -34,13 +34,14 @@ inline size_t SearchServer::EntrySum(std::vector<Entry>::iterator begin
 std::vector<DocRelevance> SearchServer::getRelevantDocs(
         const std::vector<std::string> &unique_queries) {
 
+    // unordered_map<doc_id, Relevance>
     std::unordered_map<size_t, size_t> result;
     for (const auto &query : unique_queries) {
         auto queryFreq = _index.getWordCount(query);
         for (const auto &entry : queryFreq) {
-            if (result.find(entry.doc_id) == result.end()) {
+            if (result.find(entry.doc_id) == result.end()) {  // if the document is encountered for the first time
                 result[entry.doc_id] = getDocRelevance(entry.doc_id, query);
-            } else {
+            } else {  // if the document is taken into account
                 result[entry.doc_id] += getDocRelevance(entry.doc_id, query);
             }
         }
@@ -50,7 +51,6 @@ std::vector<DocRelevance> SearchServer::getRelevantDocs(
 
 size_t SearchServer::getDocRelevance(const size_t &doc_id
                                            , const std::string &query) {
-
     auto query_freq = _index.getWordCount(query);
     auto found = std::find_if(
             query_freq.begin()
