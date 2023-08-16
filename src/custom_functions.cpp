@@ -1,8 +1,9 @@
 #include "custom_functions.h"
 #include "project_constants.h"
 
-#include <filesystem> //path directory_iterator current_path
-#include <fstream>  // fstream
+#include <filesystem>
+#include <fstream>
+#include <unordered_set>
 
 std::string custom::getFileText(const std::string &file_name) {
 
@@ -216,4 +217,17 @@ size_t custom::countOccurrences(const std::string &text, const std::string &word
     }
 
     return occur_counter;
+}
+
+std::vector<std::string> custom::getUniqueWords(const std::string &text) {
+
+    // set of unique words from requests
+    std::unordered_set<std::string> uniqueRequests;
+    std::stringstream data(text);
+    std::string buf;
+    while (data >> buf) {
+        uniqueRequests.insert(buf);
+    }
+
+    return { uniqueRequests.begin(), uniqueRequests.end() };
 }

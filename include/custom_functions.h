@@ -76,5 +76,14 @@ namespace custom {
      * @return number of occurrences word in text
      */
     size_t countOccurrences(const std::string &text, const std::string &word);
+
+
+    /**
+     * the function generates a list of unique words from the text
+     * @param text string of one or more words
+     * @return list of unique words
+     */
+    std::vector<std::string> getUniqueWords(const std::string &text);
+
 }
 #endif //SEARCH_ENGINE
