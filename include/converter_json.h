@@ -2,7 +2,6 @@
 #define CONVERTER_JSON_H
 
 #include "nlohmann/json.hpp" // json
-#include "search_server.h"
 
 #include <filesystem> //path
 #include <string> // string
@@ -36,7 +35,7 @@ public:
     /**
     * Put search results in the answers.json file
     */
-    static void putAnswers(std::vector<std::vector<RelativeIndex>> answers);
+    static void putAnswers(std::vector<std::vector<std::pair<int, float>>> answers);
 
 private:
     /**
