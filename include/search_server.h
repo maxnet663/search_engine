@@ -25,7 +25,7 @@ struct RelativeIndex {
     size_t doc_id;
     float rank;
 
-    explicit operator std::pair<int, float>() const { return {doc_id, rank}; }
+    explicit operator std::pair<size_t, float>() const { return {doc_id, rank}; }
 
     bool operator==(const RelativeIndex &other) const {
         return (doc_id == other.doc_id && rank == other.rank);
@@ -48,8 +48,17 @@ class SearchServer {
      * @param begin the beginning of a query consisting of unique words
      * @param end the end of a query consisting of unique words
      */
-    void sortQueries(std::vector<std::string>::iterator begin
+    inline void sortQueries(std::vector<std::string>::iterator begin
                      , std::vector<std::string>::iterator end);
+
+    /**
+     * helper function summing counts from all entries in range [begin, end)
+     * @param begin start of the list to sum
+     * @param end end of the list to sum
+     * @return sum of all count from all entries in the range
+     */
+    inline size_t EntrySum(const std::vector<Entry>::iterator begin
+            , const std::vector<Entry>::iterator end);
 
     /**
      * generates a list of relevant documents and counts
@@ -67,15 +76,6 @@ class SearchServer {
      * @return list with document IDs and their relevance
      */
     size_t getDocRelevance(const size_t &docId, const std::string &query);
-
-    /**
-     * helper function summing counts from all entries in range [begin, end)
-     * @param begin start of the list to sum
-     * @param end end of the list to sum
-     * @return sum of all count from all entries in the range
-     */
-    size_t EntrySum(const std::vector<Entry>::iterator begin
-                    , const std::vector<Entry>::iterator end);
 
 public:
 

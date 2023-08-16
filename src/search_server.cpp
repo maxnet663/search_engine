@@ -1,63 +1,10 @@
 #include "search_server.h"
-#include <unordered_set>
-#include <unordered_map>
+
 #include <algorithm>
 #include <numeric>
 #include <sstream>
-
-std::vector<std::vector<RelativeIndex>> SearchServer::search(
-        const std::vector<std::string> &queries_input) {
-
-    // result data
-    std::vector<std::vector<RelativeIndex>> searchResults;
-
-    // loop through each query
-    for (const auto &query : queries_input) {
-
-        // make a list of unique words
-        std::vector<std::string> uniqueQueries = getUniqueWords(query);
-
-        // sorts words in order of increasing frequency of occurrence
-        sortQueries(uniqueQueries.begin(), uniqueQueries.end());
-
-        // get list of relevant docs
-        auto relevantDocs = getRelevantDocs(uniqueQueries);
-
-        // if in the end there is not a single document left add empty list
-        if (relevantDocs.empty()) {
-
-            searchResults.emplace_back();
-
-        } else {
-
-            // get a list of documents and relevancy
-            auto answers = getRelevantDocs(uniqueQueries);
-
-            // sorts documents in descending order of relevance
-            std::sort(answers.begin(), answers.end(), std::greater());
-
-            #ifdef TEST
-            if (answers.size() > 5)
-                answers.resize(5);
-            #endif
-
-            // get maxRelevance
-            auto maxRelevance = answers[0].relevance;
-
-            // form result
-            std::vector<RelativeIndex> results(answers.size());
-
-            for (size_t i = 0; i < results.size(); ++i) {
-                results[i] = {
-                        answers[i].doc_id,
-                        (float) answers[i].relevance / (float) maxRelevance
-                };
-            }
-            searchResults.push_back(results);
-        }
-    }
-    return searchResults;
-}
+#include <unordered_set>
+#include <unordered_map>
 
 std::vector<std::string> SearchServer::getUniqueWords(const std::string &text) {
 
@@ -72,8 +19,9 @@ std::vector<std::string> SearchServer::getUniqueWords(const std::string &text) {
     return { uniqueRequests.begin(), uniqueRequests.end() };
 }
 
-void SearchServer::sortQueries(std::vector<std::string>::iterator begin
+inline void SearchServer::sortQueries(std::vector<std::string>::iterator begin
         , std::vector<std::string>::iterator end) {
+
     auto countSumComp = [&](const std::string &x, const std::string &y) {
         auto xFreq = _index.getWordCount(x);
         auto yFreq = _index.getWordCount(y);
@@ -81,10 +29,11 @@ void SearchServer::sortQueries(std::vector<std::string>::iterator begin
         auto yCountSum = EntrySum(yFreq.begin(), yFreq.end());
         return xCountSum < yCountSum;
     };
+
     std::sort(begin, end, countSumComp);
 }
 
-size_t SearchServer::EntrySum(const std::vector<Entry>::iterator begin
+inline size_t SearchServer::EntrySum(const std::vector<Entry>::iterator begin
                               , const std::vector<Entry>::iterator end) {
     return std::accumulate(
             begin
@@ -122,4 +71,58 @@ size_t SearchServer::getDocRelevance(const size_t &docId
             , [&](const Entry &entry){return entry.doc_id == docId;}
             );
     return found == queryFreq.end() ? 0 : found->count;
+}
+
+std::vector<std::vector<RelativeIndex>> SearchServer::search(
+        const std::vector<std::string> &queries_input) {
+
+    // result data
+    std::vector<std::vector<RelativeIndex>> searchResults;
+
+    // loop through each query
+    for (const auto &query : queries_input) {
+
+        // make a list of unique words
+        std::vector<std::string> uniqueQueries = getUniqueWords(query);
+
+        // sorts words in order of increasing frequency of occurrence
+        sortQueries(uniqueQueries.begin(), uniqueQueries.end());
+
+        // get list of relevant docs
+        auto relevantDocs = getRelevantDocs(uniqueQueries);
+
+        // if in the end there is not a single document left add empty list
+        if (relevantDocs.empty()) {
+
+            searchResults.emplace_back();
+
+        } else {
+
+            // get a list of documents and relevancy
+            auto answers = getRelevantDocs(uniqueQueries);
+
+            // sorts documents in descending order of relevance
+            std::sort(answers.begin(), answers.end(), std::greater());
+
+#ifdef TEST
+            if (answers.size() > 5)
+                answers.resize(5);
+#endif
+
+            // get maxRelevance
+            auto maxRelevance = answers[0].relevance;
+
+            // form result
+            std::vector<RelativeIndex> results(answers.size());
+
+            for (size_t i = 0; i < results.size(); ++i) {
+                results[i] = {
+                        answers[i].doc_id,
+                        (float) answers[i].relevance / (float) maxRelevance
+                };
+            }
+            searchResults.push_back(results);
+        }
+    }
+    return searchResults;
 }
