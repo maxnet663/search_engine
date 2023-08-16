@@ -1,4 +1,7 @@
 #include "inverted_index.h"
+
+#include "custom_functions.h"
+
 #include <thread>
 #include <sstream>
 
@@ -10,7 +13,7 @@ std::vector<Entry> InvertedIndex::getWordFrequency(const std::string &word) {
     // reviewing all documents
     for (size_t i = 0; i < docs.size(); ++i) {
 
-        auto occurrences = countOccurrences(docs[i], word);
+        auto occurrences = custom::countOccurrences(docs[i], word);
 
         // if there are not any occurrences of the word in the text
         // Entry is not created
@@ -19,41 +22,6 @@ std::vector<Entry> InvertedIndex::getWordFrequency(const std::string &word) {
     }
 
     return result;
-}
-
-size_t InvertedIndex::countOccurrences(const std::string &text, const std::string &word) {
-
-    // the current index with which we will bypass the string
-    size_t walk = 0;
-
-    // counter of occurrences
-    size_t occur_counter = 0;
-
-    // while we can detect occurrence
-    while (walk <= text.length() - word.length()) {
-
-        // get the index of occurrence's start
-        auto occur_begin = text.find(word, walk);
-
-        // if there is not any occurrence return
-        if (occur_begin == std::string::npos)
-            return occur_counter;
-
-        // get the index of occurrence's end
-        auto occur_end = occur_begin + word.length();
-
-        // if the occurrence is a single word, not part of a word
-        if ( (occur_begin == 0 || text[occur_begin - 1] == ' ')
-             && (text[occur_end] == ' ' || occur_end == text.length())) {
-
-            occur_counter++;
-        }
-
-        // move the current index
-        walk = occur_end;
-    }
-
-    return occur_counter;
 }
 
 void InvertedIndex::addUniqueWords(const std::string &text) {
@@ -80,13 +48,13 @@ void InvertedIndex::addUniqueWords(const std::string &text) {
 
             // the function accepts a word by constant reference,
             // and also accesses the docs array read-only, so it is safe
-            auto wordCount = getWordFrequency(word);
+            auto word_count = getWordFrequency(word);
 
             // when adding a new word, we lock the dictionary again
             // and prevent the race
             lock.lock();
 
-            target = std::move(wordCount);
+            target = std::move(word_count);
         }
     }
 }
@@ -110,7 +78,11 @@ void InvertedIndex::UpdateDocumentBase(std::vector<std::string> input_docs) {
 
         // access to lines from docs is carried out by
         // constant reference, so there will be no race
-        threads[i] = std::thread(&InvertedIndex::addUniqueWords, this, std::ref(docs[i]));
+        threads[i] = std::thread(
+                &InvertedIndex::addUniqueWords
+                , this
+                , std::ref(docs[i])
+                );
     }
 
     // waits for threads

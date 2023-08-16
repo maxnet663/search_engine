@@ -16,9 +16,6 @@ struct Entry {
     bool operator==(const Entry &other) const {
         return (doc_id == other.doc_id && count == other.count);
     }
-
-    // post increment operator
-    size_t operator++(int) { return count++; }
 };
 
 class InvertedIndex {
@@ -37,14 +34,6 @@ class InvertedIndex {
      * mutex to manage access to freq_dictionary
      */
     std::mutex dict_acces;
-
-    /**
-     * count occurrences of the word in doc's text
-     * @param text text of document
-     * @param word a word to count
-     * @return number of occurrences word in text
-     */
-    size_t countOccurrences(const std::string &text, const std::string &word);
 
     /**
      * fill freq_dictionary by the unique words from the text
