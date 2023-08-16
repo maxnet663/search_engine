@@ -36,7 +36,7 @@ std::vector<std::string> ConverterJSON::GetTextDocuments() {
     return documents_text;
 }
 
-int ConverterJSON::GetResponsesLimit() {
+inline int ConverterJSON::GetResponsesLimit() {
     return getConfigJson()["config"]["max_responses"];
 }
 
@@ -60,7 +60,7 @@ std::vector<std::string> ConverterJSON::GetRequests() {
 }
 
 void ConverterJSON::putAnswers(
-        std::vector<std::vector<std::pair<int, float>>> answers) {
+        std::vector<std::vector<RelativeIndex>> answers) {
 
     // result json to write in results.json
     nlohmann::json json_file;
@@ -87,8 +87,8 @@ void ConverterJSON::putAnswers(
             //if only one answer is found
             if (answers[i].size() == 1) {
                 json_file["answers"][request]["result"] = !answers.empty();
-                json_file["answers"][request]["docid"] = answers[i].begin()->first;
-                json_file["answers"][request]["rank"] = answers[i].begin()->second;
+                json_file["answers"][request]["docid"] = answers[i].begin()->doc_id;
+                json_file["answers"][request]["rank"] = answers[i].begin()->rank;
 
             } else {
 
@@ -96,20 +96,18 @@ void ConverterJSON::putAnswers(
                 json_file["answers"][request]["result"] = !answers[i].empty();
 
                 // relevance field is represented as an array
-                if (answers.size() > 5) {
+                if (answers.size() > GetResponsesLimit()) {
                     answers.resize(GetResponsesLimit());
                 }
                 for (const auto &record: answers[i]) {
 
                     // element of relevance array
                     nlohmann::json new_field;
-
                     new_field = {
-                            {"docid", record.first},
-                            {"rank",  record.second}
+                            {"docid", record.doc_id},
+                            {"rank",  record.rank}
                     };
 
-                    // add at the end
                     json_file["answers"][request]["relevance"].push_back(new_field);
                 }
             }

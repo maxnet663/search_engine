@@ -3,6 +3,8 @@
 
 #include "nlohmann/json.hpp" // json
 
+#include "search_server.h"
+
 #include <filesystem> //path
 #include <string> // string
 
@@ -24,7 +26,7 @@ public:
     * number of responses per request
     *@return max_responses
     */
-    static int GetResponsesLimit();
+    inline static int GetResponsesLimit();
 
     /**
     * Method for receiving requests from the requests.json file
@@ -35,7 +37,7 @@ public:
     /**
     * Put search results in the answers.json file
     */
-    static void putAnswers(std::vector<std::vector<std::pair<int, float>>> answers);
+    static void putAnswers(std::vector<std::vector<RelativeIndex>> answers);
 
 private:
     /**
