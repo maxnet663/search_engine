@@ -1,38 +1,39 @@
 #include "converter_json.h"
+
+#include "custom_functions.h"
 #include "project_constants.h"
-#include "file_helper.h"
 
 #include <fstream> // ifs, ofs
 #include <iostream> // cerr
 
 std::vector<std::string> ConverterJSON::GetTextDocuments() {
 
-    std::vector<std::string> textDocuments; // result data
+    std::vector<std::string> documents_text; // result data
 
     //get list of files
-    auto documentsList = getConfigJson()["files"];
+    auto documents_list = getConfigJson()["files"];
 
     //reserve space
-    textDocuments.reserve(documentsList.size());
+    documents_text.reserve(documents_list.size());
 
-    for (const auto &file : documentsList) {
+    for (const auto &file : documents_list) {
 
-        auto filePath =
-                std::string(RESOURCES_DIR) + FileHelper::getFileName(file);
+        auto file_path =
+                std::string(RESOURCES_DIR) + custom::getFileName(file);
 
-        if (std::filesystem::exists(filePath)) {
+        if (std::filesystem::exists(file_path)) {
             try {
-                textDocuments.push_back(FileHelper::getFileText(filePath));
+                documents_text.push_back(custom::getFileText(file_path));
             }
             catch (std::length_error &ex) { // catch the exception but don't break the execution
                 std::cerr << ex.what() << std::endl; // warning
             }
         } else {
-            std::cerr << filePath << "does not exist\n";
+            std::cerr << file_path << "does not exist\n";
         }
     }
 
-    return textDocuments;
+    return documents_text;
 }
 
 int ConverterJSON::GetResponsesLimit() {
@@ -44,14 +45,14 @@ std::vector<std::string> ConverterJSON::GetRequests() {
     std::vector<std::string> requests; // result data
 
     // get content of requests.json file
-    auto requestsList = getRequestsJson();
+    auto requests_list = getRequestsJson();
 
     //reserve memory
-    requests.reserve(requestsList["requests"].size());
+    requests.reserve(requests_list["requests"].size());
 
-    for (const auto &i : requestsList["requests"]) {
+    for (const auto &i : requests_list["requests"]) {
         std::string buf = to_string(i); // get request
-        FileHelper::formatString(buf); // format it
+        custom::formatString(buf); // format it
         requests.push_back(std::move(buf)); // write to requests
     }
 
@@ -62,7 +63,7 @@ void ConverterJSON::putAnswers(
         std::vector<std::vector<RelativeIndex>> answers) {
 
     // result json to write in results.json
-    nlohmann::json jsonFile;
+    nlohmann::json json_file;
 
     // get round all the elements of the answers
     // and write them down in the final structure
@@ -79,20 +80,20 @@ void ConverterJSON::putAnswers(
         // if nothing is found for this request
         if (answers[i].empty()) {
 
-            jsonFile["answers"][request]["result"] = !answers[i].empty();
+            json_file["answers"][request]["result"] = !answers[i].empty();
 
         } else {
 
             //if only one answer is found
             if (answers[i].size() == 1) {
-                jsonFile["answers"][request]["result"] = !answers.empty();
-                jsonFile["answers"][request]["docid"] = answers[i].begin()->doc_id;
-                jsonFile["answers"][request]["rank"] = answers[i].begin()->rank;
+                json_file["answers"][request]["result"] = !answers.empty();
+                json_file["answers"][request]["docid"] = answers[i].begin()->doc_id;
+                json_file["answers"][request]["rank"] = answers[i].begin()->rank;
 
             } else {
 
                 // if multiple results are found, add a field relevance
-                jsonFile["answers"][request]["result"] = !answers[i].empty();
+                json_file["answers"][request]["result"] = !answers[i].empty();
 
                 // relevance field is represented as an array
                 if (answers.size() > 5) {
@@ -101,22 +102,22 @@ void ConverterJSON::putAnswers(
                 for (const auto &j: answers[i]) {
 
                     // element of relevance array
-                    nlohmann::json newField;
+                    nlohmann::json new_field;
 
-                    newField = {
+                    new_field = {
                             {"docid", j.doc_id},
                             {"rank",  j.rank}
                     };
 
                     // add at the end
-                    jsonFile["answers"][request]["relevance"].push_back(newField);
+                    json_file["answers"][request]["relevance"].push_back(new_field);
                 }
             }
         }
     }
 
     // write to the file
-    FileHelper::writeJsonToFile(jsonFile, JSONS_DIR RESULTS_FILE_NAME);
+    custom::writeJsonToFile(json_file, JSONS_DIR RESULTS_FILE_NAME);
 }
 
 bool ConverterJSON::checkConfigFile() {
@@ -133,19 +134,19 @@ bool ConverterJSON::checkConfigFile() {
                                       , std::make_error_code(std::errc::no_such_file_or_directory));
 }
 
-bool ConverterJSON::checkConfigProperties(const nlohmann::json &jsonFile) {
+bool ConverterJSON::checkConfigProperties(const nlohmann::json &json_file) {
 
     // throws if the contents of the files do not match the conditions
 
-    if (!jsonFile.contains("config") || jsonFile["config"].empty()) {
+    if (!json_file.contains("config") || json_file["config"].empty()) {
         throw std::invalid_argument("Config file is empty");
     }
 
-    if (!jsonFile["config"].contains("max_responses") || jsonFile["config"]["max_responses"] <= 0) {
+    if (!json_file["config"].contains("max_responses") || json_file["config"]["max_responses"] <= 0) {
         throw std::invalid_argument("Wrong responses number");
     }
 
-    if (!jsonFile.contains("files") || jsonFile["files"].empty()) {
+    if (!json_file.contains("files") || json_file["files"].empty()) {
         throw std::invalid_argument("No files to search");
     }
 
@@ -159,15 +160,15 @@ nlohmann::json ConverterJSON::getConfigJson() {
     checkConfigFile();
 
     // make a json
-    std::ifstream jsonReader(JSONS_DIR CONFIG_FILE_NAME);
-    nlohmann::json jsonFile;
-    jsonReader >> jsonFile;
-    jsonReader.close();
+    std::ifstream json_reader(JSONS_DIR CONFIG_FILE_NAME);
+    nlohmann::json json_file;
+    json_reader >> json_file;
+    json_reader.close();
 
     // check if properties are valid
-    checkConfigProperties(jsonFile); // throws if config has invalid properties
+    checkConfigProperties(json_file); // throws if config has invalid properties
 
-    return jsonFile;
+    return json_file;
 }
 
 bool ConverterJSON::checkRequestsFile() {
@@ -184,21 +185,21 @@ bool ConverterJSON::checkRequestsFile() {
                     , std::make_error_code(std::errc::no_such_file_or_directory));
 }
 
-bool ConverterJSON::checkRequestsProperties(const nlohmann::json &jsonFile) {
+bool ConverterJSON::checkRequestsProperties(const nlohmann::json &json_file) {
 
     // throws if the contents of the files do not match the conditions
 
-    if (!jsonFile.contains("requests") || jsonFile["requests"].empty()) {
+    if (!json_file.contains("requests") || json_file["requests"].empty()) {
         throw std::invalid_argument("Requests file is empty");
     }
 
-    if (jsonFile["requests"].size() > MAX_REQUESTS_NUMBER) {
+    if (json_file["requests"].size() > MAX_REQUESTS_NUMBER) {
         throw std::invalid_argument(std::string("Requests number greater than ")
                                     + std::to_string(MAX_REQUESTS_NUMBER));
     }
 
-    for (const auto &i: jsonFile["requests"]) {
-        if (FileHelper::wordsCounter(to_string(i)) > MAX_REQUEST_WORDS_NUMBER)
+    for (const auto &i: json_file["requests"]) {
+        if (custom::wordsCounter(to_string(i)) > MAX_REQUEST_WORDS_NUMBER)
             throw std::invalid_argument(std::string("One of Request's words number greater than ")
                                         + std::to_string(MAX_REQUEST_WORDS_NUMBER));
     }
@@ -212,15 +213,15 @@ nlohmann::json ConverterJSON::getRequestsJson() {
     checkRequestsFile(); // throws if requests does not exist
 
     // make a json
-    std::ifstream jsonReader(JSONS_DIR REQUESTS_FILE_NAME);
-    nlohmann::json jsonFile;
-    jsonReader >> jsonFile;
-    jsonReader.close();
+    std::ifstream json_reader(JSONS_DIR REQUESTS_FILE_NAME);
+    nlohmann::json json_file;
+    json_reader >> json_file;
+    json_reader.close();
 
     // check if properties are valid
-    checkRequestsProperties(jsonFile); // throws if requests has invalid properties
+    checkRequestsProperties(json_file); // throws if requests has invalid properties
 
-    return jsonFile;
+    return json_file;
 }
 
 

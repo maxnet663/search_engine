@@ -50,7 +50,7 @@ private:
      * @return true if contains the required values
      * throws invalid_argument otherwise
      */
-     static bool checkConfigProperties(const nlohmann::json &jsonFile);
+     static bool checkConfigProperties(const nlohmann::json &json_file);
 
      /**
       * make a json from config.json
@@ -63,7 +63,7 @@ private:
      * @return true if contains the required values
      * throws invalid_argument otherwise
      */
-    static bool checkRequestsProperties(const nlohmann::json &jsonFile);
+    static bool checkRequestsProperties(const nlohmann::json &json_file);
 
     /**
      * check if requests.json exists
