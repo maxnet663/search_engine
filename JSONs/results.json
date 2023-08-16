@@ -1,0 +1,26 @@
+{
+  "answers":
+  {
+    "request0001":
+    {
+      "docid":3,
+      "rank":1.0,
+      "result":true
+    },
+    "request0002":
+    {
+      "docid":2,
+      "rank":1.0,
+      "result":true
+    },
+    "request0003":
+    {
+      "docid":0, "rank":1.0,
+      "result":true
+    },
+    "request0004":
+    {
+      "result":false
+    }
+  }
+}
