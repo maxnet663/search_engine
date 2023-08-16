@@ -9,6 +9,12 @@ std::string FileHelper::getFileText(const std::string &filename) {
     // open stream for reading
     std::ifstream ifs(filename);
 
+    if (!ifs.is_open()) {
+        throw std::filesystem::filesystem_error("Could not open the file"
+                , filename
+                , std::make_error_code(std::errc::no_such_file_or_directory));
+    }
+
     //check words number in file
     if (std::distance(std::istream_iterator<std::string>(ifs)
             , std::istream_iterator<std::string>()) > MAX_WORDS_NUMBER) {

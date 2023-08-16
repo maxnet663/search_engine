@@ -16,10 +16,10 @@ class FileHelper {
 public:
 
     /**
-    * writes the contents of the file to ss
-    * @param ss in: empty string stream. out:contents of the file
-    * @param filename string containing path of file
-    */
+     * extract the content of the file
+     * @param filename string containing path of file
+     * @return string with text from the file
+     */
     static std::string getFileText(const std::string &filename);
 
     /**
@@ -68,6 +68,6 @@ public:
      * @param s path to file or directory
      * @return the name of directory or file
      */
-    static  std::string getFileName(std::string s);
+    static std::string getFileName(std::string s);
 };
 #endif //SEARCH_ENGINE
