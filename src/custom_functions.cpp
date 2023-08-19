@@ -60,25 +60,19 @@ std::string custom::getFileText(const std::string &file_name) {
 }
 
 void custom::formatString(std::string &s)  {
-
     if (s.length() == 0) {
         return;
     }
-    //delete punctuation marks
+
     deletePunctuationMarks(s);
 
-    //lowercase letters
     toLowerCase(s);
 
-    //delete extra spaces
     deleteExtraSpaces(s);
 }
 
 int custom::wordsCounter(const std::string &s) {
-
-    // flag
     bool is_word = false;
-
     int words_counter = 0;
 
     // go through all the string
@@ -207,7 +201,7 @@ size_t custom::countOccurrences(const std::string &text, const std::string &word
 
         // if the occurrence is a single word, not part of a word
         if ( (occur_begin == 0 || text[occur_begin - 1] == ' ')
-             && (text[occur_end] == ' ' || occur_end == text.length())) {
+             && (text[occur_end] == ' ' || occur_end == text.length()) ) {
 
             occur_counter++;
         }
