@@ -5,9 +5,15 @@
 #include <vector>
 
 int main() {
-    InvertedIndex idx;
-    idx.UpdateDocumentBase(ConverterJSON::GetTextDocuments());
-    SearchServer srv(idx);
-    ConverterJSON::putAnswers(srv.search(ConverterJSON::GetRequests()));
+    try {
+        InvertedIndex idx;
+        idx.UpdateDocumentBase(ConverterJSON::GetTextDocuments());
+        SearchServer srv(idx);
+        ConverterJSON::putAnswers(srv.search(ConverterJSON::GetRequests()));
+    }
+    catch (std::exception &ex) {
+        std::cout << ex.what() << std::endl;
+        return -1;
+    }
     return 0;
 }
