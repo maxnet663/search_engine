@@ -37,7 +37,7 @@ TEST(ConverterJSONTest, GetRequestsTest) {
 }
 
 TEST(ConverterJSONTest, putAnswersTest) {
-    std::vector<std::vector<std::pair<int, float>>> test_vec;
+    std::vector<std::vector<RelativeIndex>> test_vec;
     test_vec = { { {1, 3.4}, {2, 0.3}}, {}, {{2, 8.5}}};
     ConverterJSON::putAnswers(test_vec);
     bool expected =
