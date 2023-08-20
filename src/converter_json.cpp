@@ -96,7 +96,7 @@ void ConverterJSON::putAnswers(
                 json_file["answers"][request]["result"] = !answers[i].empty();
 
                 // relevance field is represented as an array
-                if (answers.size() > GetResponsesLimit()) {
+                if (answers.size() > static_cast<size_t>(GetResponsesLimit())) {
                     answers.resize(GetResponsesLimit());
                 }
                 for (const auto &record: answers[i]) {
