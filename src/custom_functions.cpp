@@ -151,7 +151,7 @@ void custom::writeJsonToFile(const nlohmann::json &json_text
 
     // open stream for writing
     std::ofstream dest(path, std::ios::out);
-    dest << json_text;
+    dest << std::setw(2) << json_text;
     dest.close();
 
 }
