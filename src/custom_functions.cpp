@@ -71,7 +71,7 @@ void custom::formatString(std::string &s)  {
     deleteExtraSpaces(s);
 }
 
-int custom::wordsCounter(const std::string &s) {
+size_t custom::wordsCounter(const std::string &s) {
     bool is_word = false;
     int words_counter = 0;
 

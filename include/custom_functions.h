@@ -32,7 +32,7 @@ namespace custom {
      * @param s string
      * @return number of words in string
      */
-    int wordsCounter(const std::string &s);
+    size_t wordsCounter(const std::string &s);
 
     /**
      * lowercase all letters in s
