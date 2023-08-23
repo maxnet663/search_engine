@@ -3,7 +3,7 @@
 
 #include "nlohmann/json.hpp" // json
 
-#include "search_server.h"
+#include "search_server.h" // RelativeIndex
 
 #include <filesystem> //path
 #include <string> // string
