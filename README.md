@@ -137,7 +137,7 @@ Constructor
 
     explicit SearchServer(InvertedIndex &idx) : _index(idx) {};
 
-Структура содержит один публичный метод, который и производи поиск
+Класс содержит один публичный метод, который и производи поиск
 
     std::vector<std::vector<RelativeIndex>> search(
             const std::vector<std::string> &queries_input);
