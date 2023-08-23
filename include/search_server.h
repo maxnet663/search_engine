@@ -75,7 +75,7 @@ public:
      * InvertedIndex, so that SearchServer can find out
      * the frequency of words found in request
      */
-    explicit SearchServer(InvertedIndex &idx) : _index(idx) {};
+    explicit SearchServer(InvertedIndex &idx) : _index(std::move(idx)) {};
 
     /**
      * Search query processing method
