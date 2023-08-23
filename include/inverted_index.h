@@ -64,6 +64,10 @@ public:
     InvertedIndex(const InvertedIndex &other)
         : docs(other.docs), freq_dictionary(other.freq_dictionary) {};
 
+    InvertedIndex(InvertedIndex&& other)  noexcept
+        : docs(std::move(other.docs))
+        , freq_dictionary(std::move(other.freq_dictionary)) {}
+
     /**
      * update or fill in the database of documents
      * on which we will then search
