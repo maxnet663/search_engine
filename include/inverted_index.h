@@ -1,10 +1,10 @@
 #ifndef INVERTED_INDEX_H
 #define INVERTED_INDEX_H
 
-#include <vector> // vector
-#include <map> // map
-#include <string> // string
-#include <mutex> // mutex
+#include <vector>
+#include <unordered_map>
+#include <string>
+#include <mutex>
 
 // a record with the document number and
 // the number of occurrences of a certain word in it
@@ -20,40 +20,12 @@ struct Entry {
 
 class InvertedIndex {
 
-    /**
-     * document content list
-     */
     std::vector<std::string> docs;
-
-    /**
-     * frequency dictionary
-     */
-    std::map<std::string, std::vector<Entry>> freq_dictionary;
-
-    /**
-     * mutex to manage access to freq_dictionary
-     */
-    std::mutex dict_acces;
-
-    /**
-     * fill freq_dictionary by the unique words from the text
-     * @param text file's text to get unique words
-     */
-    void addUniqueWords(const std::string &text);
-
-    /**
-     * searches for occurrences of a word in array docs of document texts
-     * and prepares a frequency for the word
-     * @param word
-     * @return frequency of the word
-     */
-    std::vector<Entry> getWordFrequency(const std::string &word);
+    std::unordered_map<std::string, std::vector<Entry>> freq_dictionary;
+    std::mutex dict_acces; // mutex to manage access to freq_dictionary
 
 public:
 
-    /**
-     * default constructor
-     */
     InvertedIndex() = default;
 
     /**
@@ -73,7 +45,7 @@ public:
      * on which we will then search
      * @param input_docs document's content
      */
-    void UpdateDocumentBase(std::vector<std::string> input_docs);
+    void UpdateDocumentBase(const std::vector<std::string> &input_docs);
 
     /**
      * method determines the number of occurrences
@@ -82,6 +54,30 @@ public:
      * @return a list with word frequency
      */
     std::vector<Entry> getWordCount(const std::string &word);
+
+private:
+
+    /**
+     * fill freq_dictionary by the unique words from the text
+     * @param text file's text to get unique words
+     */
+    void addUniqueWords(const std::string &text);
+
+    /**
+     * searches for occurrences of a word in array docs of document texts
+     * and prepares a frequency for the word
+     * @param word
+     * @return frequency of the word
+     */
+    std::vector<Entry> getWordFrequency(const std::string &word);
+
+    /**
+     * extract texts from each docs in input_docs list
+     * @param input_docs list of paths to documents
+     * @return list of texts in the same order
+     */
+    std::vector<std::string> getFilesTexts(
+            const std::vector<std::string> &input_docs);
 
 };
 

@@ -1,32 +1,64 @@
-#include "inverted_index.h"
+#include "include/inverted_index.h"
 
-#include "custom_functions.h"
+#include "include/custom_functions.h"
 
+#include <list>
+#include <iostream>
 #include <thread>
 #include <sstream>
 
-std::vector<Entry> InvertedIndex::getWordFrequency(const std::string &word) {
+void InvertedIndex::UpdateDocumentBase(const std::vector<std::string> &input_docs) {
+    if (!docs.empty()) {
+        docs.clear();
+    }
+    if (!freq_dictionary.empty()) {
+        freq_dictionary.clear();
+    }
 
-    // result data
-    std::vector<Entry> result;
+#ifdef TEST
+    docs = std::move(input_docs);
+#else
+    docs = getFilesTexts(input_docs);
+#endif
 
-    // reviewing all documents
+    // starts threads
+    std::vector<std::thread> threads(docs.size());
     for (size_t i = 0; i < docs.size(); ++i) {
 
-        auto occurrences = custom::countOccurrences(docs[i], word);
+        // access to lines from docs is carried out by
+        // constant reference, so there will be no race
+        threads[i] = std::thread(
+                &InvertedIndex::addUniqueWords
+                , this
+                , std::ref(docs[i])
+                );
+    }
 
+    // waits for threads
+    for (auto &th : threads) {
+        th.join();
+    }
+}
+
+std::vector<Entry> InvertedIndex::getWordCount(const std::string &word) {
+    return
+        freq_dictionary.empty() ? std::vector<Entry>() : freq_dictionary[word];
+}
+
+std::vector<Entry> InvertedIndex::getWordFrequency(const std::string &word) {
+    std::vector<Entry> result;
+
+    for (size_t i = 0; i < docs.size(); ++i) {
+        auto occurrences = custom::countOccurrences(docs[i], word);
         // if there are not any occurrences of the word in the text
         // Entry is not created
         if (occurrences)
             result.push_back( {i, occurrences} );
     }
-
     return result;
 }
 
 void InvertedIndex::addUniqueWords(const std::string &text) {
-
-    // we will extract the words one by one
     std::stringstream data(text);
     std::string word;
 
@@ -59,39 +91,21 @@ void InvertedIndex::addUniqueWords(const std::string &text) {
     }
 }
 
-void InvertedIndex::UpdateDocumentBase(std::vector<std::string> input_docs) {
-
-    // clear old data if it necessary
-    if (!docs.empty()) {
-        docs.clear();
+std::vector<std::string> InvertedIndex::getFilesTexts(
+        const std::vector<std::string> &input_docs) {
+    //it is faster, in case when we have a lot if docs
+    std::list<std::string> texts;
+    for (const auto &docs_path : input_docs) {
+        if (std::filesystem::exists(docs_path)) {
+            try {
+                texts.push_back(custom::getFileText(docs_path));
+            }
+            catch (std::length_error &ex) {
+                std::cout << ex.what() << std::endl;
+            }
+        } else {
+            std::cerr << docs_path << " does not exist\n";
+        }
     }
-    if (!freq_dictionary.empty()) {
-        freq_dictionary.clear();
-    }
-
-    // we no longer need input_docs
-    docs = std::move(input_docs);
-
-    // starts threads
-    std::vector<std::thread> threads(docs.size());
-    for (size_t i = 0; i < docs.size(); ++i) {
-
-        // access to lines from docs is carried out by
-        // constant reference, so there will be no race
-        threads[i] = std::thread(
-                &InvertedIndex::addUniqueWords
-                , this
-                , std::ref(docs[i])
-                );
-    }
-
-    // waits for threads
-    for (auto &th : threads) {
-        th.join();
-    }
-}
-
-std::vector<Entry> InvertedIndex::getWordCount(const std::string &word) {
-    return
-        freq_dictionary.empty() ? std::vector<Entry>() : freq_dictionary[word];
+    return { texts.begin(), texts.end() };
 }
