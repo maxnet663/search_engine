@@ -4,17 +4,9 @@ project (search_engine VERSION 1.0)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_compile_definitions(PROJECT_ROOT_PATH="${PROJECT_SOURCE_DIR}")
-
-add_compile_definitions(PROJECT_JSONS_DIR="${PROJECT_SOURCE_DIR}/JSONs/")
-
-add_compile_definitions(PROJECT_RESOURCES_DIR="${PROJECT_SOURCE_DIR}/resources/")
-
-add_compile_definitions(TEST_JSONS_DIR="${PROJECT_SOURCE_DIR}/test/JSONs_test/")
+add_compile_definitions(TEST_JSONS_DIR="${PROJECT_SOURCE_DIR}/test/JSONs_test")
 
 add_compile_definitions(TEST_RESOURCES_DIR="${PROJECT_SOURCE_DIR}/test/resources_test/")
-
-set(PROJECT_INCLUDE_DIR "${PROJECT_SOURCE_DIR}/include")
 
 include(FetchContent)
 
@@ -49,8 +41,6 @@ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
 enable_testing()
-
-target_link_libraries(search_engine PRIVATE gtest_main)
 
 include(GoogleTest)
 

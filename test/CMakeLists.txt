@@ -1,7 +1,5 @@
 add_executable(test_main test_main.cpp)
 
-target_compile_definitions(test_main PUBLIC TEST)
-
 target_include_directories(
         test_main
         PUBLIC
