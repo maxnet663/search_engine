@@ -5,24 +5,27 @@
 #include "gtest/gtest.h"
 
 TEST(ConverterJSONTest, EmptyDocumentsListTest) {
-    auto documents = ConverterJSON::GetTextDocuments();
-    ASSERT_TRUE(!documents.empty());
+    ConverterJSON cj(TEST_JSONS_DIR);
+    auto documents_path = cj.getTextDocuments();
+    ASSERT_TRUE(!documents_path.empty());
 }
 
 TEST(ConverterJSONTest, GetTextDocumentsTest) {
+    ConverterJSON cj(TEST_JSONS_DIR);
     std::vector<std::string> expected_result = {
-            "milk water salt",
-            "milk apple banana",
-            "culture house documents doctors",
-            "hello world do ffffffffffffffffff"
+            "../resources/file001.txt",
+            "../resources/file002.txt",
+            "../resources/file003.txt",
+            "../resources/file004.txt"
             };
-    auto real_result = ConverterJSON::GetTextDocuments();
+    auto real_result = cj.getTextDocuments();
     ASSERT_EQ(expected_result, real_result);
 }
 
 TEST(ConverterJSONTest, GetResponsesLimitTest) {
     int expected_value = 5;
-    auto real_value = ConverterJSON::GetResponsesLimit();
+    ConverterJSON cj(TEST_JSONS_DIR);
+    auto real_value = cj.getResponsesLimit();
     ASSERT_EQ(expected_value, real_value);
 }
 
@@ -32,16 +35,18 @@ TEST(ConverterJSONTest, GetRequestsTest) {
             "some",
             "words"
     };
-    auto real_result = ConverterJSON::GetRequests();
+    ConverterJSON cj(TEST_JSONS_DIR);
+    auto real_result = cj.getRequests();
     ASSERT_EQ(expected_result, real_result);
 }
 
 TEST(ConverterJSONTest, putAnswersTest) {
     std::vector<std::vector<RelativeIndex>> test_vec;
     test_vec = { { {1, 3.4}, {2, 0.3}}, {}, {{2, 8.5}}};
-    ConverterJSON::putAnswers(test_vec);
+    ConverterJSON cj(TEST_JSONS_DIR);
+    cj.putAnswers(test_vec);
     bool expected =
-            std::filesystem::exists(JSONS_DIR RESULTS_FILE_NAME);
+            std::filesystem::exists(std::filesystem::path(TEST_JSONS_DIR) / ANSWERS_FILE_NAME);
     ASSERT_TRUE(expected);
 }
 
