@@ -3,80 +3,86 @@
 
 #include "nlohmann/json.hpp" // json
 
-#include "search_server.h" // RelativeIndex
+#include "include/search_server.h" // RelativeIndex
 
 #include <filesystem> //path
 #include <string> // string
 
 // Class for working with json files
 class ConverterJSON {
+
+    const std::filesystem::path json_dir;
+    nlohmann::json config;
+    nlohmann::json requests;
+
 public:
 
-    ConverterJSON() = default;
+    ConverterJSON() : ConverterJSON(std::filesystem::current_path()) {}
+
+    ConverterJSON(std::filesystem::path jsons_dir);
 
     /**
-    * File content retrieval method
-    * @return a list with the contents of the files listed
+    * @return a list with the paths to documents to search
     * in config.json
     */
-    static std::vector<std::string> GetTextDocuments();
+    inline std::vector<std::string> getTextDocuments();
 
     /**
     * The method reads the max_responses field to determine the limit
     * number of responses per request
     *@return max_responses
     */
-    inline static int GetResponsesLimit();
+    inline int getResponsesLimit();
 
     /**
     * Method for receiving requests from the requests.json file
     * @return a list of requests from the requests.json file
     */
-    static std::vector<std::string> GetRequests();
+    std::vector<std::string> getRequests();
 
     /**
     * Put search results in the answers.json file
     */
-    static void putAnswers(std::vector<std::vector<RelativeIndex>> answers);
+     void putAnswers(std::vector<std::vector<RelativeIndex>> answers);
 
 private:
     /**
      * check if config.json exists
      * @return true if config.json exists throws runtime_error otherwise
      */
-    static bool checkConfigFile();
+    bool checkConfigFile();
 
     /**
      * check if config properties is valid
      * @return true if contains the required values
      * throws invalid_argument otherwise
      */
-     static bool checkConfigProperties(const nlohmann::json &json_file);
+    bool checkConfigProperties(const nlohmann::json &json_file);
 
      /**
       * make a json from config.json
       * @return config json
       */
-     static nlohmann::json getConfigJson();
+    nlohmann::json getConfigJson();
 
     /**
      * check if requests properties is valid
      * @return true if contains the required values
      * throws invalid_argument otherwise
      */
-    static bool checkRequestsProperties(const nlohmann::json &json_file);
+    bool checkRequestsProperties(const nlohmann::json &json_file);
 
     /**
      * check if requests.json exists
      * @return true if requests.json exists throws runtime_error otherwise
      */
-    static bool checkRequestsFile();
+    bool checkRequestsFile();
 
      /**
       * make a json from requests.json
       * @return requests json
       */
-     static nlohmann::json getRequestsJson();
+    nlohmann::json getRequestsJson();
 
 };
 

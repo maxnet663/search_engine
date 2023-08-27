@@ -1,75 +1,43 @@
-#include "converter_json.h"
+#include "include/converter_json.h"
 
-#include "custom_functions.h"
-#include "project_constants.h"
+#include "include/custom_functions.h"
+#include "include/project_constants.h"
 
 #include <fstream> // ifs, ofs
 #include <iostream> // cerr
+#include <utility>
 
-std::vector<std::string> ConverterJSON::GetTextDocuments() {
-
-    std::vector<std::string> documents_text; // result data
-
-    //get list of files
-    auto documents_list = getConfigJson()["files"];
-
-    //reserve space
-    documents_text.reserve(documents_list.size());
-
-    for (const auto &file : documents_list) {
-
-        auto file_path =
-                std::string(RESOURCES_DIR) + custom::getFileName(file);
-
-        if (std::filesystem::exists(file_path)) {
-            try {
-                documents_text.push_back(custom::getFileText(file_path));
-            }
-            catch (std::length_error &ex) { // catch the exception but don't break the execution
-                std::cerr << ex.what() << std::endl; // warning
-            }
-        } else {
-            std::cerr << file_path << "does not exist\n";
-        }
-    }
-
-    return documents_text;
+inline std::vector<std::string> ConverterJSON::getTextDocuments() {
+    return { config["files"].begin(), config["files"].end() };
 }
 
-inline int ConverterJSON::GetResponsesLimit() {
-    return getConfigJson()["config"]["max_responses"];
+inline int ConverterJSON::getResponsesLimit() {
+    return config["config"]["max_responses"];
 }
 
-std::vector<std::string> ConverterJSON::GetRequests() {
+std::vector<std::string> ConverterJSON::getRequests() {
 
-    std::vector<std::string> requests; // result data
-
-    // get content of requests.json file
-    auto requests_list = getRequestsJson();
+    std::vector<std::string> requests_list; // result data
 
     //reserve memory
-    requests.reserve(requests_list["requests"].size());
+    requests_list.reserve(requests["requests"].size());
 
-    for (const auto &i : requests_list["requests"]) {
+    for (const auto &i : requests["requests"]) {
         std::string buf = to_string(i); // get request
         custom::formatString(buf); // format it
-        requests.push_back(std::move(buf)); // write to requests
+        requests_list.push_back(std::move(buf)); // write to requests_list
     }
 
-    return requests;
+    return requests_list;
 }
 
 void ConverterJSON::putAnswers(
         std::vector<std::vector<RelativeIndex>> answers) {
-
-    // result json to write in results.json
     nlohmann::json json_file;
 
     // get round all the elements of the answers
     // and write them down in the final structure
     for (size_t i = 0; i < answers.size(); ++i) {
-
-        // field for requests
         std::string request = "request";
 
         // form number of the request
@@ -79,7 +47,6 @@ void ConverterJSON::putAnswers(
 
         // if nothing is found for this request
         if (answers[i].empty()) {
-
             json_file["answers"][request]["result"] = !answers[i].empty();
 
         } else {
@@ -95,46 +62,47 @@ void ConverterJSON::putAnswers(
                 // if multiple results are found, add a field relevance
                 json_file["answers"][request]["result"] = !answers[i].empty();
 
-                // relevance field is represented as an array
-                if (answers.size() > static_cast<size_t>(GetResponsesLimit())) {
-                    answers.resize(GetResponsesLimit());
+                if (answers.size() > static_cast<size_t>(getResponsesLimit())) {
+                    answers.resize(getResponsesLimit());
                 }
-                for (const auto &record: answers[i]) {
 
+                for (const auto &record: answers[i]) {
                     // element of relevance array
                     nlohmann::json new_field;
                     new_field = {
                             {"docid", record.doc_id},
                             {"rank",  record.rank}
                     };
-
                     json_file["answers"][request]["relevance"].push_back(new_field);
                 }
             }
         }
     }
-
-    // write to the file
-    custom::writeJsonToFile(json_file, JSONS_DIR RESULTS_FILE_NAME);
+    custom::writeJsonToFile(json_file, json_dir / ANSWERS_FILE_NAME);
 }
 
 bool ConverterJSON::checkConfigFile() {
 
-    // return true if file exist
-    if (std::filesystem::exists(JSONS_DIR CONFIG_FILE_NAME)) {
-        return true;
+    // return true if config.json exist
+    for (const auto &file : std::filesystem::directory_iterator(json_dir)) {
+        if (file.is_regular_file() && file.path().filename() == CONFIG_FILE_NAME) {
+            return true;
+        }
     }
 
     // throws otherwise
     throw std::filesystem::filesystem_error("Config file is missing"
-                                      , JSONS_DIR
+                                      , json_dir
                                       , CONFIG_FILE_NAME
                                       , std::make_error_code(std::errc::no_such_file_or_directory));
 }
 
 bool ConverterJSON::checkConfigProperties(const nlohmann::json &json_file) {
 
-    // throws if the contents of the files do not match the conditions
+    // if file still do not open
+    if (json_file == nullptr) {
+        return false;
+    }
 
     if (!json_file.contains("config") || json_file["config"].empty()) {
         throw std::invalid_argument("Config file is empty");
@@ -158,7 +126,7 @@ nlohmann::json ConverterJSON::getConfigJson() {
     checkConfigFile();
 
     // make a json
-    std::ifstream json_reader(JSONS_DIR CONFIG_FILE_NAME);
+    std::ifstream json_reader(json_dir / CONFIG_FILE_NAME);
     nlohmann::json json_file;
     json_reader >> json_file;
     json_reader.close();
@@ -172,13 +140,13 @@ nlohmann::json ConverterJSON::getConfigJson() {
 bool ConverterJSON::checkRequestsFile() {
 
     // return true is file exists
-    if (std::filesystem::exists(JSONS_DIR REQUESTS_FILE_NAME)) {
+    if (std::filesystem::exists(json_dir / REQUESTS_FILE_NAME)) {
         return true;
     }
 
     // throws otherwise
     throw std::filesystem::filesystem_error("Requests file is missing"
-                    , JSONS_DIR
+                    , json_dir
                     , REQUESTS_FILE_NAME
                     , std::make_error_code(std::errc::no_such_file_or_directory));
 }
@@ -198,8 +166,10 @@ bool ConverterJSON::checkRequestsProperties(const nlohmann::json &json_file) {
 
     for (const auto &i: json_file["requests"]) {
         if (custom::wordsCounter(to_string(i)) > MAX_REQUEST_WORDS_NUMBER)
-            throw std::invalid_argument(std::string("One of Request's words number greater than ")
-                                        + std::to_string(MAX_REQUEST_WORDS_NUMBER));
+            throw std::invalid_argument(
+                    "One of Request's words number greater than "
+                    + std::to_string(MAX_REQUEST_WORDS_NUMBER)
+                    );
     }
 
     // return true otherwise
@@ -211,7 +181,7 @@ nlohmann::json ConverterJSON::getRequestsJson() {
     checkRequestsFile(); // throws if requests does not exist
 
     // make a json
-    std::ifstream json_reader(JSONS_DIR REQUESTS_FILE_NAME);
+    std::ifstream json_reader(json_dir / REQUESTS_FILE_NAME);
     nlohmann::json json_file;
     json_reader >> json_file;
     json_reader.close();
@@ -222,6 +192,17 @@ nlohmann::json ConverterJSON::getRequestsJson() {
     return json_file;
 }
 
+ConverterJSON::ConverterJSON(std::filesystem::path in_jsons_dir)
+    : json_dir(std::move(in_jsons_dir))
+{
+    if (!is_directory(json_dir)) {
+        throw std::filesystem::filesystem_error("Wrong path"
+                                                , json_dir
+                                                , std::make_error_code(std::errc::not_a_directory));
+    }
+    config = getConfigJson();
+    requests = getRequestsJson();
+}
 
 
 
