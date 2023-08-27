@@ -6,6 +6,6 @@ add_library(
         search_server.cpp
 )
 
-target_include_directories(engine_lib PUBLIC ${PROJECT_INCLUDE_DIR} ${NLOHMANN_JSON_DIR})
+target_include_directories(engine_lib PUBLIC ${PROJECT_SOURCE_DIR} ${NLOHMANN_JSON_DIR})
 
 target_link_libraries(engine_lib PUBLIC nlohmann_json::nlohmann_json)
