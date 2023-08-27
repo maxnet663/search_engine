@@ -4,8 +4,6 @@
 #include "include/project_constants.h"
 
 #include <fstream> // ifs, ofs
-#include <iostream> // cerr
-#include <utility>
 
 inline std::vector<std::string> ConverterJSON::getTextDocuments() {
     return { config["files"].begin(), config["files"].end() };
