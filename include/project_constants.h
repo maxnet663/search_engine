@@ -9,7 +9,7 @@
 
 #define CONFIG_FILE_NAME "config.json"
 #define REQUESTS_FILE_NAME "requests.json"
-#define RESULTS_FILE_NAME "results.json"
+#define RESULTS_FILE_NAME "answers.json"
 
 
 // select paths to directories depending on the current build target
