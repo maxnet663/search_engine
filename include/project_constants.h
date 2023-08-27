@@ -9,16 +9,6 @@
 
 #define CONFIG_FILE_NAME "config.json"
 #define REQUESTS_FILE_NAME "requests.json"
-#define RESULTS_FILE_NAME "answers.json"
-
-
-// select paths to directories depending on the current build target
-#ifdef TEST
-#define JSONS_DIR TEST_JSONS_DIR
-#define RESOURCES_DIR TEST_RESOURCES_DIR
-#else
-#define JSONS_DIR PROJECT_JSONS_DIR
-#define RESOURCES_DIR PROJECT_RESOURCES_DIR
-#endif
+#define ANSWERS_FILE_NAME "answers.json"
 
 #endif //PROJECT_LIMITS_H
