@@ -53,7 +53,12 @@ class SearchServer {
      */
     size_t getDocRelevance(const size_t &doc_id, const std::string &query);
 
-std::vector<RelativeIndex> makeRequest(const std::string &query);
+    /**
+     * method returns answer on the query
+     * @param query string which represents a request
+     * @return list with relative docs with their relevance
+     */
+    std::vector<RelativeIndex> makeRequest(const std::string &query);
 
 public:
 

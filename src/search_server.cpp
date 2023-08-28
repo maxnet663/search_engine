@@ -39,22 +39,6 @@ size_t SearchServer::getDocRelevance(const size_t &doc_id
     return found == query_freq.end() ? 0 : found->count;
 }
 
-std::vector<std::vector<RelativeIndex>> SearchServer::search(
-        const std::vector<std::string> &queries_input) {
-
-    std::list<std::vector<RelativeIndex>> search_results;
-
-    std::queue<std::future<std::vector<RelativeIndex>>> threads_pool;
-    for (const auto &query : queries_input) {
-        threads_pool.push(std::async(&SearchServer::makeRequest, this, query));
-    }
-    for (size_t i = 0; i < queries_input.size(); ++i) {
-        search_results.push_back(threads_pool.front().get());
-        threads_pool.pop();
-    }
-    return { search_results.begin(), search_results.end() };
-}
-
 std::vector<RelativeIndex> SearchServer::makeRequest(const std::string &query) {
     std::vector<std::string> unique_queries = custom::getUniqueWords(query);
     auto answers = getRelevantDocs(unique_queries);
@@ -80,4 +64,20 @@ std::vector<RelativeIndex> SearchServer::makeRequest(const std::string &query) {
         }
         return results;
     }
+}
+
+std::vector<std::vector<RelativeIndex>> SearchServer::search(
+        const std::vector<std::string> &queries_input) {
+
+    std::list<std::vector<RelativeIndex>> search_results;
+
+    std::queue<std::future<std::vector<RelativeIndex>>> threads_pool;
+    for (const auto &query : queries_input) {
+        threads_pool.push(std::async(&SearchServer::makeRequest, this, query));
+    }
+    while (!threads_pool.empty()) {
+        search_results.push_back(threads_pool.front().get());
+        threads_pool.pop();
+    }
+    return { search_results.begin(), search_results.end() };
 }
