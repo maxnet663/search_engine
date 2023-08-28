@@ -3,9 +3,9 @@
 #include "include/custom_functions.h"
 
 #include <list>
+#include <sstream>
 #include <iostream>
 #include <thread>
-#include <sstream>
 
 void InvertedIndex::UpdateDocumentBase(const std::vector<std::string> &input_docs) {
     if (!docs.empty()) {
@@ -40,7 +40,7 @@ void InvertedIndex::UpdateDocumentBase(const std::vector<std::string> &input_doc
     }
 }
 
-inline std::vector<Entry> InvertedIndex::getWordCount(const std::string &word) {
+std::vector<Entry> InvertedIndex::getWordCount(const std::string &word) {
     return
         freq_dictionary.empty() ? std::vector<Entry>() : freq_dictionary[word];
 }

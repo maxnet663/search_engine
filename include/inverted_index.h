@@ -53,7 +53,7 @@ public:
      * @param word the word whose occurrence frequency is to be determined
      * @return a list with word frequency
      */
-    inline std::vector<Entry> getWordCount(const std::string &word);
+    std::vector<Entry> getWordCount(const std::string &word);
 
 private:
 
