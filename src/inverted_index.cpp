@@ -15,7 +15,7 @@ void InvertedIndex::UpdateDocumentBase(const std::vector<std::string> &input_doc
         freq_dictionary.clear();
     }
 
-#ifdef TEST
+#ifdef TEST // for comfort testing
     docs = std::move(input_docs);
 #else
     docs = getFilesTexts(input_docs);
@@ -40,7 +40,7 @@ void InvertedIndex::UpdateDocumentBase(const std::vector<std::string> &input_doc
     }
 }
 
-std::vector<Entry> InvertedIndex::getWordCount(const std::string &word) {
+inline std::vector<Entry> InvertedIndex::getWordCount(const std::string &word) {
     return
         freq_dictionary.empty() ? std::vector<Entry>() : freq_dictionary[word];
 }
@@ -66,7 +66,7 @@ void InvertedIndex::addUniqueWords(const std::string &text) {
 
         // we protect our container from the race
         // RAII concept will not let us forget to unlock the mutex
-        std::unique_lock<std::mutex> lock(dict_acces);
+        std::unique_lock<std::mutex> lock(dict_access);
 
         if (freq_dictionary.find(word) == freq_dictionary.end()) {
 

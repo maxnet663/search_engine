@@ -22,7 +22,7 @@ class InvertedIndex {
 
     std::vector<std::string> docs;
     std::unordered_map<std::string, std::vector<Entry>> freq_dictionary;
-    std::mutex dict_acces; // mutex to manage access to freq_dictionary
+    std::mutex dict_access; // mutex to manage access to freq_dictionary
 
 public:
 
@@ -53,7 +53,7 @@ public:
      * @param word the word whose occurrence frequency is to be determined
      * @return a list with word frequency
      */
-    std::vector<Entry> getWordCount(const std::string &word);
+    inline std::vector<Entry> getWordCount(const std::string &word);
 
 private:
 
