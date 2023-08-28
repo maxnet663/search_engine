@@ -5,6 +5,20 @@
 
 #include <fstream> // ifs, ofs
 
+ConverterJSON::ConverterJSON(std::filesystem::path in_jsons_dir)
+    : json_dir(std::move(in_jsons_dir))
+{
+    if (!is_directory(json_dir)) {
+        throw std::filesystem::filesystem_error(
+                "Wrong path"
+                , json_dir
+                , std::make_error_code(std::errc::not_a_directory)
+                );
+    }
+    config = getConfigJson();
+    requests = getRequestsJson();
+}
+
 inline std::vector<std::string> ConverterJSON::getTextDocuments() {
     return { config["files"].begin(), config["files"].end() };
 }
@@ -190,17 +204,6 @@ nlohmann::json ConverterJSON::getRequestsJson() {
     return json_file;
 }
 
-ConverterJSON::ConverterJSON(std::filesystem::path in_jsons_dir)
-    : json_dir(std::move(in_jsons_dir))
-{
-    if (!is_directory(json_dir)) {
-        throw std::filesystem::filesystem_error("Wrong path"
-                                                , json_dir
-                                                , std::make_error_code(std::errc::not_a_directory));
-    }
-    config = getConfigJson();
-    requests = getRequestsJson();
-}
 
 
 
