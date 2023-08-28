@@ -1,7 +1,9 @@
 #ifndef SEARCH_SERVER_H
 #define SEARCH_SERVER_H
 
-#include "inverted_index.h"
+#include "include/inverted_index.h"
+
+#include <memory>
 
 /**
  * Structure for forming the relevance of documents
@@ -32,24 +34,7 @@ struct RelativeIndex {
 
 class SearchServer {
 
-    InvertedIndex _index;
-
-    /**
-     * Sorts requests in order of increasing frequency of their occurrence
-     * @param begin the beginning of a query consisting of unique words
-     * @param end the end of a query consisting of unique words
-     */
-    inline void sortQueries(std::vector<std::string>::iterator begin
-                     , std::vector<std::string>::iterator end);
-
-    /**
-     * helper function summing counts from all entries in range [begin, end)
-     * @param begin start of the list to sum
-     * @param end end of the list to sum
-     * @return sum of all count from all entries in the range
-     */
-    inline size_t EntrySum(std::vector<Entry>::iterator begin
-                           , std::vector<Entry>::iterator end);
+    std::shared_ptr<InvertedIndex> _index;
 
     /**
      * generates a list of relevant documents and counts
@@ -68,14 +53,20 @@ class SearchServer {
      */
     size_t getDocRelevance(const size_t &doc_id, const std::string &query);
 
+std::vector<RelativeIndex> makeRequest(const std::string &query);
+
 public:
+
+    SearchServer() = delete;
+
+    SearchServer(const SearchServer &other) = default;
 
     /**
      * @param idx a reference to the class is passed to the class constructor
      * InvertedIndex, so that SearchServer can find out
      * the frequency of words found in request
      */
-    explicit SearchServer(InvertedIndex &idx) : _index(std::move(idx)) {};
+    explicit SearchServer(std::shared_ptr<InvertedIndex> &idx) : _index(idx) {};
 
     /**
      * Search query processing method
