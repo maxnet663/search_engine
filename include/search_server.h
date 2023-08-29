@@ -36,6 +36,30 @@ class SearchServer {
 
     std::shared_ptr<InvertedIndex> _index;
 
+public:
+
+    SearchServer() = delete;
+
+    SearchServer(const SearchServer &other) = default;
+
+    /**
+     * @param idx a reference to the class is passed to the class constructor
+     * InvertedIndex, so that SearchServer can find out
+     * the frequency of words found in request
+     */
+    explicit SearchServer(std::shared_ptr<InvertedIndex> &idx) : _index(idx) {};
+
+    /**
+     * Search query processing method
+     * @param queries_input search queries taken from the file requests.json
+     * @return returns a sorted list of relevant
+     * responses for given requests
+     */
+    std::vector<std::vector<RelativeIndex>> search(
+            const std::vector<std::string> &queries_input);
+
+private:
+
     /**
      * generates a list of relevant documents and counts
      * relevance index for each document
@@ -59,28 +83,6 @@ class SearchServer {
      * @return list with relative docs with their relevance
      */
     std::vector<RelativeIndex> makeRequest(const std::string &query);
-
-public:
-
-    SearchServer() = delete;
-
-    SearchServer(const SearchServer &other) = default;
-
-    /**
-     * @param idx a reference to the class is passed to the class constructor
-     * InvertedIndex, so that SearchServer can find out
-     * the frequency of words found in request
-     */
-    explicit SearchServer(std::shared_ptr<InvertedIndex> &idx) : _index(idx) {};
-
-    /**
-     * Search query processing method
-     * @param queries_input search queries taken from the file requests.json
-     * @return returns a sorted list of relevant
-     * responses for given requests
-     */
-    std::vector<std::vector<RelativeIndex>> search(
-            const std::vector<std::string> &queries_input);
 
 };
 
