@@ -1,36 +1,36 @@
 #include "include/inverted_index.h"
 
-#include "include/custom_functions.h"
-
 #include <list>
 #include <sstream>
 #include <iostream>
 #include <thread>
 
-void InvertedIndex::UpdateDocumentBase(const std::vector<std::string> &input_docs) {
-    if (!docs.empty()) {
-        docs.clear();
+#include "include/custom_functions.h"
+
+void InvertedIndex::updateDocumentBase(const std::vector<std::string> &input_docs) {
+    if (!docs_texts.empty()) {
+        docs_texts.clear();
     }
     if (!freq_dictionary.empty()) {
         freq_dictionary.clear();
     }
 
 #ifdef TEST // for comfort testing
-    docs = std::move(input_docs);
+    docs_texts = std::move(input_docs);
 #else
-    docs = getFilesTexts(input_docs);
+    docs_texts = getFilesTexts(input_docs);
 #endif
 
     // starts threads
-    std::vector<std::thread> threads(docs.size());
-    for (size_t i = 0; i < docs.size(); ++i) {
+    std::vector<std::thread> threads(docs_texts.size());
+    for (size_t i = 0; i < docs_texts.size(); ++i) {
 
         // access to lines from docs is carried out by
         // constant reference, so there will be no race
         threads[i] = std::thread(
                 &InvertedIndex::addUniqueWords
                 , this
-                , std::ref(docs[i])
+                , std::ref(docs_texts[i])
                 );
     }
 
@@ -48,8 +48,8 @@ std::vector<Entry> InvertedIndex::getWordCount(const std::string &word) {
 std::vector<Entry> InvertedIndex::getWordFrequency(const std::string &word) {
     std::vector<Entry> result;
 
-    for (size_t i = 0; i < docs.size(); ++i) {
-        auto occurrences = custom::countOccurrences(docs[i], word);
+    for (size_t i = 0; i < docs_texts.size(); ++i) {
+        auto occurrences = custom::countOccurrences(docs_texts[i], word);
         // if there are not any occurrences of the word in the text
         // Entry is not created
         if (occurrences)
@@ -79,7 +79,7 @@ void InvertedIndex::addUniqueWords(const std::string &text) {
             lock.unlock();
 
             // the function accepts a word by constant reference,
-            // and also accesses the docs array read-only, so it is safe
+            // and also accesses the docs_texts array read-only, so it is safe
             auto word_count = getWordFrequency(word);
 
             // when adding a new word, we lock the dictionary again
@@ -109,3 +109,5 @@ std::vector<std::string> InvertedIndex::getFilesTexts(
     }
     return { texts.begin(), texts.end() };
 }
+
+

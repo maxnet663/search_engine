@@ -20,7 +20,7 @@ struct Entry {
 
 class InvertedIndex {
 
-    std::vector<std::string> docs;
+    std::vector<std::string> docs_texts;
     std::unordered_map<std::string, std::vector<Entry>> freq_dictionary;
     std::mutex dict_access; // mutex to manage access to freq_dictionary
 
@@ -34,18 +34,19 @@ public:
      * @param other another instance of InvertedIndex class
      */
     InvertedIndex(const InvertedIndex &other)
-        : docs(other.docs), freq_dictionary(other.freq_dictionary) {};
+        : docs_texts(other.docs_texts)
+        , freq_dictionary(other.freq_dictionary) {};
 
-    InvertedIndex(InvertedIndex&& other)  noexcept
-        : docs(std::move(other.docs))
-        , freq_dictionary(std::move(other.freq_dictionary)) {}
+    InvertedIndex(InvertedIndex&& other) noexcept
+        : docs_texts(std::move(other.docs_texts))
+        , freq_dictionary(std::move(other.freq_dictionary)) {};
 
     /**
      * update or fill in the database of documents
      * on which we will then search
      * @param input_docs document's content
      */
-    void UpdateDocumentBase(const std::vector<std::string> &input_docs);
+    void updateDocumentBase(const std::vector<std::string> &input_docs);
 
     /**
      * method determines the number of occurrences
