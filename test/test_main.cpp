@@ -114,8 +114,8 @@ TEST(TestCaseSearchServer, TestSimple) {
             }
     };
 
-    InvertedIndex idx;
-    idx.UpdateDocumentBase(docs);
+    std::shared_ptr<InvertedIndex> idx = std::make_shared<InvertedIndex>();
+    idx->UpdateDocumentBase(docs);
 
     SearchServer srv(idx);
 
@@ -159,8 +159,9 @@ TEST(TestCaseSearchServer, TestTop5) {
                     {2, 0.666666687}
             }
     };
-    InvertedIndex idx;
-    idx.UpdateDocumentBase(docs);
+
+    std::shared_ptr<InvertedIndex> idx = std::make_shared<InvertedIndex>();
+    idx->UpdateDocumentBase(docs);
     SearchServer srv(idx);
     std::vector<std::vector<RelativeIndex>> result = srv.search(request);
     if (result[0].size() > 5) {
