@@ -1,13 +1,13 @@
 #ifndef CONVERTER_JSON_H
 #define CONVERTER_JSON_H
 
+#include <filesystem> //path
+#include <string> // string
+
 #include "nlohmann/json.hpp" // json
 
 #include "include/search_server.h" // RelativeIndex
 #include "include/observer.h"
-
-#include <filesystem> //path
-#include <string> // string
 
 // Class for working with json files
 class ConverterJSON : public IObserver{

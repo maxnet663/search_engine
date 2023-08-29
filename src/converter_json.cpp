@@ -1,9 +1,10 @@
 #include "include/converter_json.h"
 
+#include <fstream> // ifs, ofs
+
 #include "include/custom_functions.h"
 #include "include/project_constants.h"
 
-#include <fstream> // ifs, ofs
 
 ConverterJSON::ConverterJSON(std::filesystem::path in_jsons_dir)
     : json_dir(std::move(in_jsons_dir))
