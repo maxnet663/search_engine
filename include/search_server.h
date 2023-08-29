@@ -43,9 +43,7 @@ public:
     SearchServer(const SearchServer &other) = default;
 
     /**
-     * @param idx a reference to the class is passed to the class constructor
-     * InvertedIndex, so that SearchServer can find out
-     * the frequency of words found in request
+     * @param idx pointer to the docs database
      */
     explicit SearchServer(std::shared_ptr<InvertedIndex> &idx) : _index(idx) {};
 
@@ -71,14 +69,15 @@ private:
 
     /**
      * get a relevance index of doc relatively the query
-     * @param docs list of documents
-     * @param unique_queries list of queries
-     * @return list with document IDs and their relevance
+     * @param doc_id
+     * @param query
+     * @return relevance of doc
      */
     size_t getDocRelevance(const size_t &doc_id, const std::string &query);
 
     /**
-     * method returns answer on the query
+     * uses for async computing
+     * method returns answer to the query
      * @param query string which represents a request
      * @return list with relative docs with their relevance
      */
