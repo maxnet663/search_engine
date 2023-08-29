@@ -44,7 +44,5 @@ enable_testing()
 
 include(GoogleTest)
 
-gtest_discover_tests(search_engine)
-
 add_subdirectory(test)
 
