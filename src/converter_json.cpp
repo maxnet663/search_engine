@@ -15,8 +15,8 @@ ConverterJSON::ConverterJSON(std::filesystem::path in_jsons_dir)
                 , std::make_error_code(std::errc::not_a_directory)
                 );
     }
-    config = getConfigJson();
-    requests = getRequestsJson();
+    config = getConfigJson(json_dir);
+    requests = getRequestsJson(json_dir);
 }
 
 inline std::vector<std::string> ConverterJSON::getTextDocuments() {
@@ -93,20 +93,9 @@ void ConverterJSON::putAnswers(
     custom::writeJsonToFile(json_file, json_dir / ANSWERS_FILE_NAME);
 }
 
-bool ConverterJSON::checkConfigFile() {
-
-    // return true if config.json exist
-    for (const auto &file : std::filesystem::directory_iterator(json_dir)) {
-        if (file.is_regular_file() && file.path().filename() == CONFIG_FILE_NAME) {
-            return true;
-        }
-    }
-
-    // throws otherwise
-    throw std::filesystem::filesystem_error("Config file is missing"
-                                      , json_dir
-                                      , CONFIG_FILE_NAME
-                                      , std::make_error_code(std::errc::no_such_file_or_directory));
+bool ConverterJSON::checkConfigFile(const std::filesystem::path &dir) {
+    return exists(dir / CONFIG_FILE_NAME)
+        && is_regular_file(dir / CONFIG_FILE_NAME);
 }
 
 bool ConverterJSON::checkConfigProperties(const nlohmann::json &json_file) {
@@ -132,13 +121,18 @@ bool ConverterJSON::checkConfigProperties(const nlohmann::json &json_file) {
     return true;
 }
 
-nlohmann::json ConverterJSON::getConfigJson() {
+nlohmann::json ConverterJSON::getConfigJson(const std::filesystem::path &dir) {
 
     // throws if config does not exist
-    checkConfigFile();
+    if (!checkConfigFile(dir)) {
+        throw std::filesystem::filesystem_error("Config file is missing"
+                , dir
+                , CONFIG_FILE_NAME
+                , std::make_error_code(std::errc::no_such_file_or_directory));
+    }
 
     // make a json
-    std::ifstream json_reader(json_dir / CONFIG_FILE_NAME);
+    std::ifstream json_reader(dir / CONFIG_FILE_NAME);
     nlohmann::json json_file;
     json_reader >> json_file;
     json_reader.close();
@@ -149,18 +143,9 @@ nlohmann::json ConverterJSON::getConfigJson() {
     return json_file;
 }
 
-bool ConverterJSON::checkRequestsFile() {
-
-    // return true is file exists
-    if (std::filesystem::exists(json_dir / REQUESTS_FILE_NAME)) {
-        return true;
-    }
-
-    // throws otherwise
-    throw std::filesystem::filesystem_error("Requests file is missing"
-                    , json_dir
-                    , REQUESTS_FILE_NAME
-                    , std::make_error_code(std::errc::no_such_file_or_directory));
+bool ConverterJSON::checkRequestsFile(const std::filesystem::path &dir) {
+    return exists(dir / REQUESTS_FILE_NAME)
+        && is_regular_file(dir/ REQUESTS_FILE_NAME);
 }
 
 bool ConverterJSON::checkRequestsProperties(const nlohmann::json &json_file) {
@@ -172,7 +157,7 @@ bool ConverterJSON::checkRequestsProperties(const nlohmann::json &json_file) {
     }
 
     if (json_file["requests"].size() > MAX_REQUESTS_NUMBER) {
-        throw std::invalid_argument(std::string("Requests number greater than ")
+        throw std::invalid_argument("Requests number greater than "
                                     + std::to_string(MAX_REQUESTS_NUMBER));
     }
 
@@ -180,20 +165,24 @@ bool ConverterJSON::checkRequestsProperties(const nlohmann::json &json_file) {
         if (custom::wordsCounter(to_string(i)) > MAX_REQUEST_WORDS_NUMBER)
             throw std::invalid_argument(
                     "One of Request's words number greater than "
-                    + std::to_string(MAX_REQUEST_WORDS_NUMBER)
-                    );
+                    + std::to_string(MAX_REQUEST_WORDS_NUMBER));
     }
 
     // return true otherwise
     return true;
 }
 
-nlohmann::json ConverterJSON::getRequestsJson() {
+nlohmann::json ConverterJSON::getRequestsJson(const std::filesystem::path &dir) {
 
-    checkRequestsFile(); // throws if requests does not exist
+    if (!checkRequestsFile(dir)) {
+        throw std::filesystem::filesystem_error("Requests file is missing"
+                , dir
+                , REQUESTS_FILE_NAME
+                , std::make_error_code(std::errc::no_such_file_or_directory));
+    }
 
     // make a json
-    std::ifstream json_reader(json_dir / REQUESTS_FILE_NAME);
+    std::ifstream json_reader(dir / REQUESTS_FILE_NAME);
     nlohmann::json json_file;
     json_reader >> json_file;
     json_reader.close();
