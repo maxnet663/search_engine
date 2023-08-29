@@ -7,10 +7,9 @@
 #include "nlohmann/json.hpp" // json
 
 #include "include/search_server.h" // RelativeIndex
-#include "include/observer.h"
 
 // Class for working with json files
-class ConverterJSON : public IObserver{
+class ConverterJSON {
 
     std::filesystem::path json_dir;
     nlohmann::json config;
@@ -26,9 +25,6 @@ public:
 
     inline void setJsonDir(std::filesystem::path new_path)
     { json_dir = std::move(new_path); }
-
-    void update() override
-    { config = getConfigJson(json_dir); requests = getRequestsJson(json_dir); }
 
     /**
     * @return a list with the paths to documents to search
