@@ -26,6 +26,9 @@ public:
     inline void setJsonDir(std::filesystem::path new_path)
     { json_dir = std::move(new_path); }
 
+    inline const nlohmann::json& getConfig() const { return config; }
+    inline const nlohmann::json& getRequests() const { return requests; }
+
     /**
     * @return a list with the paths to documents to search
     * in config.json
@@ -72,7 +75,7 @@ private:
       * @param dir a dir with config.json
       * @return json object
       */
-    static nlohmann::json getConfigJson(const std::filesystem::path &dir);
+    static nlohmann::json makeConfigJson(const std::filesystem::path &dir);
 
     /**
      * check if requests properties is valid
@@ -92,7 +95,7 @@ private:
       * make a json from requests.json
       * @return requests json
       */
-    static nlohmann::json getRequestsJson(const std::filesystem::path &dir);
+    static nlohmann::json makeRequestsJson(const std::filesystem::path &dir);
 
 };
 

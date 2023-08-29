@@ -16,8 +16,8 @@ ConverterJSON::ConverterJSON(std::filesystem::path in_jsons_dir)
                 , std::make_error_code(std::errc::not_a_directory)
                 );
     }
-    config = getConfigJson(json_dir);
-    requests = getRequestsJson(json_dir);
+    config = makeConfigJson(json_dir);
+    requests = makeRequestsJson(json_dir);
 }
 
 inline std::vector<std::string> ConverterJSON::getTextDocuments() {
@@ -122,7 +122,7 @@ bool ConverterJSON::checkConfigProperties(const nlohmann::json &json_file) {
     return true;
 }
 
-nlohmann::json ConverterJSON::getConfigJson(const std::filesystem::path &dir) {
+nlohmann::json ConverterJSON::makeConfigJson(const std::filesystem::path &dir) {
 
     // throws if config does not exist
     if (!checkConfigFile(dir)) {
@@ -173,7 +173,7 @@ bool ConverterJSON::checkRequestsProperties(const nlohmann::json &json_file) {
     return true;
 }
 
-nlohmann::json ConverterJSON::getRequestsJson(const std::filesystem::path &dir) {
+nlohmann::json ConverterJSON::makeRequestsJson(const std::filesystem::path &dir) {
 
     if (!checkRequestsFile(dir)) {
         throw std::filesystem::filesystem_error("Requests file is missing"
