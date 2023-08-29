@@ -1,5 +1,5 @@
 .idea/
 cmake-build-debug/
-JSONs/results.json
-test/JSONs_test/results.json
+JSONs/answers.json
+test/JSONs_test/answers.json
 .gitignore
