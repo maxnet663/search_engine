@@ -11,20 +11,31 @@
 
 class Manager {
 
-   std::string engine_name;
-   std::string engine_version;
-   std::filesystem::path jsons_dir;
-   std::filesystem::path resources_dir;
-   std::vector<std::string> indexed_documents;
+    ConverterJSON converter;
+    InvertedIndex document_base;
 
-   std::unique_ptr<ConverterJSON> converter;
-   std::shared_ptr<InvertedIndex> document_base;
-   std::unique_ptr<SearchServer> searchServer;
+    std::string engine_name;
+    std::string engine_version;
+    std::filesystem::path jsons_dir;
+    std::vector<std::string> indexed_documents;
 
 public:
 
-    Manager();
+    Manager(std::string path);
 
+    void startSession();
+
+    void updateInfo();
+
+    void updateDB();
+
+private:
+
+    void showHelp();
+
+    void showStat();
+
+    bool checkUpdate();
 };
 
 #endif //MANAGER_H
