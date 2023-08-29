@@ -3,8 +3,6 @@
 
 #include "include/inverted_index.h"
 
-#include <memory>
-
 /**
  * Structure for forming the relevance of documents
  */
@@ -34,7 +32,7 @@ struct RelativeIndex {
 
 class SearchServer {
 
-    std::shared_ptr<InvertedIndex> _index;
+    InvertedIndex &_index;
 
 public:
 
@@ -45,7 +43,7 @@ public:
     /**
      * @param idx pointer to the docs database
      */
-    explicit SearchServer(std::shared_ptr<InvertedIndex> &idx) : _index(idx) {};
+    explicit SearchServer(InvertedIndex &idx) : _index(idx) {};
 
     /**
      * Search query processing method

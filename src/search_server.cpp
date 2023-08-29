@@ -15,7 +15,7 @@ std::vector<DocRelevance> SearchServer::getRelevantDocs(
 
     for (const auto &query : unique_queries) {
 
-        auto queryFreq = _index->getWordCount(query);
+        auto queryFreq = _index.getWordCount(query);
 
         for (const auto &entry : queryFreq) {
             if (result.find(entry.doc_id) == result.end()) {
@@ -30,7 +30,7 @@ std::vector<DocRelevance> SearchServer::getRelevantDocs(
 
 size_t SearchServer::getDocRelevance(const size_t &doc_id
                                            , const std::string &query) {
-    auto query_freq = _index->getWordCount(query);
+    auto query_freq = _index.getWordCount(query);
     auto found = std::find_if(
             query_freq.begin()
             , query_freq.end()
