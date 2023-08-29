@@ -58,7 +58,7 @@ void TestInvertedIndexFunctionality(
     std::vector<std::vector<Entry>> result;
     InvertedIndex idx;
 
-    idx.UpdateDocumentBase(docs);
+    idx.updateDocumentBase(docs);
 
     for (auto &request : requests) {
         std::vector<Entry> word_count = idx.getWordCount(request);
@@ -114,8 +114,8 @@ TEST(TestCaseSearchServer, TestSimple) {
             }
     };
 
-    std::shared_ptr<InvertedIndex> idx = std::make_shared<InvertedIndex>();
-    idx->UpdateDocumentBase(docs);
+    InvertedIndex idx;
+    idx.updateDocumentBase(docs);
 
     SearchServer srv(idx);
 
@@ -160,8 +160,8 @@ TEST(TestCaseSearchServer, TestTop5) {
             }
     };
 
-    std::shared_ptr<InvertedIndex> idx = std::make_shared<InvertedIndex>();
-    idx->UpdateDocumentBase(docs);
+    InvertedIndex idx;
+    idx.updateDocumentBase(docs);
     SearchServer srv(idx);
     std::vector<std::vector<RelativeIndex>> result = srv.search(request);
     if (result[0].size() > 5) {
