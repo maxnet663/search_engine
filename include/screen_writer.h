@@ -2,14 +2,13 @@
 #define MANGER_H
 
 #include <string>
-#include <memory>
 
 #include "include/converter_json.h"
 #include "include/inverted_index.h"
 #include "include/search_server.h"
 
 
-class Manager {
+class ScreenWriter {
 
     ConverterJSON converter;
     InvertedIndex document_base;
@@ -21,7 +20,7 @@ class Manager {
 
 public:
 
-    Manager(std::string path);
+    ScreenWriter(const std::string &path);
 
     void startSession();
 
@@ -36,6 +35,8 @@ private:
     void showStat();
 
     bool checkUpdate();
+
+    void handler(const std::string &cmd);
 };
 
 #endif //MANAGER_H
