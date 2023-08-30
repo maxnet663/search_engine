@@ -110,9 +110,9 @@ std::vector<std::string> InvertedIndex::getFilesTexts(
     return { texts.begin(), texts.end() };
 }
 
-InvertedIndex &InvertedIndex::operator=(InvertedIndex &&other) noexcept {
-    docs_texts = std::move(other.docs_texts);
-    freq_dictionary = std::move(other.freq_dictionary);
+InvertedIndex &InvertedIndex::operator=(InvertedIndex &&right) noexcept {
+    docs_texts = std::move(right.docs_texts);
+    freq_dictionary = std::move(right.freq_dictionary);
     return *this;
 }
 

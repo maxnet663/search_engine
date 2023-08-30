@@ -41,7 +41,7 @@ public:
         : docs_texts(std::move(other.docs_texts))
         , freq_dictionary(std::move(other.freq_dictionary)) {};
 
-    InvertedIndex& operator=(InvertedIndex&& other) noexcept;
+    InvertedIndex& operator=(InvertedIndex&& right) noexcept;
     /**
      * update or fill in the database of documents
      * on which we will then search
