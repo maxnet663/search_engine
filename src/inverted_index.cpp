@@ -117,4 +117,12 @@ InvertedIndex& InvertedIndex::operator=(InvertedIndex &&right) noexcept {
     return *this;
 }
 
+InvertedIndex& InvertedIndex::operator=(const InvertedIndex &right) {
+    if (this != &right) {
+        docs_texts = right.docs_texts;
+        freq_dictionary = right.freq_dictionary;
+    }
+    return *this;
+}
+
 
