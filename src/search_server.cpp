@@ -1,11 +1,11 @@
 #include "include/search_server.h"
 
-#include "include/custom_functions.h"
-
 #include <sstream>
 #include <future>
 #include <list>
 #include <queue>
+
+#include "include/custom_functions.h"
 
 std::vector<DocRelevance> SearchServer::getRelevantDocs(
         const std::vector<std::string> &unique_queries) {

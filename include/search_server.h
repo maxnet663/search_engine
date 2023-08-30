@@ -32,7 +32,7 @@ struct RelativeIndex {
 
 class SearchServer {
 
-    InvertedIndex &_index;
+    const InvertedIndex &_index;
 
 public:
 
@@ -43,10 +43,11 @@ public:
     /**
      * @param idx pointer to the docs database
      */
-    explicit SearchServer(InvertedIndex &idx) : _index(idx) {};
+    explicit SearchServer(const InvertedIndex &idx) : _index(idx) {};
 
     /**
      * Search query processing method
+     * !async!
      * @param queries_input search queries taken from the file requests.json
      * @return returns a sorted list of relevant
      * responses for given requests
