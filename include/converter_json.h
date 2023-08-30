@@ -27,40 +27,43 @@ public:
     { json_dir = std::move(new_path); }
 
     inline const nlohmann::json& getConfig() const { return config; }
-    inline const nlohmann::json& getRequests() const { return requests; }
 
     /**
     * @return a list with the paths to documents to search
     * in config.json
     */
-    inline std::vector<std::string> getTextDocuments();
+    inline std::vector<std::string> getTextDocuments() const;
 
     /**
     * The method reads the max_responses field to determine the limit
     * number of responses per request
     *@return max_responses
     */
-    inline int getResponsesLimit();
+    inline int getResponsesLimit() const;
 
     /**
     * Method for receiving requests from the requests.json file
     * @return a list of requests from the requests.json file
     */
-    std::vector<std::string> getRequests();
+    std::vector<std::string> getRequests() const;
 
     /**
     * Put search results in the answers.json file
     */
-     void putAnswers(std::vector<std::vector<RelativeIndex>> answers);
+     void putAnswers(std::vector<std::vector<RelativeIndex>> answers) const;
+
+     void updateConfig() { config = makeConfigJson(json_dir); }
+
+     void updateRequests() {requests = makeRequestsJson(json_dir); }
 
 private:
 
     /**
      * check if config properties is valid
      * @return true if contains the required values
-     * throws invalid_argument or filesystem_error otherwise
+     * throws invalid_argument otherwise
      */
-    static bool checkConfigProperties(const nlohmann::json &json_file);
+    bool checkConfigProperties(const nlohmann::json &json_file);
 
     /**
      * check if config.json exists
@@ -68,34 +71,37 @@ private:
      * @return true if config.json exists
      * false otherwise
      */
-    static bool checkConfigFile(const std::filesystem::path &dir);
+    bool checkConfigFile(const std::filesystem::path &dir);
 
     /**
       * make a json object from config.json
       * @param dir a dir with config.json
-      * @return json object
+      * @return json object made of config.json
+      * throws filesystem_error or invalid_argument otherwise
       */
-    static nlohmann::json makeConfigJson(const std::filesystem::path &dir);
+    nlohmann::json makeConfigJson(const std::filesystem::path &dir);
 
     /**
      * check if requests properties is valid
      * @return true if contains the required values
      * throws invalid_argument otherwise
      */
-    static bool checkRequestsProperties(const nlohmann::json &json_file);
+    bool checkRequestsProperties(const nlohmann::json &json_file);
 
     /**
      * check if requests.json exists
      * * @param dir a dir with requests.json
-     * @return true if requests.json exists throws runtime_error otherwise
+     * @return true if requests.json exists false otherwise
      */
-    static bool checkRequestsFile(const std::filesystem::path &dir);
+    bool checkRequestsFile(const std::filesystem::path &dir);
 
-     /**
-      * make a json from requests.json
-      * @return requests json
-      */
-    static nlohmann::json makeRequestsJson(const std::filesystem::path &dir);
+    /**
+     *
+     * @param dir a dir with requests.json
+     * @return json object made of request.json throws
+     * filesystem_error or invalid_argument otherwise
+     */
+    nlohmann::json makeRequestsJson(const std::filesystem::path &dir);
 
 };
 

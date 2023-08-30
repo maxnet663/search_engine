@@ -13,22 +13,22 @@ ConverterJSON::ConverterJSON(std::filesystem::path in_jsons_dir)
         throw std::filesystem::filesystem_error(
                 "Wrong path"
                 , json_dir
-                , std::make_error_code(std::errc::not_a_directory)
+                , std::make_error_code(std::errc::no_such_file_or_directory)
                 );
     }
     config = makeConfigJson(json_dir);
     requests = makeRequestsJson(json_dir);
 }
 
-inline std::vector<std::string> ConverterJSON::getTextDocuments() {
+inline std::vector<std::string> ConverterJSON::getTextDocuments() const {
     return { config["files"].begin(), config["files"].end() };
 }
 
-inline int ConverterJSON::getResponsesLimit() {
+inline int ConverterJSON::getResponsesLimit() const {
     return config["config"]["max_responses"];
 }
 
-std::vector<std::string> ConverterJSON::getRequests() {
+std::vector<std::string> ConverterJSON::getRequests() const {
 
     std::vector<std::string> requests_list; // result data
 
@@ -45,7 +45,7 @@ std::vector<std::string> ConverterJSON::getRequests() {
 }
 
 void ConverterJSON::putAnswers(
-        std::vector<std::vector<RelativeIndex>> answers) {
+        std::vector<std::vector<RelativeIndex>> answers) const {
     nlohmann::json json_file;
 
     // get round all the elements of the answers
