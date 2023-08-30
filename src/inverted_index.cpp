@@ -40,12 +40,13 @@ void InvertedIndex::updateDocumentBase(const std::vector<std::string> &input_doc
     }
 }
 
-std::vector<Entry> InvertedIndex::getWordCount(const std::string &word) {
-    return
-        freq_dictionary.empty() ? std::vector<Entry>() : freq_dictionary[word];
+std::vector<Entry> InvertedIndex::getWordCount(const std::string &word) const {
+    auto it = freq_dictionary.find(word);
+    return it == freq_dictionary.end() ? std::vector<Entry>() : it->second;
 }
 
-std::vector<Entry> InvertedIndex::getWordFrequency(const std::string &word) {
+std::vector<Entry>
+        InvertedIndex::getWordFrequency(const std::string &word) const {
     std::vector<Entry> result;
 
     for (size_t i = 0; i < docs_texts.size(); ++i) {
@@ -92,7 +93,7 @@ void InvertedIndex::addUniqueWords(const std::string &text) {
 }
 
 std::vector<std::string> InvertedIndex::getFilesTexts(
-        const std::vector<std::string> &input_docs) {
+        const std::vector<std::string> &input_docs) const {
     //it is faster, in case when we have a lot if docs
     std::list<std::string> texts;
     for (const auto &docs_path : input_docs) {
@@ -110,7 +111,7 @@ std::vector<std::string> InvertedIndex::getFilesTexts(
     return { texts.begin(), texts.end() };
 }
 
-InvertedIndex &InvertedIndex::operator=(InvertedIndex &&right) noexcept {
+InvertedIndex& InvertedIndex::operator=(InvertedIndex &&right) noexcept {
     docs_texts = std::move(right.docs_texts);
     freq_dictionary = std::move(right.freq_dictionary);
     return *this;

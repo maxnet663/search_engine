@@ -55,12 +55,13 @@ public:
      * @param word the word whose occurrence frequency is to be determined
      * @return a list with word frequency
      */
-    std::vector<Entry> getWordCount(const std::string &word);
+    std::vector<Entry> getWordCount(const std::string &word) const;
 
 private:
 
     /**
      * fill freq_dictionary by the unique words from the text
+     * !uses for threads!
      * @param text file's text to get unique words
      */
     void addUniqueWords(const std::string &text);
@@ -71,7 +72,7 @@ private:
      * @param word
      * @return frequency of the word
      */
-    std::vector<Entry> getWordFrequency(const std::string &word);
+    std::vector<Entry> getWordFrequency(const std::string &word) const;
 
     /**
      * extract texts from each docs in input_docs list
@@ -79,7 +80,7 @@ private:
      * @return list of texts in the same order
      */
     std::vector<std::string> getFilesTexts(
-            const std::vector<std::string> &input_docs);
+            const std::vector<std::string> &input_docs) const;
 
 };
 
