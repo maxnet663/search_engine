@@ -1,4 +1,4 @@
-#include "include/manager.h"
+#include "include/screenwriter.h"
 
 Manager::Manager(std::string path) : converter(path) {
     auto config = converter.getConfig();

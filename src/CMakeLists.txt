@@ -4,6 +4,7 @@ add_library(
         custom_functions.cpp
         inverted_index.cpp
         search_server.cpp
+        screenwriter.cpp
 )
 
 target_include_directories(engine_lib PUBLIC ${PROJECT_SOURCE_DIR} ${NLOHMANN_JSON_DIR})
