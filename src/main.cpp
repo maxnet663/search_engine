@@ -12,15 +12,26 @@ int main() {
     std::cout << "Prepare to run...\n";
     std::cout << "Input path (relative or absolute) to JSONs dir\n";
     std::cout << "or type \"default\" to find JSONs dir in current path:\n> ";
-    std::getline(std::cin, path);
 
-    if (std::cin.eof())
-        return 1;
-
-    if (path == "default")
-        path = std::filesystem::current_path() / "JSONs";
-
-    ScreenWriter session(path);
-    session.startSession();
+    while(!std::getline(std::cin, path).eof()) {
+        if (path == "default")
+            path = std::filesystem::current_path() / "JSONs";
+        try {
+            ScreenWriter session(path);
+            session.startSession();
+        }
+        catch (std::exception &ex) {
+            std::cout << ex.what() << std::endl;
+            std::cout << "Try again [y/n]: ";
+            std::getline(std::cin, path);
+            if (path == "y") {
+                std::cout << "Input path (relative or absolute)"
+                << " to JSONs dir\n> ";
+                continue;
+            }
+            else
+                std::cin.setstate(std::ios_base::eofbit);
+        }
+    }
     return 0;
 }
