@@ -7,13 +7,23 @@
 
 std::string custom::getFileText(const std::string &file_name) {
 
+    if (!std::filesystem::exists(file_name)) {
+        throw std::filesystem::filesystem_error(
+                "File does not exist"
+                , file_name
+                , std::make_error_code(std::errc::no_such_file_or_directory)
+                );
+    }
+
     // open stream for reading
     std::ifstream ifs(file_name);
 
     if (!ifs.is_open()) {
-        throw std::filesystem::filesystem_error("Could not open the file"
+        throw std::filesystem::filesystem_error(
+                "Could not open the file"
                 , file_name
-                , std::make_error_code(std::errc::no_such_file_or_directory));
+                , std::make_error_code(std::errc::permission_denied)
+                );
     }
 
     //check words number in file
@@ -40,9 +50,9 @@ std::string custom::getFileText(const std::string &file_name) {
 
         //check word's length
         if (buf.length() > MAX_WORD_LENGTH) {
-            throw std::length_error(std::string("one of words from file:")
+            throw std::length_error("one of words from file:"
                                     + file_name
-                                    + std::string( " has length greater than ")
+                                    + " has length greater than "
                                     + std::to_string(MAX_WORD_LENGTH));
         }
 
@@ -216,12 +226,12 @@ size_t custom::countOccurrences(const std::string &text, const std::string &word
 std::vector<std::string> custom::getUniqueWords(const std::string &text) {
 
     // set of unique words from requests
-    std::unordered_set<std::string> uniqueRequests;
+    std::unordered_set<std::string> unique_words;
     std::stringstream data(text);
     std::string buf;
     while (data >> buf) {
-        uniqueRequests.insert(buf);
+        unique_words.insert(buf);
     }
 
-    return { uniqueRequests.begin(), uniqueRequests.end() };
+    return { unique_words.begin(), unique_words.end() };
 }
