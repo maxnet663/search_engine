@@ -159,17 +159,18 @@ void custom::deleteExtraSpaces(std::string &s) {
 
 void custom::writeJsonToFile(const nlohmann::json &json_text
                              , const std::string &path) {
-    if (!isWriteable(path)) {
-        std::cerr << "Can not write to the file" << path
-        << " permission denied" << std::endl;
-    }
-    // if file already exists we should remove it
     if (std::filesystem::exists(path)) {
-        remove(path.data());
+        if (!isWriteable(path)) {
+            throw std::filesystem::filesystem_error(
+                    "Can not write to the file " + path
+                    , path
+                    , std::make_error_code(std::errc::permission_denied)
+            );
+        }
     }
 
     // open stream for writing
-    std::ofstream dest(path, std::ios::out);
+    std::ofstream dest(path, std::ios::out | std::ios::trunc);
     dest << std::setw(2) << json_text;
     dest.close();
 
