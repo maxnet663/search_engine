@@ -85,5 +85,23 @@ namespace custom {
      */
     std::vector<std::string> getUniqueWords(const std::string &text);
 
+    /**
+     * checks permission to read from a file
+     * !only owner rights are checked!
+     * @param file_path path to file
+     * @return true if the file is readable by the owner
+     * false otherwise
+     */
+    bool isReadable(const std::string &file_path);
+
+    /**
+     * checks permission to write to a file
+     * !only owner rights are checked!
+     * @param file_path path to file
+     * @return true if the file is writeable by the owner
+     * false otherwise
+     */
+    bool isWriteable(const std::string &file_path);
+
 }
 #endif //SEARCH_ENGINE

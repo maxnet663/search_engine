@@ -1,9 +1,11 @@
 #include "include/custom_functions.h"
-#include "include/project_constants.h"
 
 #include <filesystem>
 #include <fstream>
 #include <unordered_set>
+#include <iostream>
+
+#include "include/project_constants.h"
 
 std::string custom::getFileText(const std::string &file_name) {
 
@@ -13,6 +15,10 @@ std::string custom::getFileText(const std::string &file_name) {
                 , file_name
                 , std::make_error_code(std::errc::no_such_file_or_directory)
                 );
+    }
+    if (!isReadable(file_name)) {
+        std::cerr << "Can not read from the file " << file_name
+        << " permission denied" << std::endl;
     }
 
     // open stream for reading
@@ -153,7 +159,10 @@ void custom::deleteExtraSpaces(std::string &s) {
 
 void custom::writeJsonToFile(const nlohmann::json &json_text
                              , const std::string &path) {
-
+    if (!isWriteable(path)) {
+        std::cerr << "Can not write to the file" << path
+        << " permission denied" << std::endl;
+    }
     // if file already exists we should remove it
     if (std::filesystem::exists(path)) {
         remove(path.data());
@@ -232,6 +241,25 @@ std::vector<std::string> custom::getUniqueWords(const std::string &text) {
     while (data >> buf) {
         unique_words.insert(buf);
     }
+    return {unique_words.begin(), unique_words.end()};
+}
 
-    return { unique_words.begin(), unique_words.end() };
+bool custom::isReadable(const std::string &file_name) {
+    std::filesystem::path path(file_name);
+    if (!exists(path))
+        return false;
+
+    auto file_perms = std::filesystem::status(path).permissions();
+    auto read_perms = std::filesystem::perms::owner_read;
+    return std::filesystem::perms::none != (file_perms & read_perms);
+}
+
+bool custom::isWriteable(const std::string &file_name) {
+    std::filesystem::path path(file_name);
+    if (!exists(path))
+        return false;
+
+    auto file_perms = std::filesystem::status(path).permissions();
+    auto write_perms = std::filesystem::perms::owner_write;
+    return std::filesystem::perms::none != (file_perms & write_perms);
 }
