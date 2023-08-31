@@ -1,6 +1,7 @@
 #include "include/converter_json.h"
 
 #include <fstream> // ifs, ofs
+#include <iostream> //cerr
 
 #include "include/custom_functions.h"
 #include "include/project_constants.h"
@@ -92,7 +93,13 @@ void ConverterJSON::putAnswers(
             }
         }
     }
-    custom::writeJsonToFile(json_file, json_dir / ANSWERS_FILE_NAME);
+    try {
+        custom::writeJsonToFile(json_file, json_dir / ANSWERS_FILE_NAME);
+    }
+    catch (std::filesystem::filesystem_error &ex) {
+        std::cerr << ex.what() << std::endl;
+        custom::writeJsonToFile(json_file, json_dir / "answers_safe.json");
+    }
 }
 
 bool ConverterJSON::checkConfigFile(const std::filesystem::path &dir) {
