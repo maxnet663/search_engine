@@ -118,7 +118,8 @@ bool ConverterJSON::checkConfigProperties(const nlohmann::json &json_file) {
         throw std::invalid_argument("Config file is empty");
     }
 
-    if (!json_file["config"].contains("max_responses") || json_file["config"]["max_responses"] <= 0) {
+    if (!json_file["config"].contains("max_responses")
+        || json_file["config"]["max_responses"] <= 0) {
         throw std::invalid_argument("Wrong responses number");
     }
 
