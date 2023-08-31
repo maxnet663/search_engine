@@ -16,6 +16,7 @@ ConverterJSON::ConverterJSON(std::filesystem::path in_jsons_dir)
                 , std::make_error_code(std::errc::no_such_file_or_directory)
                 );
     }
+
     config = makeConfigJson(json_dir);
     requests = makeRequestsJson(json_dir);
 }
@@ -124,12 +125,23 @@ bool ConverterJSON::checkConfigProperties(const nlohmann::json &json_file) {
 
 nlohmann::json ConverterJSON::makeConfigJson(const std::filesystem::path &dir) {
 
+    if (!custom::isReadable(dir / CONFIG_FILE_NAME)) {
+        throw std::filesystem::filesystem_error(
+                CONFIG_FILE_NAME " permission denied"
+                ,dir
+                , CONFIG_FILE_NAME
+                , std::make_error_code(std::errc::permission_denied)
+                );
+    }
+
     // throws if config does not exist
     if (!checkConfigFile(dir)) {
-        throw std::filesystem::filesystem_error("Config file is missing"
+        throw std::filesystem::filesystem_error(
+                "Config file is missing"
                 , dir
                 , CONFIG_FILE_NAME
-                , std::make_error_code(std::errc::no_such_file_or_directory));
+                , std::make_error_code(std::errc::no_such_file_or_directory)
+                );
     }
 
     // make a json
@@ -175,11 +187,22 @@ bool ConverterJSON::checkRequestsProperties(const nlohmann::json &json_file) {
 
 nlohmann::json ConverterJSON::makeRequestsJson(const std::filesystem::path &dir) {
 
+    if (!custom::isReadable(dir / REQUESTS_FILE_NAME)) {
+        throw std::filesystem::filesystem_error(
+                REQUESTS_FILE_NAME " permission denied"
+                ,dir
+                , REQUESTS_FILE_NAME
+                , std::make_error_code(std::errc::permission_denied)
+                );
+    }
+
     if (!checkRequestsFile(dir)) {
-        throw std::filesystem::filesystem_error("Requests file is missing"
+        throw std::filesystem::filesystem_error(
+                "Requests file is missing"
                 , dir
                 , REQUESTS_FILE_NAME
-                , std::make_error_code(std::errc::no_such_file_or_directory));
+                , std::make_error_code(std::errc::no_such_file_or_directory)
+                );
     }
 
     // make a json
