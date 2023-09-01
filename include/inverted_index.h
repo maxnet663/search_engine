@@ -37,7 +37,7 @@ public:
         : docs_texts(other.docs_texts)
         , freq_dictionary(other.freq_dictionary) {};
 
-    InvertedIndex& operator=(const InvertedIndex& right);
+    InvertedIndex& operator=(const InvertedIndex &right);
 
     InvertedIndex(InvertedIndex&& other) noexcept
         : docs_texts(std::move(other.docs_texts))
