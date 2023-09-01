@@ -57,7 +57,8 @@ void ConverterJSON::putAnswers(
 
         // form number of the request
         std::string number(std::to_string(i + 1)); // 1 <= number <= 1000
-        number.insert(0, std::string(4 - number.length(), '0')); // fill spaces by zeroes
+        // fill spaces by zeroes
+        number.insert(0, std::string(4 - number.length(), '0'));
         request.append(number); // get "request...."
 
         // if nothing is found for this request
@@ -69,8 +70,8 @@ void ConverterJSON::putAnswers(
             //if only one answer is found
             if (answers[i].size() == 1) {
                 json_file["answers"][request]["result"] = !answers.empty();
-                json_file["answers"][request]["docid"] = answers[i].begin()->doc_id;
-                json_file["answers"][request]["rank"] = answers[i].begin()->rank;
+                json_file["answers"][request]["docid"] = answers[i][0].doc_id;
+                json_file["answers"][request]["rank"] = answers[i][0].rank;
 
             } else {
 
@@ -98,7 +99,8 @@ void ConverterJSON::putAnswers(
     }
     catch (std::filesystem::filesystem_error &ex) {
         std::cerr << ex.what() << std::endl;
-        custom::writeJsonToFile(json_file, json_dir / "answers_safe.json");
+        custom::writeJsonToFile(json_file
+                                , json_dir / EXCEPTION_ANSWERS_FILE_NAME);
     }
 }
 
@@ -133,16 +135,6 @@ bool ConverterJSON::checkConfigProperties(const nlohmann::json &json_file) {
 
 nlohmann::json ConverterJSON::makeConfigJson(const std::filesystem::path &dir) {
 
-    if (!custom::isReadable(dir / CONFIG_FILE_NAME)) {
-        throw std::filesystem::filesystem_error(
-                CONFIG_FILE_NAME " permission denied"
-                ,dir
-                , CONFIG_FILE_NAME
-                , std::make_error_code(std::errc::permission_denied)
-                );
-    }
-
-    // throws if config does not exist
     if (!checkConfigFile(dir)) {
         throw std::filesystem::filesystem_error(
                 "Config file is missing"
@@ -150,6 +142,15 @@ nlohmann::json ConverterJSON::makeConfigJson(const std::filesystem::path &dir) {
                 , CONFIG_FILE_NAME
                 , std::make_error_code(std::errc::no_such_file_or_directory)
                 );
+    }
+
+    if (!custom::isReadable(dir / CONFIG_FILE_NAME)) {
+        throw std::filesystem::filesystem_error(
+                CONFIG_FILE_NAME " permission denied"
+                ,dir
+                , CONFIG_FILE_NAME
+                , std::make_error_code(std::errc::permission_denied)
+        );
     }
 
     // make a json
