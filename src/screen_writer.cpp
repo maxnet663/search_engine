@@ -3,12 +3,14 @@
 #include <iostream>
 
 #include "include/project_constants.h"
+#include "include/custom_functions.h"
 
 ScreenWriter::ScreenWriter(const std::string &path) : converter(path)
                                                     , srv(document_base) {
     engine_name = converter.getConfig()["config"]["name"];
     engine_version = converter.getConfig()["config"]["version"];
     indexed_documents = converter.getConfig()["files"];
+    document_base.updateDocumentBase(indexed_documents);
     last_changes_config =
             last_write_time(converter.getJsonDir() / CONFIG_FILE_NAME);
     last_changes_requests =
@@ -19,6 +21,9 @@ ScreenWriter::ScreenWriter(const std::string &path) : converter(path)
             {"help",      &ScreenWriter::showHelp       },
             {"status",    &ScreenWriter::showStat       },
             {"find",      &ScreenWriter::search         },
+            {"print-rq",  &ScreenWriter::showRequests   },
+            {"print-db",  &ScreenWriter::showIndexedDocs},
+            {"print-ans", &ScreenWriter::showAnswers    },
             {"quit",      &ScreenWriter::exit           }
     };
 }
@@ -31,36 +36,35 @@ void ScreenWriter::startSession() {
     while(!std::getline(std::cin, cmd).eof()) {
         handler(cmd);
     }
-    std::cin.setstate(std::ios_base::goodbit);
 }
 
 void ScreenWriter::updateDB() {
     if (last_write_time(converter.getJsonDir() / CONFIG_FILE_NAME)
-        == last_changes_config)
-        return;
-
-    last_changes_config =
-            last_write_time(converter.getJsonDir() / CONFIG_FILE_NAME);
-    converter.updateConfig();
-    auto new_indexed_documents = converter.getConfig()["files"];
-    if (has_diff(indexed_documents, new_indexed_documents)) {
-        indexed_documents = std::move(new_indexed_documents);
-        document_base.updateDocumentBase(indexed_documents);
+        == last_changes_config) {
+        std::cout << "Indexed documents are up to date" << std::endl;
+    } else {
+        last_changes_config =
+                last_write_time(converter.getJsonDir() / CONFIG_FILE_NAME);
+        converter.updateConfig();
+        auto new_indexed_documents = converter.getConfig()["files"];
+        if (has_diff(indexed_documents, new_indexed_documents)) {
+            indexed_documents = std::move(new_indexed_documents);
+            document_base.updateDocumentBase(indexed_documents);
+        }
+        std::cout << "Indexed documents updated" << std::endl;
     }
-    std::cout << "Indexed documents updated" << std::endl;
 }
 
 void ScreenWriter::updateRequests() {
     if (last_write_time(converter.getJsonDir() / REQUESTS_FILE_NAME)
         == last_changes_requests) {
         std::cout << "Requests are up to date\n";
-        return;
+    } else {
+        converter.updateRequests();
+        last_changes_requests =
+                last_write_time(converter.getJsonDir() / REQUESTS_FILE_NAME);
+        std::cout << "Requests updated" << std::endl;
     }
-
-    converter.updateRequests();
-    last_changes_requests =
-            last_write_time(converter.getJsonDir() / REQUESTS_FILE_NAME);
-    std::cout << "Requests updated" << std::endl;
 }
 
 void ScreenWriter::showHelp() {
@@ -70,6 +74,9 @@ void ScreenWriter::showHelp() {
     << "help        : prints the list of commands\n"
     << "status      : prints info about session\n"
     << "find        : searches for current queries in the current database\n"
+    << "print-rq    : prints current requests from requests.json\n"
+    << "print-db    : prints current indexed docs from config.json[files]\n"
+    << "print-ans   : prints cuurent search results from answers.json\n"
     << "quit        : ends the session" << std::endl;
 }
 
@@ -81,26 +88,44 @@ void ScreenWriter::showStat() {
     << std::endl;
 }
 
+void ScreenWriter::showRequests() {
+    std::cout << "Current Requests:\n";
+    auto queries = converter.getRequests();
+    std::for_each(queries.begin(), queries.end(),[](const std::string &q) {
+        std::cout << q << std::endl;
+    });
+}
+
+void ScreenWriter::showIndexedDocs() {
+    std::cout << "Current Indexed Documents:\n";
+    auto docs = converter.getConfig()["files"];
+    std::for_each(docs.begin(), docs.end(), [](const nlohmann::json &doc) {
+        std::cout << doc << std::endl;
+    });
+}
+
 bool ScreenWriter::checkUpdate() {
     auto path = converter.getJsonDir();
-    auto x = last_write_time(path / CONFIG_FILE_NAME);
-    auto y = last_write_time(path / REQUESTS_FILE_NAME);
-    return  x != last_changes_config
-        || y != last_changes_requests;
+    return  last_write_time(path / CONFIG_FILE_NAME) != last_changes_config
+        || last_write_time(path / REQUESTS_FILE_NAME) != last_changes_requests;
 }
 
 void ScreenWriter::handler(const std::string &cmd) {
     if (!cmd.empty()) {
+
         if (cmd == "q")
             const_cast<std::string &>(cmd) = "quit";
+
         auto execute = commands.find(cmd);
-        if (execute == commands.end()) {
+
+        if (execute == commands.end())
             std::cout << "No such a command \"" << cmd << "\"" << std::endl;
-        } else {
+        else
             (this->*execute->second)();
-        }
+
     }
-    std::cout << "> ";
+    if (!std::cout.eof())
+        std::cout << "> ";
 }
 
 bool ScreenWriter::has_diff(const std::vector<std::string> &left
@@ -110,6 +135,40 @@ bool ScreenWriter::has_diff(const std::vector<std::string> &left
 
 void ScreenWriter::search() {
     converter.putAnswers(srv.search(converter.getRequests()));
+}
+
+void ScreenWriter::showAnswers() {
+    auto answers
+        = ConverterJSON::openJson(converter.getJsonDir() / ANSWERS_FILE_NAME);
+    if (answers == nullptr) {
+        answers = ConverterJSON::openJson(
+                converter.getJsonDir() / EXCEPTION_ANSWERS_FILE_NAME
+                );
+    }
+    if (answers == nullptr) {
+        std::cout << "Oops, looks like file \"answers.json\" does not exists\n"
+        << "The file may have been moved or the search has not yet been "
+        << "performed." << std::endl;
+        return;
+    }
+    const auto &requests = answers["answers"];
+    for (auto it = requests.begin(); it != requests.end(); it++) {
+        std::cout << it.key() << ":\n";
+        if (it.value()["result"] == true) {
+            if (it.value().contains("relevance")) {
+                std::for_each(it.value()["relevance"].begin()
+                    ,it.value()["relevance"].end()
+                    , [](const nlohmann::json &ans)
+                    { std::cout << ans << std::endl; }
+                );
+            } else {
+                std::cout << "doc id: " << it.value()["docid"]
+                << "relevance: " << it.value()["rank"] << std::endl;
+            }
+        } else {
+            std::cout << it.value() << std::endl;
+        }
+    }
 }
 
 void ScreenWriter::exit() {
