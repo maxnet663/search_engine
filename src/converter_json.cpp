@@ -106,7 +106,7 @@ void ConverterJSON::putAnswers(
 
  nlohmann::json ConverterJSON::openJson(const std::string &path) {
     if (!std::filesystem::exists(path) || !custom::isReadable(path)
-        || std::filesystem::path(path).extension() != ".txt") {
+        || std::filesystem::path(path).extension() != ".json") {
         return nullptr;
     }
     std::ifstream reader(path);
