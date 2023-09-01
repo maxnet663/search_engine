@@ -104,6 +104,27 @@ void ConverterJSON::putAnswers(
     }
 }
 
+ nlohmann::json ConverterJSON::openJson(const std::string &path) {
+    if (!std::filesystem::exists(path) || !custom::isReadable(path)
+        || std::filesystem::path(path).extension() != ".txt") {
+        return nullptr;
+    }
+    std::ifstream reader(path);
+    if (!reader.is_open()) {
+        throw std::filesystem::filesystem_error(
+                "Can not read file " + path
+                , path
+                , custom::getFileName(path)
+                , std::make_error_code(std::errc::bad_file_descriptor)
+                );
+    }
+    nlohmann::json result;
+    reader >> result;
+    reader.close();
+
+    return result;
+}
+
 bool ConverterJSON::checkConfigFile(const std::filesystem::path &dir) {
     return exists(dir / CONFIG_FILE_NAME)
         && is_regular_file(dir / CONFIG_FILE_NAME);

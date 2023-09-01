@@ -56,6 +56,15 @@ public:
 
      void updateRequests() {requests = makeRequestsJson(json_dir); }
 
+     /**
+      * creates json object from a file under path
+      * !before creating check if file exists, perms to read
+      * and file's extension(must be *.json)!
+      * @param path path to the file
+      * @return json object
+      */
+     static nlohmann::json openJson(const std::string &path);
+
 private:
 
     /**
