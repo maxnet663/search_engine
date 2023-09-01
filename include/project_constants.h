@@ -10,5 +10,6 @@
 #define CONFIG_FILE_NAME "config.json"
 #define REQUESTS_FILE_NAME "requests.json"
 #define ANSWERS_FILE_NAME "answers.json"
+#define EXCEPTION_ANSWERS_FILE_NAME "answers_safe.json"
 
 #endif //PROJECT_LIMITS_H
