@@ -15,9 +15,8 @@ std::vector<DocRelevance> SearchServer::getRelevantDocs(
 
     for (const auto &query : unique_queries) {
 
-        auto queryFreq = _index.getWordCount(query);
-
-        for (const auto &entry : queryFreq) {
+        auto &query_freq = _index.getWordCount(query);
+        for (const auto &entry : query_freq) {
             if (result.find(entry.doc_id) == result.end()) {
                 result[entry.doc_id] = getDocRelevance(entry.doc_id, query);
             } else {
@@ -30,7 +29,7 @@ std::vector<DocRelevance> SearchServer::getRelevantDocs(
 
 size_t SearchServer::getDocRelevance(const size_t &doc_id
                                            , const std::string &query) {
-    auto query_freq = _index.getWordCount(query);
+    auto &query_freq = _index.getWordCount(query);
     auto found = std::find_if(
             query_freq.begin()
             , query_freq.end()
@@ -40,7 +39,7 @@ size_t SearchServer::getDocRelevance(const size_t &doc_id
 }
 
 std::vector<RelativeIndex> SearchServer::makeRequest(const std::string &query) {
-    std::vector<std::string> unique_queries = custom::getUniqueWords(query);
+    auto unique_queries = custom::getUniqueWords(query);
     auto answers = getRelevantDocs(unique_queries);
 
     // if in the end there is not a single document left add empty list
@@ -59,7 +58,7 @@ std::vector<RelativeIndex> SearchServer::makeRequest(const std::string &query) {
         for (size_t i = 0; i < results.size(); ++i) {
             results[i] = {
                     answers[i].doc_id,
-                    (float) answers[i].relevance / (float) maxRelevance
+                    (double) answers[i].relevance / (double) maxRelevance
             };
         }
         return results;
