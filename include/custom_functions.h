@@ -86,6 +86,14 @@ namespace custom {
     std::vector<std::string> getUniqueWords(const std::string &text);
 
     /**
+     * rounds the number up to n decimal place
+     * @param num number to round
+     * @param precision
+     * @return rounded number
+     */
+    double round(double num, int precision);
+
+    /**
      * checks permission to read from a file
      * !only owner rights are checked!
      * @param file_path path to file

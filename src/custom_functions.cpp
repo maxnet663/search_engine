@@ -13,12 +13,13 @@ std::string custom::getFileText(const std::string &file_name) {
         throw std::filesystem::filesystem_error(
                 "File does not exist"
                 , file_name
-                , std::make_error_code(std::errc::no_such_file_or_directory)
-                );
+                , std::make_error_code(std::errc::no_such_file_or_directory));
     }
     if (!isReadable(file_name)) {
-        std::cerr << "Can not read from the file " << file_name
-        << " permission denied" << std::endl;
+        throw std::filesystem::filesystem_error(
+                "Could not open the file"
+                , file_name
+                , std::make_error_code(std::errc::permission_denied));
     }
 
     // open stream for reading
@@ -28,16 +29,15 @@ std::string custom::getFileText(const std::string &file_name) {
         throw std::filesystem::filesystem_error(
                 "Could not open the file"
                 , file_name
-                , std::make_error_code(std::errc::permission_denied)
-                );
+                , std::make_error_code(std::errc::bad_file_descriptor));
     }
 
     //check words number in file
     if (std::distance(std::istream_iterator<std::string>(ifs)
             , std::istream_iterator<std::string>()) > MAX_WORDS_NUMBER) {
 
-        throw std::length_error(std::string("number of words in file ")
-                                + file_name + std::string(" greater than ")
+        throw std::length_error("Number of words in file "
+                                + file_name + " greater than "
                                 + std::to_string(MAX_WORDS_NUMBER));
     }
 
@@ -46,12 +46,11 @@ std::string custom::getFileText(const std::string &file_name) {
     ifs.seekg(0);
 
     std::string buf; // buffer for word processing
-    std::string text;//storage for text
+    std::string text; //storage for text
 
     // reserve memory
     text.reserve(std::filesystem::file_size(file_name));
 
-    // read one word at a time
     while (ifs >> buf) {
 
         //check word's length
@@ -62,14 +61,11 @@ std::string custom::getFileText(const std::string &file_name) {
                                     + std::to_string(MAX_WORD_LENGTH));
         }
 
-        //put the word to the storage
         text += buf + " ";
     }
 
-    // close stream
     ifs.close();
 
-    // format string
     formatString(text);
 
     return text;
@@ -164,12 +160,10 @@ void custom::writeJsonToFile(const nlohmann::json &json_text
             throw std::filesystem::filesystem_error(
                     "Can not write to the file " + path
                     , path
-                    , std::make_error_code(std::errc::permission_denied)
-            );
+                    , std::make_error_code(std::errc::permission_denied));
         }
     }
 
-    // open stream for writing
     std::ofstream dest(path, std::ios::out | std::ios::trunc);
     dest << std::setw(2) << json_text;
     dest.close();
@@ -178,7 +172,6 @@ void custom::writeJsonToFile(const nlohmann::json &json_text
 
 std::string custom::getFileName(std::string s) {
 
-    //format name
     // pointers to the end of the string
     auto walk = s.end() - 1;
 
@@ -192,18 +185,13 @@ std::string custom::getFileName(std::string s) {
         walk--;
     }
 
-    // remove them
     s.erase(s.begin(), walk + 1);
 
     return s;
 }
 
 size_t custom::countOccurrences(const std::string &text, const std::string &word) {
-
-    // the current index with which we will bypass the string
     size_t walk = 0;
-
-    // counter of occurrences
     size_t occur_counter = 0;
 
     // while we can detect occurrence
@@ -212,11 +200,10 @@ size_t custom::countOccurrences(const std::string &text, const std::string &word
         // get the index of occurrence's start
         auto occur_begin = text.find(word, walk);
 
-        // if there is not any occurrence return
+        // if there is not any occurrence
         if (occur_begin == std::string::npos)
             return occur_counter;
 
-        // get the index of occurrence's end
         auto occur_end = occur_begin + word.length();
 
         // if the occurrence is a single word, not part of a word
@@ -234,15 +221,19 @@ size_t custom::countOccurrences(const std::string &text, const std::string &word
 }
 
 std::vector<std::string> custom::getUniqueWords(const std::string &text) {
-
-    // set of unique words from requests
     std::unordered_set<std::string> unique_words;
     std::stringstream data(text);
     std::string buf;
     while (data >> buf) {
         unique_words.insert(buf);
     }
-    return {unique_words.begin(), unique_words.end()};
+    return { unique_words.begin(), unique_words.end() };
+}
+
+double custom::round(double num, int precision) {
+    std::ostringstream os;
+    os << std::fixed << std::setprecision(precision) << num;
+    return std::stod(os.str());
 }
 
 bool custom::isReadable(const std::string &file_name) {
