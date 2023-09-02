@@ -50,7 +50,8 @@ public:
     /**
     * Put search results in the answers.json file
     */
-     void putAnswers(std::vector<std::vector<RelativeIndex>> answers) const;
+     void putAnswers(
+             const std::vector<std::vector<RelativeIndex>> &answers) const;
 
      void updateConfig() { config = makeConfigJson(json_dir); }
 

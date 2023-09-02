@@ -47,7 +47,7 @@ std::vector<std::string> ConverterJSON::getRequests() const {
 }
 
 void ConverterJSON::putAnswers(
-        std::vector<std::vector<RelativeIndex>> answers) const {
+        const std::vector<std::vector<RelativeIndex>> &answers) const {
     nlohmann::json json_file;
 
     // get round all the elements of the answers
@@ -78,16 +78,16 @@ void ConverterJSON::putAnswers(
                 // if multiple results are found, add a field relevance
                 json_file["answers"][request]["result"] = !answers[i].empty();
 
-                if (answers.size() > static_cast<size_t>(getResponsesLimit())) {
-                    answers.resize(getResponsesLimit());
-                }
-
-                for (const auto &record: answers[i]) {
+//                if (answers.size() > static_cast<size_t>(getResponsesLimit())) {
+//                    answers.resize(getResponsesLimit());
+//                }
+                auto limit = static_cast<size_t>(getResponsesLimit());
+                for (size_t j = 0; j < limit && j < answers[i].size(); ++j) {
                     // element of relevance array
                     nlohmann::json new_field;
                     new_field = {
-                            {"docid", record.doc_id},
-                            {"rank",  record.rank}
+                            {"docid", answers[i][j].doc_id},
+                            {"rank",  custom::round(answers[i][j].rank, 2)}
                     };
                     json_file["answers"][request]["relevance"].push_back(new_field);
                 }
