@@ -26,6 +26,11 @@ class InvertedIndex {
 
 public:
 
+    /**
+     * default return value for queries that are not in the dictionary
+     */
+    static const std::vector<Entry> nfound;
+
     InvertedIndex() = default;
 
     /**
@@ -53,12 +58,22 @@ public:
     void updateDocumentBase(const std::vector<std::string> &input_docs);
 
     /**
+     * alternative getter for const InvertedIndex
      * method determines the number of occurrences
      * of a word in the loaded document base
      * @param word the word whose occurrence frequency is to be determined
-     * @return a list with word frequency
+     * @return const ref to a list with word frequency or nfound
      */
-    std::vector<Entry> getWordCount(const std::string &word) const;
+    const std::vector<Entry>& getWordCount(const std::string &word) const;
+
+    /**
+     * alternative getter for non-constant InvertedIndex
+     * method determines the number of occurrences
+     * of a word in the loaded document base
+     * @param word the word whose occurrence frequency is to be determined
+     * @return a list with word frequency or nfound
+     */
+    std::vector<Entry> getWordCount(const std::string &word);
 
 private:
 

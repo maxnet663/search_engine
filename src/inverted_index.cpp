@@ -7,6 +7,8 @@
 
 #include "include/custom_functions.h"
 
+const std::vector<Entry> InvertedIndex::nfound;
+
 void InvertedIndex::updateDocumentBase(const std::vector<std::string> &input_docs) {
     if (!docs_texts.empty()) {
         docs_texts.clear();
@@ -40,7 +42,12 @@ void InvertedIndex::updateDocumentBase(const std::vector<std::string> &input_doc
     }
 }
 
-std::vector<Entry> InvertedIndex::getWordCount(const std::string &word) const {
+const std::vector<Entry>& InvertedIndex::getWordCount(const std::string &word) const {
+    auto it = freq_dictionary.find(word);
+    return it == freq_dictionary.end() ? nfound : it->second;
+}
+
+std::vector<Entry> InvertedIndex::getWordCount(const std::string &word) {
     auto it = freq_dictionary.find(word);
     return it == freq_dictionary.end() ? std::vector<Entry>() : it->second;
 }
