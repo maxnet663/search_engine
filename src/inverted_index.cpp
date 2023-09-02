@@ -24,20 +24,17 @@ void InvertedIndex::updateDocumentBase(const std::vector<std::string> &input_doc
 #endif
 
     // starts threads
-    std::vector<std::thread> threads(docs_texts.size());
+    std::vector<std::thread> threads_pool(docs_texts.size());
     for (size_t i = 0; i < docs_texts.size(); ++i) {
 
         // access to lines from docs is carried out by
         // constant reference, so there will be no race
-        threads[i] = std::thread(
+        threads_pool[i] = std::thread(
                 &InvertedIndex::addUniqueWords
                 , this
-                , std::ref(docs_texts[i])
-                );
+                , std::ref(docs_texts[i]));
     }
-
-    // waits for threads
-    for (auto &th : threads) {
+    for (auto &th : threads_pool) {
         th.join();
     }
 }
@@ -53,13 +50,11 @@ std::vector<Entry> InvertedIndex::getWordCount(const std::string &word) {
 }
 
 std::vector<Entry>
-        InvertedIndex::getWordFrequency(const std::string &word) const {
+InvertedIndex::getWordFrequency(const std::string &word) const {
     std::vector<Entry> result;
 
     for (size_t i = 0; i < docs_texts.size(); ++i) {
         auto occurrences = custom::countOccurrences(docs_texts[i], word);
-        // if there are not any occurrences of the word in the text
-        // Entry is not created
         if (occurrences)
             result.push_back( {i, occurrences} );
     }
@@ -101,6 +96,7 @@ void InvertedIndex::addUniqueWords(const std::string &text) {
 
 std::vector<std::string> InvertedIndex::getFilesTexts(
         const std::vector<std::string> &input_docs) const {
+
     //it is faster, in case when we have a lot if docs
     std::list<std::string> texts;
     for (const auto &docs_path : input_docs) {
@@ -109,7 +105,7 @@ std::vector<std::string> InvertedIndex::getFilesTexts(
                 texts.push_back(custom::getFileText(docs_path));
             }
             catch (std::length_error &ex) {
-                std::cout << ex.what() << std::endl;
+                std::cerr << ex.what() << std::endl;
             }
         } else {
             std::cerr << docs_path << " does not exist\n";
