@@ -9,13 +9,13 @@
 
 int main() {
     std::string path;
-    std::cout << "Prepare to run...\n";
-    std::cout << "Input path (relative or absolute) to JSONs dir\n";
-    std::cout << "or type \"default\" to find JSONs dir in current path:\n> ";
+    std::cout << "Prepare to run...\n"
+                 "Input path (relative or absolute) to jsons dir\n"
+                 "or type \"default\" to find jsons dir in current path:\n> ";
 
     while(!std::getline(std::cin, path).eof()) {
         if (path == "default")
-            path = std::filesystem::current_path() / "JSONs";
+            path = std::filesystem::current_path() / "jsons";
         try {
             ScreenWriter session(path);
             session.startSession();
@@ -26,7 +26,7 @@ int main() {
             std::getline(std::cin, path);
             if (path == "y") {
                 std::cout << "Input path (relative or absolute)"
-                << " to JSONs dir\n> ";
+                             " to jsons dir\n> ";
                 continue;
             }
             else
