@@ -31,6 +31,8 @@ public:
 
 private:
 
+    void handler(const std::string &cmd);
+
     void updateDB();
 
     void updateRequests();
@@ -45,14 +47,11 @@ private:
 
     void showIndexedDocs();
 
-    void handler(const std::string &cmd);
-
-    bool has_diff(const std::vector<std::string> &left
-                  , const std::vector<std::string> &right);
-
     void search();
 
     void showAnswers();
+
+    void printAnswers(const nlohmann::json &answers);
 
     void exit();
 };
