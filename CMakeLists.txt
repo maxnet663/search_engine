@@ -5,7 +5,6 @@ project (search_engine VERSION 1.0)
 set(CMAKE_CXX_STANDARD 17)
 
 add_compile_definitions(TEST_JSONS_DIR="${PROJECT_SOURCE_DIR}/test/JSONs_test")
-
 add_compile_definitions(TEST_RESOURCES_DIR="${PROJECT_SOURCE_DIR}/test/resources_test/")
 
 include(FetchContent)
@@ -26,6 +25,15 @@ target_include_directories(search_engine PUBLIC ${PROJECT_INCLUDE_DIR})
 
 target_link_libraries(search_engine PRIVATE engine_lib)
 
+install(TARGETS search_engine)
+install(FILES jsons/config.json jsons/requests.json DESTINATION jsons)
+install(FILES
+        resources/file001.txt
+        resources/file002.txt
+        resources/file003.txt
+        resources/file004.txt
+        DESTINATION resources)
+
 FetchContent_Declare(
         googletest
         URL
@@ -34,15 +42,22 @@ FetchContent_Declare(
 
 include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 
-#set(gtest_disable_pthreads on)
+FetchContent_MakeAvailable(googletest)
+
+set(INSTALL_GMOCK OFF CACHE BOOL "" FORCE)
+set(INSTALL_GTEST OFF CACHE BOOL "" FORCE)
+
+set(gtest_force_shared_crt ON CACHE INTERNAL "")
+set(gtest_disable_pthreads ON CACHE INTERNAL "")
+set(BUILD_GMOCK OFF CACHE INTERNAL "")
+set(BUILD_GTEST OFF CACHE INTERNAL "")
 
 set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-
-FetchContent_MakeAvailable(googletest)
 
 enable_testing()
 
 include(GoogleTest)
 
 add_subdirectory(test)
+
 
