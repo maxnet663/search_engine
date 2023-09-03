@@ -30,13 +30,18 @@ target_link_libraries(search_engine_simple PRIVATE engine_lib)
 
 install(TARGETS search_engine DESTINATION .)
 install(TARGETS search_engine_simple DESTINATION .)
-install(FILES jsons/config.json jsons/requests.json DESTINATION jsons)
+install(FILES
+        install_files/config.json
+        install_files/requests.json
+        DESTINATION
+        jsons)
 install(FILES
         resources/file001.txt
         resources/file002.txt
         resources/file003.txt
         resources/file004.txt
-        DESTINATION resources)
+        DESTINATION
+        resources)
 
 FetchContent_Declare(
         googletest
