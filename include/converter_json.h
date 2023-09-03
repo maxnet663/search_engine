@@ -32,7 +32,7 @@ public:
     * @return a list with the paths to documents to search
     * in config.json
     */
-    inline std::vector<std::string> getTextDocuments() const;
+    std::vector<std::string> getTextDocuments() const;
 
     /**
     * The method reads the max_responses field to determine the limit

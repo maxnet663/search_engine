@@ -22,7 +22,7 @@ ConverterJSON::ConverterJSON(std::filesystem::path in_jsons_dir)
     requests = makeRequestsJson(json_dir);
 }
 
-inline std::vector<std::string> ConverterJSON::getTextDocuments() const {
+std::vector<std::string> ConverterJSON::getTextDocuments() const {
     return { config["files"].begin(), config["files"].end() };
 }
 
