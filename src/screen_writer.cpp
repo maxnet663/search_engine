@@ -111,7 +111,7 @@ void ScreenWriter::showIndexedDocs() {
 bool ScreenWriter::checkUpdate() {
     auto path = converter.getJsonDir();
     return last_write_time(path / CONFIG_FILE_NAME) != last_changes_config
-    || last_write_time(path / REQUESTS_FILE_NAME) != last_changes_requests;
+      || last_write_time(path / REQUESTS_FILE_NAME) != last_changes_requests;
 }
 
 void ScreenWriter::handler(const std::string &cmd) {
@@ -140,11 +140,12 @@ void ScreenWriter::search() {
 
 void ScreenWriter::showAnswers() {
     auto answers= ConverterJSON::openJson(
-            converter.getJsonDir() / ANSWERS_FILE_NAME);
+            (converter.getJsonDir() / ANSWERS_FILE_NAME).string());
 
     if (answers == nullptr) {
         answers = ConverterJSON::openJson(
-                converter.getJsonDir() / EXCEPTION_ANSWERS_FILE_NAME);
+                (converter.getJsonDir() /
+                      EXCEPTION_ANSWERS_FILE_NAME).string());
     }
 
     if (answers == nullptr) {

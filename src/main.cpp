@@ -12,7 +12,7 @@ int main() {
 
     while(!std::getline(std::cin, path).eof()) {
         if (path == "default")
-            path = std::filesystem::current_path() / "jsons";
+            path = (std::filesystem::current_path() / "jsons").string();
         try {
             ScreenWriter session(path);
             session.startSession();

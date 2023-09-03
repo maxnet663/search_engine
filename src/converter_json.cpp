@@ -91,14 +91,16 @@ void ConverterJSON::putAnswers(
         }
     }
     try {
-        custom::writeJsonToFile(json_file, json_dir / ANSWERS_FILE_NAME);
+        custom::writeJsonToFile(json_file
+                                , (json_dir / ANSWERS_FILE_NAME).string());
     }
     catch (std::filesystem::filesystem_error &ex) {
         std::cerr << ex.what() << std::endl;
         std::cout << "Could not write to the file \"answers.json\"\n"
                      "Result have written to \"answers_safe.json\"\n";
         custom::writeJsonToFile(json_file
-                                , json_dir / EXCEPTION_ANSWERS_FILE_NAME);
+                                , (json_dir
+                                / EXCEPTION_ANSWERS_FILE_NAME).string());
     }
 }
 
@@ -162,7 +164,7 @@ nlohmann::json ConverterJSON::makeConfigJson(const std::filesystem::path &dir) {
                 );
     }
 
-    if (!custom::isReadable(dir / CONFIG_FILE_NAME)) {
+    if (!custom::isReadable((dir / CONFIG_FILE_NAME).string())) {
         throw std::filesystem::filesystem_error(
                 CONFIG_FILE_NAME " permission denied"
                 ,dir
@@ -214,7 +216,7 @@ bool ConverterJSON::checkRequestsProperties(const nlohmann::json &json_file) {
 
 nlohmann::json ConverterJSON::makeRequestsJson(const std::filesystem::path &dir) {
 
-    if (!custom::isReadable(dir / REQUESTS_FILE_NAME)) {
+    if (!custom::isReadable((dir / REQUESTS_FILE_NAME).string())) {
         throw std::filesystem::filesystem_error(
                 REQUESTS_FILE_NAME " permission denied"
                 ,dir
