@@ -133,7 +133,9 @@ void ScreenWriter::handler(const std::string &cmd) {
 }
 
 void ScreenWriter::search() {
+    std::cout << "Search started, wait please...\n";
     converter.putAnswers(srv.search(converter.getRequests()));
+    std::cout << "Search done" << std::endl;
 }
 
 void ScreenWriter::showAnswers() {
