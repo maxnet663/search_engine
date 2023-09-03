@@ -4,6 +4,8 @@
 #include "search_server.cpp"
 #include "gtest/gtest.h"
 
+#define TEST_JSONS_DIR "../../test/jsons_test"
+
 TEST(ConverterJSONTest, EmptyDocumentsListTest) {
     ConverterJSON cj(TEST_JSONS_DIR);
     auto documents_path = cj.getTextDocuments();
