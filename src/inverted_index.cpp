@@ -12,6 +12,7 @@ const std::vector<Entry> InvertedIndex::nfound;
 void InvertedIndex::updateDocumentBase(const std::vector<std::string> &input_docs) {
     if (input_docs.empty()) {
         std::cerr << "DB: no documents to update" << std::endl;
+        return;
     }
     if (!docs_texts.empty()) {
         docs_texts.clear();
