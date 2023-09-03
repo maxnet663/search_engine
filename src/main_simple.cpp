@@ -5,7 +5,7 @@
 #include "include/search_server.h"
 
 int main() {
-    ConverterJSON convertor;
+    ConverterJSON convertor(std::filesystem::current_path() / "jsons");
     InvertedIndex db;
     db.updateDocumentBase(convertor.getTextDocuments());
     SearchServer srv(db);
