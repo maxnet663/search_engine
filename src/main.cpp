@@ -1,9 +1,6 @@
 #include <iostream>
 #include <vector>
 
-#include "include/converter_json.h"
-#include "include/inverted_index.h"
-#include "include/search_server.h"
 #include "include/screen_writer.h"
 
 
