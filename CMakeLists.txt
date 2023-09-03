@@ -4,9 +4,6 @@ project (search_engine VERSION 1.0)
 
 set(CMAKE_CXX_STANDARD 17)
 
-add_compile_definitions(TEST_JSONS_DIR="${PROJECT_SOURCE_DIR}/test/JSONs_test")
-add_compile_definitions(TEST_RESOURCES_DIR="${PROJECT_SOURCE_DIR}/test/resources_test/")
-
 include(FetchContent)
 
 FetchContent_Declare(
@@ -30,10 +27,6 @@ add_executable(search_engine_simple ${PROJECT_SOURCE_DIR}/src/main_simple.cpp)
 target_include_directories(search_engine_simple PUBLIC ${PROJECT_SOURCE_DIR})
 
 target_link_libraries(search_engine_simple PRIVATE engine_lib)
-
-#если вводить эту переменную а всопльзоваться командой cmake -DMAKE_INSTALL_PREFIX=install/path
-#при сборке проекта в cmake_install.cmake запишется значение из CMakeCache.txt
-#set(CMAKE_INSTALL_PREFIX "${CMAKE_SOURCE_DIR}/install")
 
 install(TARGETS search_engine DESTINATION .)
 install(TARGETS search_engine_simple DESTINATION .)
