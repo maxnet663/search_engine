@@ -95,6 +95,8 @@ void ConverterJSON::putAnswers(
     }
     catch (std::filesystem::filesystem_error &ex) {
         std::cerr << ex.what() << std::endl;
+        std::cout << "Could not write to the file \"answers.json\"\n"
+                     "Result have written to \"answers_safe.json\"\n";
         custom::writeJsonToFile(json_file
                                 , json_dir / EXCEPTION_ANSWERS_FILE_NAME);
     }
