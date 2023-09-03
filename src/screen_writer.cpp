@@ -9,7 +9,7 @@ ScreenWriter::ScreenWriter(const std::string &path)
 : converter(path)  , srv(document_base) {
     engine_name = converter.getConfig()["config"]["name"];
     engine_version = converter.getConfig()["config"]["version"];
-    indexed_documents = converter.getConfig()["files"];
+    indexed_documents = removeInvalid(converter.getConfig()["files"]);
     document_base.updateDocumentBase(indexed_documents);
     last_changes_config =
             last_write_time(converter.getJsonDir() / CONFIG_FILE_NAME);
@@ -46,8 +46,10 @@ void ScreenWriter::updateDB() {
         last_changes_config = last_write_time(
                 converter.getJsonDir() / CONFIG_FILE_NAME);
         converter.updateConfig();
+
         std::vector<std::string> new_indexed_documents
-            = converter.getConfig()["files"];
+            = removeInvalid(converter.getConfig()["files"]);
+
         if (indexed_documents != new_indexed_documents) {
             indexed_documents = std::move(new_indexed_documents);
             document_base.updateDocumentBase(indexed_documents);
@@ -69,8 +71,8 @@ void ScreenWriter::updateRequests() {
 }
 
 void ScreenWriter::showHelp() {
-    std::cout << "Commands:" << std::endl
-    << "update-db   : updates data base if you changed indexed docs\n"
+    std::cout <<    "Commands:\n"
+       "update-db   : updates data base if you changed indexed docs\n"
        "update-rq   : updates requests if you changed requests.json\n"
        "help        : prints the list of commands\n"
        "status      : prints info about session\n"
@@ -85,8 +87,8 @@ void ScreenWriter::showStat() {
     std::cout << engine_name                                      << std::endl
               << "Version: "            << engine_version         << std::endl
               << "Current jsons path: " << converter.getJsonDir() << std::endl
-              << (checkUpdate() ?    "Update available"
-                                :    "Everything is up to date"  )<< std::endl;
+              << (checkUpdate() ?       "Update available"
+                                :       "Everything is up to date")<< std::endl;
 }
 
 void ScreenWriter::showRequests() {
@@ -100,10 +102,9 @@ void ScreenWriter::showRequests() {
 
 void ScreenWriter::showIndexedDocs() {
     std::cout << "Current Indexed Documents:\n";
-    auto docs = converter.getConfig()["files"];
-    std::for_each(docs.begin()
-                  , docs.end()
-                  , [](const nlohmann::json &doc)
+    std::for_each(indexed_documents.begin()
+                  , indexed_documents.end()
+                  , [](const std::string &doc)
                   { std::cout << doc << std::endl; });
 }
 
@@ -127,7 +128,7 @@ void ScreenWriter::handler(const std::string &cmd) {
             (this->*execute->second)();
 
     }
-    if (!std::cout.eof())
+    if (!std::cin.eof())
         std::cout << "> ";
 }
 
@@ -168,7 +169,7 @@ void ScreenWriter::printAnswers(const nlohmann::json &answers) {
                                 { std::cout << ans << std::endl; });
             } else {
                 std::cout << "doc id: "      << it.value()["docid"]
-                          << "relevance: "  << it.value()["rank"]
+                          << "relevance: "   << it.value()["rank"]
                           << std::endl;
             }
 
@@ -180,4 +181,21 @@ void ScreenWriter::printAnswers(const nlohmann::json &answers) {
 
 void ScreenWriter::exit() {
     std::cin.setstate(std::ios_base::eofbit);
+}
+
+std::vector<std::string> ScreenWriter::removeInvalid(
+        std::vector<std::string> paths) {
+    if (!paths.empty()) {
+        auto new_end = std::remove_if(paths.begin()
+                                      , paths.end()
+                                      , [](const std::string &p)
+                                      { return !std::filesystem::exists(p); });
+        std::for_each(new_end
+                      , paths.end()
+                      , [](const std::string &p)
+                      { std::cout << p << " does not exist\n"; });
+
+        paths.erase(new_end, paths.end());
+    }
+    return paths;
 }

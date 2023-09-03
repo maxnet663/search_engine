@@ -53,6 +53,9 @@ private:
 
     void printAnswers(const nlohmann::json &answers);
 
+    std::vector<std::string>
+    removeInvalid(std::vector<std::string> paths);
+
     void exit();
 };
 
