@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# check args
+if (("$#" < "1")) 
+then
+    echo "Install path required"
+    exit
+fi
+
+build="build"
+install_path="$1"
+
+cd ..
+mkdir -p $build
+cd $build
+
+# configure
+cmake -DINSTALL_GMOCK:BOOL=OFF -DCMAKE_INSTALL_PREFIX:PATH=$install_path ../
+cmake --build .
+
+# Install the project
+make install/local
+echo Project installed to $install_path
