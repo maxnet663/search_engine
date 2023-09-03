@@ -17,15 +17,26 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(json)
 
-add_executable(search_engine ${PROJECT_SOURCE_DIR}/src/main.cpp)
-
 add_subdirectory(src)
 
-target_include_directories(search_engine PUBLIC ${PROJECT_INCLUDE_DIR})
+add_executable(search_engine ${PROJECT_SOURCE_DIR}/src/main.cpp)
+
+target_include_directories(search_engine PUBLIC ${PROJECT_SOURCE_DIR})
 
 target_link_libraries(search_engine PRIVATE engine_lib)
 
-install(TARGETS search_engine)
+add_executable(search_engine_simple ${PROJECT_SOURCE_DIR}/src/main_simple.cpp)
+
+target_include_directories(search_engine_simple PUBLIC ${PROJECT_SOURCE_DIR})
+
+target_link_libraries(search_engine_simple PRIVATE engine_lib)
+
+#если вводить эту переменную а всопльзоваться командой cmake -DMAKE_INSTALL_PREFIX=install/path
+#при сборке проекта в cmake_install.cmake запишется значение из CMakeCache.txt
+#set(CMAKE_INSTALL_PREFIX "${CMAKE_SOURCE_DIR}/install")
+
+install(TARGETS search_engine DESTINATION .)
+install(TARGETS search_engine_simple DESTINATION .)
 install(FILES jsons/config.json jsons/requests.json DESTINATION jsons)
 install(FILES
         resources/file001.txt

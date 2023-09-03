@@ -14,8 +14,7 @@ ConverterJSON::ConverterJSON(std::filesystem::path in_jsons_dir)
         throw std::filesystem::filesystem_error(
                 "Wrong path"
                 , json_dir
-                , std::make_error_code(std::errc::no_such_file_or_directory)
-                );
+                , std::make_error_code(std::errc::no_such_file_or_directory));
     }
 
     config = makeConfigJson(json_dir);
@@ -78,9 +77,6 @@ void ConverterJSON::putAnswers(
                 // if multiple results are found, add a field relevance
                 json_file["answers"][request]["result"] = !answers[i].empty();
 
-//                if (answers.size() > static_cast<size_t>(getResponsesLimit())) {
-//                    answers.resize(getResponsesLimit());
-//                }
                 auto limit = static_cast<size_t>(getResponsesLimit());
                 for (size_t j = 0; j < limit && j < answers[i].size(); ++j) {
                     // element of relevance array
@@ -115,8 +111,7 @@ void ConverterJSON::putAnswers(
                 "Can not read file " + path
                 , path
                 , custom::getFileName(path)
-                , std::make_error_code(std::errc::bad_file_descriptor)
-                );
+                , std::make_error_code(std::errc::bad_file_descriptor));
     }
     nlohmann::json result;
     reader >> result;
@@ -222,8 +217,7 @@ nlohmann::json ConverterJSON::makeRequestsJson(const std::filesystem::path &dir)
                 REQUESTS_FILE_NAME " permission denied"
                 ,dir
                 , REQUESTS_FILE_NAME
-                , std::make_error_code(std::errc::permission_denied)
-                );
+                , std::make_error_code(std::errc::permission_denied));
     }
 
     if (!checkRequestsFile(dir)) {
@@ -231,8 +225,7 @@ nlohmann::json ConverterJSON::makeRequestsJson(const std::filesystem::path &dir)
                 "Requests file is missing"
                 , dir
                 , REQUESTS_FILE_NAME
-                , std::make_error_code(std::errc::no_such_file_or_directory)
-                );
+                , std::make_error_code(std::errc::no_such_file_or_directory));
     }
 
     // make a json
