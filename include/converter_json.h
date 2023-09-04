@@ -11,22 +11,35 @@
 // Class for working with json files
 class ConverterJSON {
 
-    std::filesystem::path json_dir;
+    std::string config_path;
+    std::string requests_path;
     nlohmann::json config;
     nlohmann::json requests;
 
 public:
 
-    ConverterJSON() : ConverterJSON(std::filesystem::current_path()) {}
+    ConverterJSON() : ConverterJSON(
+            std::filesystem::current_path().string()) {}
 
-    ConverterJSON(std::filesystem::path jsons_dir);
+    ConverterJSON(const std::string &jsons_dir);
 
-    inline std::filesystem::path getJsonDir() const { return json_dir; }
-
-    inline void setJsonDir(std::filesystem::path new_path)
-    { json_dir = std::move(new_path); }
-
+    /**
+     * config getter
+     * @return json object config.json
+     */
     inline const nlohmann::json& getConfig() const { return config; }
+
+    /**
+     * config_path getter
+     * @return path to current config.json
+     */
+    inline std::string getConfigPath() const { return config_path; }
+
+    /**
+     * requests_path getter
+     * @return path to current requests.json
+     */
+    inline std::string getRequestsPath() const { return requests_path; }
 
     /**
     * @return a list with the paths to documents to search
@@ -50,21 +63,39 @@ public:
     /**
     * Put search results in the answers.json file
     */
-     void putAnswers(
+    void putAnswers(
              const std::vector<std::vector<RelativeIndex>> &answers) const;
 
-     void updateConfig() { config = makeConfigJson(json_dir); }
+    void updateConfig()
+    { config = makeConfigJson(config_path); }
 
-     void updateRequests() {requests = makeRequestsJson(json_dir); }
+    void updateRequests()
+    { requests = makeRequestsJson(requests_path); }
 
-     /**
-      * creates json object from a file under path
-      * !before creating check if file exists, perms to read
-      * and file's extension(must be *.json)!
-      * @param path path to the file
-      * @return json object
-      */
-     static nlohmann::json openJson(const std::string &path);
+    /**
+     * creates json object from a file under path
+     * !before creating check if file exists, perms to read
+     * and file's extension(must be *.json)!
+     * @param path path to the file
+     * @return json object
+     */
+    static nlohmann::json openJson(const std::string &path);
+
+    /**
+     * searches for file_name
+     * @param file_name
+     * @return absolute path to file or empty string otherwise
+     */
+    static std::string findFile(const std::string &file_name);
+
+    /**
+     * searches for file_name in directory tree with root in dir
+     * @param dir start dir
+     * @param file_name name of the file
+     * @return absolute path to a file or empty string
+     */
+    static std::string findFile(const std::string &dir
+                                , const std::string &file_name);
 
 private:
 
@@ -77,19 +108,19 @@ private:
 
     /**
      * check if config.json exists
-     * @param dir a directory inside which search file
+     * @param path path to config.json
      * @return true if config.json exists
      * false otherwise
      */
-    bool checkConfigFile(const std::filesystem::path &dir);
+    bool checkConfigFile(const std::filesystem::path &path);
 
     /**
       * make a json object from config.json
-      * @param dir a dir with config.json
+      * @param path path to a config.json
       * @return json object made of config.json
       * throws filesystem_error or invalid_argument otherwise
       */
-    nlohmann::json makeConfigJson(const std::filesystem::path &dir);
+    nlohmann::json makeConfigJson(const std::filesystem::path &path);
 
     /**
      * check if requests properties is valid
@@ -100,18 +131,18 @@ private:
 
     /**
      * check if requests.json exists
-     * * @param dir a dir with requests.json
+     * * @param path to requests.json
      * @return true if requests.json exists false otherwise
      */
-    bool checkRequestsFile(const std::filesystem::path &dir);
+    bool checkRequestsFile(const std::filesystem::path &path);
 
     /**
-     *
-     * @param dir a dir with requests.json
+     * make a json object from requests.json
+     * @param path to requests.json
      * @return json object made of request.json throws
      * filesystem_error or invalid_argument otherwise
      */
-    nlohmann::json makeRequestsJson(const std::filesystem::path &dir);
+    nlohmann::json makeRequestsJson(const std::filesystem::path &path);
 
 };
 

@@ -6,19 +6,27 @@
 #include "include/custom_functions.h"
 #include "include/project_constants.h"
 
-
-ConverterJSON::ConverterJSON(std::filesystem::path in_jsons_dir)
-    : json_dir(std::move(in_jsons_dir))
-{
-    if (!is_directory(json_dir)) {
+ConverterJSON::ConverterJSON(const std::string &jsons_dir) {
+    if (!std::filesystem::is_directory(jsons_dir)) {
         throw std::filesystem::filesystem_error(
                 "Wrong path"
-                , json_dir
+                , jsons_dir
                 , std::make_error_code(std::errc::no_such_file_or_directory));
     }
 
-    config = makeConfigJson(json_dir);
-    requests = makeRequestsJson(json_dir);
+    // try to find paths to json files
+    config_path = findFile(jsons_dir, CONFIG_FILE_NAME);
+    if (config_path.empty()) {
+        throw std::invalid_argument("Could not find " CONFIG_FILE_NAME);
+    }
+
+    requests_path = findFile(jsons_dir, REQUESTS_FILE_NAME);
+    if (requests_path.empty()) {
+        throw std::invalid_argument("Could not find " REQUESTS_FILE_NAME);
+    }
+
+    config = makeConfigJson(config_path);
+    requests = makeRequestsJson(requests_path);
 }
 
 std::vector<std::string> ConverterJSON::getTextDocuments() const {
@@ -33,7 +41,6 @@ std::vector<std::string> ConverterJSON::getRequests() const {
 
     std::vector<std::string> requests_list; // result data
 
-    //reserve memory
     requests_list.reserve(requests["requests"].size());
 
     for (const auto &i : requests["requests"]) {
@@ -80,27 +87,24 @@ void ConverterJSON::putAnswers(
                 auto limit = static_cast<size_t>(getResponsesLimit());
                 for (size_t j = 0; j < limit && j < answers[i].size(); ++j) {
                     // element of relevance array
-                    nlohmann::json new_field;
-                    new_field = {
+                    nlohmann::json field;
+                    field = {
                             {"docid", answers[i][j].doc_id},
                             {"rank",  custom::round(answers[i][j].rank, 2)}
                     };
-                    json_file["answers"][request]["relevance"].push_back(new_field);
+                    json_file["answers"][request]["relevance"].push_back(field);
                 }
             }
         }
     }
     try {
-        custom::writeJsonToFile(json_file
-                                , (json_dir / ANSWERS_FILE_NAME).string());
+        custom::writeJsonToFile(json_file, ANSWERS_FILE_NAME);
     }
     catch (std::filesystem::filesystem_error &ex) {
         std::cerr << ex.what() << std::endl;
         std::cout << "Could not write to the file \"answers.json\"\n"
                      "Result have written to \"answers_safe.json\"\n";
-        custom::writeJsonToFile(json_file
-                                , (json_dir
-                                / EXCEPTION_ANSWERS_FILE_NAME).string());
+        custom::writeJsonToFile(json_file, EXCEPTION_ANSWERS_FILE_NAME);
     }
 }
 
@@ -124,9 +128,28 @@ void ConverterJSON::putAnswers(
     return result;
 }
 
-bool ConverterJSON::checkConfigFile(const std::filesystem::path &dir) {
-    return exists(dir / CONFIG_FILE_NAME)
-        && is_regular_file(dir / CONFIG_FILE_NAME);
+std::string ConverterJSON::findFile(const std::string &file_name) {
+    auto dir_tree = std::filesystem::recursive_directory_iterator(
+            std::filesystem::current_path());
+    for (const auto &entry : dir_tree) {
+        if (entry.path().filename() == file_name)
+            return absolute(entry.path()).string();
+    }
+    return { };
+}
+
+std::string ConverterJSON::findFile(const std::string &dir
+                                    , const std::string &file_name) {
+    auto dir_tree = std::filesystem::recursive_directory_iterator(dir);
+    for (const auto &entry : dir_tree) {
+        if (entry.path().filename() == file_name)
+            return absolute(entry.path()).string();
+    }
+    return { };
+}
+
+bool ConverterJSON::checkConfigFile(const std::filesystem::path &path) {
+    return exists(path) && is_regular_file(path);
 }
 
 bool ConverterJSON::checkConfigProperties(const nlohmann::json &json_file) {
@@ -153,28 +176,28 @@ bool ConverterJSON::checkConfigProperties(const nlohmann::json &json_file) {
     return true;
 }
 
-nlohmann::json ConverterJSON::makeConfigJson(const std::filesystem::path &dir) {
+nlohmann::json ConverterJSON::makeConfigJson(const std::filesystem::path &path) {
 
-    if (!checkConfigFile(dir)) {
+    if (!checkConfigFile(path)) {
         throw std::filesystem::filesystem_error(
                 "Config file is missing"
-                , dir
+                , path
                 , CONFIG_FILE_NAME
                 , std::make_error_code(std::errc::no_such_file_or_directory)
                 );
     }
 
-    if (!custom::isReadable((dir / CONFIG_FILE_NAME).string())) {
+    if (!custom::isReadable(path.string())) {
         throw std::filesystem::filesystem_error(
                 CONFIG_FILE_NAME " permission denied"
-                ,dir
+                , path
                 , CONFIG_FILE_NAME
                 , std::make_error_code(std::errc::permission_denied)
         );
     }
 
     // make a json
-    std::ifstream json_reader(dir / CONFIG_FILE_NAME);
+    std::ifstream json_reader(path);
     nlohmann::json json_file;
     json_reader >> json_file;
     json_reader.close();
@@ -185,9 +208,8 @@ nlohmann::json ConverterJSON::makeConfigJson(const std::filesystem::path &dir) {
     return json_file;
 }
 
-bool ConverterJSON::checkRequestsFile(const std::filesystem::path &dir) {
-    return exists(dir / REQUESTS_FILE_NAME)
-        && is_regular_file(dir/ REQUESTS_FILE_NAME);
+bool ConverterJSON::checkRequestsFile(const std::filesystem::path &path) {
+    return exists(path) && is_regular_file(path);
 }
 
 bool ConverterJSON::checkRequestsProperties(const nlohmann::json &json_file) {
@@ -214,26 +236,26 @@ bool ConverterJSON::checkRequestsProperties(const nlohmann::json &json_file) {
     return true;
 }
 
-nlohmann::json ConverterJSON::makeRequestsJson(const std::filesystem::path &dir) {
+nlohmann::json ConverterJSON::makeRequestsJson(const std::filesystem::path &path) {
 
-    if (!custom::isReadable((dir / REQUESTS_FILE_NAME).string())) {
+    if (!custom::isReadable(path.string())) {
         throw std::filesystem::filesystem_error(
                 REQUESTS_FILE_NAME " permission denied"
-                ,dir
+                , path
                 , REQUESTS_FILE_NAME
                 , std::make_error_code(std::errc::permission_denied));
     }
 
-    if (!checkRequestsFile(dir)) {
+    if (!checkRequestsFile(path)) {
         throw std::filesystem::filesystem_error(
                 "Requests file is missing"
-                , dir
+                , path
                 , REQUESTS_FILE_NAME
                 , std::make_error_code(std::errc::no_such_file_or_directory));
     }
 
     // make a json
-    std::ifstream json_reader(dir / REQUESTS_FILE_NAME);
+    std::ifstream json_reader(path);
     nlohmann::json json_file;
     json_reader >> json_file;
     json_reader.close();
