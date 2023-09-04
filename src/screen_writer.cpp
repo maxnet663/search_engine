@@ -7,14 +7,15 @@
 
 ScreenWriter::ScreenWriter(const std::string &path)
 : converter(path)  , srv(document_base) {
+
     engine_name = converter.getConfig()["config"]["name"];
     engine_version = converter.getConfig()["config"]["version"];
     indexed_documents = removeInvalid(converter.getConfig()["files"]);
     document_base.updateDocumentBase(indexed_documents);
     last_changes_config =
-            last_write_time(converter.getJsonDir() / CONFIG_FILE_NAME);
+            std::filesystem::last_write_time(converter.getConfigPath());
     last_changes_requests =
-            last_write_time(converter.getJsonDir() / REQUESTS_FILE_NAME);
+            std::filesystem::last_write_time(converter.getRequestsPath());
     commands = {
             {"update-db", &ScreenWriter::updateDB       },
             {"update-rq", &ScreenWriter::updateRequests },
@@ -39,12 +40,12 @@ void ScreenWriter::startSession() {
 }
 
 void ScreenWriter::updateDB() {
-    if (last_write_time(converter.getJsonDir() / CONFIG_FILE_NAME)
+    if (std::filesystem::last_write_time(converter.getConfigPath())
         == last_changes_config) {
         std::cout << "Indexed documents are up to date" << std::endl;
     } else {
-        last_changes_config = last_write_time(
-                converter.getJsonDir() / CONFIG_FILE_NAME);
+        last_changes_config = std::filesystem::last_write_time(
+                converter.getConfigPath());
         converter.updateConfig();
 
         std::vector<std::string> new_indexed_documents
@@ -59,13 +60,13 @@ void ScreenWriter::updateDB() {
 }
 
 void ScreenWriter::updateRequests() {
-    if (last_write_time(converter.getJsonDir() / REQUESTS_FILE_NAME)
+    if (std::filesystem::last_write_time(converter.getRequestsPath())
         == last_changes_requests) {
         std::cout << "Requests are up to date\n";
     } else {
         converter.updateRequests();
-        last_changes_requests = last_write_time(
-                converter.getJsonDir() / REQUESTS_FILE_NAME);
+        last_changes_requests = std::filesystem::last_write_time(
+                converter.getRequestsPath());
         std::cout << "Requests updated" << std::endl;
     }
 }
@@ -84,11 +85,13 @@ void ScreenWriter::showHelp() {
 }
 
 void ScreenWriter::showStat() {
-    std::cout << engine_name                                      << std::endl
-              << "Version: "            << engine_version         << std::endl
-              << "Current jsons path: " << converter.getJsonDir() << std::endl
-              << (checkUpdate() ?       "Update available"
-                                :       "Everything is up to date")<< std::endl;
+    std::cout << engine_name
+              << "\nVersion: "              << engine_version
+              << "\nCurrent config.json: "  << converter.getConfigPath()
+              << "\nCurrent requests.json " << converter.getRequestsPath()
+              << (checkUpdate()     ?       "\nUpdate available"
+                                    :       "\nEverything is up to date")
+              << std::endl;
 }
 
 void ScreenWriter::showRequests() {
@@ -109,9 +112,10 @@ void ScreenWriter::showIndexedDocs() {
 }
 
 bool ScreenWriter::checkUpdate() {
-    auto path = converter.getJsonDir();
-    return last_write_time(path / CONFIG_FILE_NAME) != last_changes_config
-      || last_write_time(path / REQUESTS_FILE_NAME) != last_changes_requests;
+    auto conf_path = converter.getConfigPath();
+    auto req_path = converter.getRequestsPath();
+    return std::filesystem::last_write_time(conf_path) != last_changes_config
+      || std::filesystem::last_write_time(req_path) != last_changes_requests;
 }
 
 void ScreenWriter::handler(const std::string &cmd) {
@@ -139,13 +143,10 @@ void ScreenWriter::search() {
 }
 
 void ScreenWriter::showAnswers() {
-    auto answers= ConverterJSON::openJson(
-            (converter.getJsonDir() / ANSWERS_FILE_NAME).string());
+    auto answers= ConverterJSON::openJson(ANSWERS_FILE_NAME);
 
     if (answers == nullptr) {
-        answers = ConverterJSON::openJson(
-                (converter.getJsonDir() /
-                      EXCEPTION_ANSWERS_FILE_NAME).string());
+        answers = ConverterJSON::openJson(EXCEPTION_ANSWERS_FILE_NAME);
     }
 
     if (answers == nullptr) {
