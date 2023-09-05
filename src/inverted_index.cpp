@@ -11,7 +11,7 @@ const std::vector<Entry> InvertedIndex::nfound;
 
 void InvertedIndex::updateDocumentBase(const std::vector<std::string> &input_docs) {
     if (input_docs.empty()) {
-        std::cerr << "DB: no documents to update" << std::endl;
+        custom::print_yellow("DB: no documents to update");
         return;
     }
     if (!docs_texts.empty()) {
@@ -109,10 +109,10 @@ std::vector<std::string> InvertedIndex::getFilesTexts(
                 texts.push_back(custom::getFileText(docs_path));
             }
             catch (std::length_error &ex) {
-                std::cerr << ex.what() << std::endl;
+                custom::print_yellow(ex.what());
             }
         } else {
-            std::cerr << docs_path << " does not exist\n";
+            custom::print_yellow(docs_path + " does not exist");
         }
     }
     return { texts.begin(), texts.end() };
