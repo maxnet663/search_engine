@@ -99,9 +99,9 @@ void ConverterJSON::putAnswers(
     }
     try {
         custom::writeJsonToFile(json_file, ANSWERS_FILE_NAME);
-        custom::print_green(
-                (std::filesystem::current_path()
-                / ANSWERS_FILE_NAME).string());
+        custom::print_green("Result have written to " +
+                            (std::filesystem::current_path()
+                            / ANSWERS_FILE_NAME).string());
     }
     catch (std::filesystem::filesystem_error &ex) {
         custom::print_yellow(ex.what());
