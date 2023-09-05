@@ -99,12 +99,19 @@ void ConverterJSON::putAnswers(
     }
     try {
         custom::writeJsonToFile(json_file, ANSWERS_FILE_NAME);
+        custom::print_green(
+                (std::filesystem::current_path()
+                / ANSWERS_FILE_NAME).string());
     }
     catch (std::filesystem::filesystem_error &ex) {
-        std::cerr << ex.what() << std::endl;
-        std::cout << "Could not write to the file \"answers.json\"\n"
-                     "Result have written to \"answers_safe.json\"\n";
+        custom::print_yellow(ex.what());
+        std::string msg = "Could not write to the file \"answers.json\"\n"
+                          "Result have written to \"answers_safe.json\"\n";
+        custom::print_yellow(msg);
         custom::writeJsonToFile(json_file, EXCEPTION_ANSWERS_FILE_NAME);
+        custom::print_green(
+                (std::filesystem::current_path()
+                / EXCEPTION_ANSWERS_FILE_NAME).string());
     }
 }
 
