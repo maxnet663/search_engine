@@ -6,6 +6,7 @@
 #include <iostream>
 
 #include "include/project_constants.h"
+#include "termcolor/termcolor.hpp"
 
 std::string custom::getFileText(const std::string &file_name) {
 
@@ -110,7 +111,9 @@ size_t custom::wordsCounter(const std::string &s) {
 
 void custom::toLowerCase(std::string &s) {
 
-    std::for_each(s.begin(), s.end(), [](char &ch){ ch = tolower(ch); });
+    std::for_each(s.begin()
+                  , s.end()
+                  , [](char &ch){ ch = tolower(ch); });
 
 }
 
@@ -254,4 +257,20 @@ bool custom::isWriteable(const std::string &file_name) {
     auto file_perms = std::filesystem::status(path).permissions();
     auto write_perms = std::filesystem::perms::owner_write;
     return std::filesystem::perms::none != (file_perms & write_perms);
+}
+
+void custom::print_red(const std::string &msg) {
+    std::cout << termcolor::red << msg << termcolor::reset << std::endl;
+}
+
+void custom::print_green(const std::string &msg) {
+    std::cout << termcolor::green << msg << termcolor::reset << std::endl;
+}
+
+void custom::print_yellow(const std::string &msg) {
+    std::cout << termcolor::yellow << msg << termcolor::reset << std::endl;
+}
+
+void custom::print_blue(const std::string &msg) {
+    std::cout << termcolor::blue << msg << termcolor::reset << std::endl;
 }

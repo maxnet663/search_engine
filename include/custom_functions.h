@@ -1,10 +1,10 @@
 #ifndef SEARCH_ENGINE
 #define SEARCH_ENGINE
 
-#include "nlohmann/json.hpp" // json
-
 #include <string> // string
+#include <cstdint> // uint8_t
 
+#include "nlohmann/json.hpp" // json
 
 /*
  * namespace with a functions for working with files
@@ -110,6 +110,30 @@ namespace custom {
      * false otherwise
      */
     bool isWriteable(const std::string &file_path);
+
+    /**
+     * colors printing to standard output in red
+     * @param msg message to print
+     */
+    void print_red(const std::string &msg);
+
+    /**
+     * colors printing to standard output in green
+     * @param msg message to print
+     */
+    void print_green(const std::string &msg);
+
+    /**
+     * colors printing to standard output in yellow
+     * @param msg message to print
+     */
+    void print_yellow(const std::string &msg);
+
+    /**
+     * colors printing to standard output in blue
+     * @param msg message to print
+     */
+    void print_blue(const std::string &msg);
 
 }
 #endif //SEARCH_ENGINE
