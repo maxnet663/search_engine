@@ -8,7 +8,7 @@ int main() {
     std::string path;
     std::cout << "Prepare to run...\n"
                  "Input path (relative or absolute) to jsons dir\n"
-                 "or type \"default\" to find jsons dir in current path:\n> ";
+                 "or type \"default\" to find json files in current path:\n> ";
 
     while(!std::getline(std::cin, path).eof()) {
         if (path == "default")
