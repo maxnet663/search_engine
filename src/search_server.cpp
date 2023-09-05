@@ -14,9 +14,11 @@ std::vector<DocRelevance> SearchServer::getRelevantDocs(
     std::unordered_map<size_t, size_t> result;
 
     for (const auto &query : unique_queries) {
-
+        // get a list of documents that contain the query
         auto &query_freq = _index.getWordCount(query);
         for (const auto &entry : query_freq) {
+            // enter the document and its relevance
+            // relatively the query into the table
             if (result.find(entry.doc_id) == result.end()) {
                 result[entry.doc_id] = getDocRelevance(entry.doc_id, query);
             } else {
@@ -24,17 +26,20 @@ std::vector<DocRelevance> SearchServer::getRelevantDocs(
             }
         }
     }
+    // at the output we get a final table with documents and their relevance
     return { result.begin(), result.end() };
 }
 
 size_t SearchServer::getDocRelevance(const size_t &doc_id
-                                           , const std::string &query) {
+                                     , const std::string &query) {
+    // function answers the question:
+    // how many times the query occurs in the document?
     auto &query_freq = _index.getWordCount(query);
     auto found = std::find_if(
             query_freq.begin()
             , query_freq.end()
-            , [&](const Entry &entry){return entry.doc_id == doc_id;}
-            );
+            , [&](const Entry &entry)
+            { return entry.doc_id == doc_id; });
     return found == query_freq.end() ? 0 : found->count;
 }
 
@@ -42,7 +47,7 @@ std::vector<RelativeIndex> SearchServer::makeRequest(const std::string &query) {
     auto unique_queries = custom::getUniqueWords(query);
     auto answers = getRelevantDocs(unique_queries);
 
-    // if in the end there is not a single document left add empty list
+    // if in the end there is not a single document left - add empty list
     if (answers.empty()) {
 
         return {};
