@@ -7,6 +7,7 @@
 #include "include/converter_json.h"
 #include "include/inverted_index.h"
 #include "include/search_server.h"
+#include "custom_functions.h"
 
 
 class ScreenWriter {
@@ -54,7 +55,7 @@ private:
     void printAnswers(const nlohmann::json &answers);
 
     std::vector<std::string>
-    removeInvalid(std::vector<std::string> paths);
+    makeAbsolute(std::vector<std::string> paths);
 
     void exit();
 };

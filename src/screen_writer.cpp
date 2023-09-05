@@ -3,14 +3,13 @@
 #include <iostream>
 
 #include "include/project_constants.h"
-#include "include/custom_functions.h"
 
 ScreenWriter::ScreenWriter(const std::string &path)
 : converter(path)  , srv(document_base) {
 
     engine_name = converter.getConfig()["config"]["name"];
     engine_version = converter.getConfig()["config"]["version"];
-    indexed_documents = removeInvalid(converter.getConfig()["files"]);
+    indexed_documents = makeAbsolute(converter.getConfig()["files"]);
     document_base.updateDocumentBase(indexed_documents);
     last_changes_config =
             std::filesystem::last_write_time(converter.getConfigPath());
@@ -42,32 +41,32 @@ void ScreenWriter::startSession() {
 void ScreenWriter::updateDB() {
     if (std::filesystem::last_write_time(converter.getConfigPath())
         == last_changes_config) {
-        std::cout << "Indexed documents are up to date" << std::endl;
+        custom::print_green("Indexed documents are up to date");
     } else {
         last_changes_config = std::filesystem::last_write_time(
                 converter.getConfigPath());
         converter.updateConfig();
 
         std::vector<std::string> new_indexed_documents
-            = removeInvalid(converter.getConfig()["files"]);
+            = makeAbsolute(converter.getConfig()["files"]);
 
         if (indexed_documents != new_indexed_documents) {
             indexed_documents = std::move(new_indexed_documents);
             document_base.updateDocumentBase(indexed_documents);
         }
-        std::cout << "Indexed documents updated" << std::endl;
+        custom::print_green("Indexed documents updated");
     }
 }
 
 void ScreenWriter::updateRequests() {
     if (std::filesystem::last_write_time(converter.getRequestsPath())
         == last_changes_requests) {
-        std::cout << "Requests are up to date\n";
+        custom::print_green("Requests are up to date");
     } else {
         converter.updateRequests();
         last_changes_requests = std::filesystem::last_write_time(
                 converter.getRequestsPath());
-        std::cout << "Requests updated" << std::endl;
+        custom::print_green("Requests updated");
     }
 }
 
@@ -85,13 +84,20 @@ void ScreenWriter::showHelp() {
 }
 
 void ScreenWriter::showStat() {
-    std::cout << engine_name
-              << "\nVersion: "              << engine_version
-              << "\nCurrent config.json: "  << converter.getConfigPath()
-              << "\nCurrent requests.json " << converter.getRequestsPath()
-              << (checkUpdate()     ?       "\nUpdate available"
-                                    :       "\nEverything is up to date")
-              << std::endl;
+    std::cout << engine_name << std::endl
+    << "Version: ";
+    custom::print_green(engine_version);
+
+    std::cout << "Current config.json: ";
+    custom::print_green(converter.getConfigPath());
+
+    std::cout << "Current requests.json ";
+    custom::print_green(converter.getRequestsPath());
+
+    if (checkUpdate())
+        custom::print_green("Update available");
+    else
+        std::cout << "Everything is up to date\n";
 }
 
 void ScreenWriter::showRequests() {
@@ -108,7 +114,7 @@ void ScreenWriter::showIndexedDocs() {
     std::for_each(indexed_documents.begin()
                   , indexed_documents.end()
                   , [](const std::string &doc)
-                  { std::cout << doc << std::endl; });
+                  { custom::print_green(doc); });
 }
 
 bool ScreenWriter::checkUpdate() {
@@ -137,9 +143,9 @@ void ScreenWriter::handler(const std::string &cmd) {
 }
 
 void ScreenWriter::search() {
-    std::cout << "Search started, wait please...\n";
+    custom::print_green("Search started, please wait...");
     converter.putAnswers(srv.search(converter.getRequests()));
-    std::cout << "Search done" << std::endl;
+    custom::print_green("Search done");
 }
 
 void ScreenWriter::showAnswers() {
@@ -150,10 +156,10 @@ void ScreenWriter::showAnswers() {
     }
 
     if (answers == nullptr) {
-        std::cout << "Oops, looks like file \"answers.json\" does not exists\n"
-                     "The file may have been moved or the search has not yet "
-                     "been performed."
-                  << std::endl;
+        std::string msg = "Oops, looks like file \"answers.json\" does not "
+                          "exists;\n The file may have been moved or the search"
+                          " has not yet been performed.";
+        custom::print_yellow(msg);
         return;
     }
 
@@ -163,22 +169,34 @@ void ScreenWriter::showAnswers() {
 void ScreenWriter::printAnswers(const nlohmann::json &answers) {
 
     for (auto it = answers.begin(); it != answers.end(); it++) {
-        std::cout << it.key() << ":\n";
+        custom::print_blue(it.key());
+
+        // if there is at least one result
         if (it.value()["result"] == true) {
 
+            // lamda for printing json entry
+            auto print_entry = [](const nlohmann::json &ans) {
+                std::cout << "document id:\t";
+                custom::print_green(ans["docid"].dump());
+                std::cout << "relevance:\t";
+                custom::print_green(ans["rank"].dump());
+            };
+
+            // if there are several
             if (it.value().contains("relevance")) {
                 std::for_each(it.value()["relevance"].begin()
                                 ,it.value()["relevance"].end()
-                                , [](const nlohmann::json &ans)
-                                { std::cout << ans << std::endl; });
+                                , print_entry);
             } else {
-                std::cout << "doc id: "      << it.value()["docid"]
-                          << "relevance: "   << it.value()["rank"]
-                          << std::endl;
+                // if there is only one
+                std::cout << "document id:\t"   ;
+                custom::print_green(it.value()["docid"].dump());
+                std::cout << "relevance:\t";
+                custom::print_green(it.value()["rank"].dump());
             }
 
         } else {
-            std::cout << it.value() << std::endl;
+            custom::print_red(it.value().dump());
         }
     }
 }
@@ -187,7 +205,7 @@ void ScreenWriter::exit() {
     std::cin.setstate(std::ios_base::eofbit);
 }
 
-std::vector<std::string> ScreenWriter::removeInvalid(
+std::vector<std::string> ScreenWriter::makeAbsolute(
         std::vector<std::string> paths) {
     if (!paths.empty()) {
         auto new_end = std::remove_if(paths.begin()
@@ -197,9 +215,15 @@ std::vector<std::string> ScreenWriter::removeInvalid(
         std::for_each(new_end
                       , paths.end()
                       , [](const std::string &p)
-                      { std::cout << p << " does not exist\n"; });
+                      { custom::print_yellow(p + " does not exist"); });
 
         paths.erase(new_end, paths.end());
+
+        std::for_each(paths.begin()
+                      , paths.end()
+                      , [](std::string &p)
+                      { p = absolute(
+                              std::filesystem::path(p)).string(); });
     }
     return paths;
 }
