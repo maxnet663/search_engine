@@ -17,4 +17,7 @@ int main() {
     catch (const std::exception &ex) {
         std::cerr << ex.what() << std::endl;
     }
+#if defined(_WIN32) || defined(WIN32)
+    std::cin.get();
+#endif
 }
