@@ -14,6 +14,13 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(json)
 
+FetchContent_Declare(
+        termcolor
+        URL
+        https://github.com/ikalnytskyi/termcolor/archive/refs/heads/master.zip)
+
+FetchContent_MakeAvailable(termcolor)
+
 add_subdirectory(src)
 
 add_executable(search_engine ${PROJECT_SOURCE_DIR}/src/main.cpp)

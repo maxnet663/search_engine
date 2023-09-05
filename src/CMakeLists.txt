@@ -5,8 +5,9 @@ add_library(
         inverted_index.cpp
         search_server.cpp
         screen_writer.cpp
+        ../include/ColoredPirnter.h
 )
 
-target_include_directories(engine_lib PUBLIC ${PROJECT_SOURCE_DIR} ${NLOHMANN_JSON_DIR})
+target_include_directories(engine_lib PUBLIC ${PROJECT_SOURCE_DIR})
 
-target_link_libraries(engine_lib PUBLIC nlohmann_json::nlohmann_json)
+target_link_libraries(engine_lib PUBLIC nlohmann_json::nlohmann_json termcolor)
