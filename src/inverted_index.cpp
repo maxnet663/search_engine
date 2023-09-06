@@ -48,11 +48,6 @@ const std::vector<Entry>& InvertedIndex::getWordCount(const std::string &word) c
     return it == freq_dictionary.end() ? nfound : it->second;
 }
 
-std::vector<Entry> InvertedIndex::getWordCount(const std::string &word) {
-    auto it = freq_dictionary.find(word);
-    return it == freq_dictionary.end() ? std::vector<Entry>() : it->second;
-}
-
 std::vector<Entry>
 InvertedIndex::getWordFrequency(const std::string &word) const {
     std::vector<Entry> result;
