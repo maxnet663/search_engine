@@ -2,7 +2,7 @@
 
 #include <filesystem>
 #include <fstream>
-#include <unordered_set>
+#include <list>
 #include <iostream>
 
 #include "include/project_constants.h"
@@ -224,11 +224,11 @@ size_t custom::countOccurrences(const std::string &text, const std::string &word
 }
 
 std::vector<std::string> custom::getUniqueWords(const std::string &text) {
-    std::unordered_set<std::string> unique_words;
+    std::list<std::string> unique_words;
     std::stringstream data(text);
     std::string buf;
     while (data >> buf) {
-        unique_words.insert(buf);
+        unique_words.push_back(buf);
     }
     return { unique_words.begin(), unique_words.end() };
 }
