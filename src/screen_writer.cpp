@@ -78,7 +78,7 @@ void ScreenWriter::showHelp() {
        "status      : prints info about session\n"
        "find        : searches for current queries in the current database\n"
        "print-rq    : prints current requests from requests.json\n"
-       "print-db    : prints current indexed docs from config.json[files]\n"
+       "print-db    : prints current indexed docs from config.json\n"
        "print-ans   : prints cuurent search results from answers.json\n"
        "quit        : ends the session" << std::endl;
 }
@@ -124,11 +124,12 @@ bool ScreenWriter::checkUpdate() {
       || std::filesystem::last_write_time(req_path) != last_changes_requests;
 }
 
-void ScreenWriter::handler(const std::string &cmd) {
+void ScreenWriter::handler(std::string &cmd) {
+    custom::deleteExtraSpaces(cmd);
     if (!cmd.empty()) {
 
         if (cmd == "q")
-            const_cast<std::string &>(cmd) = "quit";
+            cmd = "quit";
 
         auto execute = commands.find(cmd);
 
@@ -178,7 +179,7 @@ void ScreenWriter::printAnswers(const nlohmann::json &answers) {
             auto print_entry = [](const nlohmann::json &ans) {
                 std::cout << "document id:\t";
                 custom::print_green(ans["docid"].dump());
-                std::cout << "relevance:\t";
+                std::cout << "relevance:  \t";
                 custom::print_green(ans["rank"].dump());
             };
 

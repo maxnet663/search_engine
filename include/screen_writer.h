@@ -26,13 +26,15 @@ class ScreenWriter {
 
 public:
 
+    ScreenWriter() : ScreenWriter(std::filesystem::current_path().string()) {}
+
     ScreenWriter(const std::string &path);
 
     void startSession();
 
 private:
 
-    void handler(const std::string &cmd);
+    void handler(std::string &cmd);
 
     void updateDB();
 
