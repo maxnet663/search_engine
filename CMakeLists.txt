@@ -23,6 +23,7 @@ FetchContent_MakeAvailable(termcolor)
 
 add_subdirectory(src)
 
+# add targets
 add_executable(search_engine ${PROJECT_SOURCE_DIR}/src/main.cpp)
 
 target_include_directories(search_engine PUBLIC ${PROJECT_SOURCE_DIR})
@@ -35,6 +36,10 @@ target_include_directories(search_engine_simple PUBLIC ${PROJECT_SOURCE_DIR})
 
 target_link_libraries(search_engine_simple PRIVATE engine_lib)
 
+#uncomment if installing without using a script
+#set(CMAKE_INSTALL_PREFIX /path/to/install)
+
+#setup instruction
 install(TARGETS search_engine DESTINATION .)
 install(TARGETS search_engine_simple DESTINATION .)
 install(FILES
@@ -60,11 +65,14 @@ include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 
 FetchContent_MakeAvailable(googletest)
 
+#disabling gtest library installation
 set(INSTALL_GMOCK OFF CACHE BOOL "" FORCE)
 set(INSTALL_GTEST OFF CACHE BOOL "" FORCE)
 
 set(gtest_force_shared_crt ON CACHE INTERNAL "")
 set(gtest_disable_pthreads ON CACHE INTERNAL "")
+
+#don't build test sources if main tests are built
 set(BUILD_GMOCK OFF CACHE INTERNAL "")
 set(BUILD_GTEST OFF CACHE INTERNAL "")
 
