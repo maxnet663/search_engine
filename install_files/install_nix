@@ -1,10 +1,9 @@
-#!/bin/bash
+#!/bin/sh
 
 # check args
-if (("$#" < "1")) 
-then
+if [ "$#" -lt "1" ]; then
     echo "Install path required"
-    exit
+    exit 1
 fi
 
 build="build"
