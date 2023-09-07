@@ -1,33 +1,23 @@
 #include <iostream>
-#include <vector>
 
-#include "include/screen_writer.h"
+#include "include/converter_json.h"
+#include "include/inverted_index.h"
+#include "include/search_server.h"
+#include "include/custom_functions.h"
 
 int main() {
-    std::string path;
-    custom::print_green("Prepare to run...");
-    std::cout << "Input path (relative or absolute) to jsons dir\n"
-                 "or type \"default\" to find json files in current path:\n> ";
-
-    while(!std::getline(std::cin, path).eof()) {
-        if (path == "default")
-            path = std::filesystem::current_path().string();
-        try {
-            ScreenWriter session(path);
-            session.startSession();
-        }
-        catch (std::exception &ex) {
-            custom::print_red(ex.what());
-            std::cout << "\nLooks like something went wrong\nTry again [y/n]:";
-            std::getline(std::cin, path);
-            if (path == "y") {
-                std::cout << "Input path (relative or absolute)"
-                             " to jsons dir\n> ";
-                continue;
-            }
-            else
-                std::cin.setstate(std::ios_base::eofbit);
-        }
+    ConverterJSON convertor;
+    InvertedIndex db;
+    db.updateDocumentBase(convertor.getTextDocuments());
+    SearchServer srv(db);
+    try {
+        convertor.putAnswers(srv.search(convertor.getRequests()));
+        custom::print_green("Search done");
     }
-    return 0;
+    catch (const std::exception &ex) {
+        std::cerr << ex.what() << std::endl;
+    }
+#if defined(_WIN32) || defined(WIN32)
+    std::cin.get();
+#endif
 }
