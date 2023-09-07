@@ -27,7 +27,7 @@ include(GoogleTest)
 
 add_executable(test_main test_main.cpp)
 
-add_compile_definitions(TEST -DTESTS_DIR="${PROJECT_SOURCE_DIR}/test")
+target_compile_definitions(test_main PRIVATE TEST -DTESTS_DIR="${PROJECT_SOURCE_DIR}/test")
 
 target_include_directories(
         test_main
