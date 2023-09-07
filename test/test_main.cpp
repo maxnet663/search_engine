@@ -4,16 +4,14 @@
 #include "search_server.cpp"
 #include "gtest/gtest.h"
 
-#define TEST_JSONS_DIR "../../test/jsons_test"
-
 TEST(ConverterJSONTest, EmptyDocumentsListTest) {
-    ConverterJSON cj(TEST_JSONS_DIR);
+    ConverterJSON cj(TESTS_DIR);
     auto documents_path = cj.getTextDocuments();
     ASSERT_TRUE(!documents_path.empty());
 }
 
 TEST(ConverterJSONTest, GetTextDocumentsTest) {
-    ConverterJSON cj(TEST_JSONS_DIR);
+    ConverterJSON cj(TESTS_DIR);
     std::vector<std::string> expected_result = {
             "../resources/file001.txt",
             "../resources/file002.txt",
@@ -26,7 +24,7 @@ TEST(ConverterJSONTest, GetTextDocumentsTest) {
 
 TEST(ConverterJSONTest, GetResponsesLimitTest) {
     int expected_value = 5;
-    ConverterJSON cj(TEST_JSONS_DIR);
+    ConverterJSON cj(TESTS_DIR);
     auto real_value = cj.getResponsesLimit();
     ASSERT_EQ(expected_value, real_value);
 }
@@ -37,7 +35,7 @@ TEST(ConverterJSONTest, GetRequestsTest) {
             "some",
             "words"
     };
-    ConverterJSON cj(TEST_JSONS_DIR);
+    ConverterJSON cj(TESTS_DIR);
     auto real_result = cj.getRequests();
     ASSERT_EQ(expected_result, real_result);
 }
@@ -45,10 +43,9 @@ TEST(ConverterJSONTest, GetRequestsTest) {
 TEST(ConverterJSONTest, putAnswersTest) {
     std::vector<std::vector<RelativeIndex>> test_vec;
     test_vec = { { {1, 3.4}, {2, 0.3}}, {}, {{2, 8.5}}};
-    ConverterJSON cj(TEST_JSONS_DIR);
+    ConverterJSON cj(TESTS_DIR);
     cj.putAnswers(test_vec);
-    bool expected =
-            std::filesystem::exists(std::filesystem::path(TEST_JSONS_DIR) / ANSWERS_FILE_NAME);
+    bool expected = std::filesystem::exists(ANSWERS_FILE_NAME);
     ASSERT_TRUE(expected);
 }
 
