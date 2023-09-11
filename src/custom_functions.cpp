@@ -2,34 +2,33 @@
 
 #include <filesystem>
 #include <fstream>
-#include <list>
 #include <iostream>
 
 #include "include/project_constants.h"
 #include "termcolor/termcolor.hpp"
 
-std::string custom::getFileText(const std::string &file_name) {
+std::string custom::getFileText(const std::string &file_path) {
 
-    if (!std::filesystem::exists(file_name)) {
+    if (!std::filesystem::exists(file_path)) {
         throw std::filesystem::filesystem_error(
                 "File does not exist"
-                , file_name
+                , file_path
                 , std::make_error_code(std::errc::no_such_file_or_directory));
     }
-    if (!isReadable(file_name)) {
+    if (!isReadable(file_path)) {
         throw std::filesystem::filesystem_error(
                 "Could not open the file"
-                , file_name
+                , file_path
                 , std::make_error_code(std::errc::permission_denied));
     }
 
     // open stream for reading
-    std::ifstream ifs(file_name);
+    std::ifstream ifs(file_path);
 
     if (!ifs.is_open()) {
         throw std::filesystem::filesystem_error(
                 "Could not open the file"
-                , file_name
+                , file_path
                 , std::make_error_code(std::errc::bad_file_descriptor));
     }
 
@@ -38,7 +37,7 @@ std::string custom::getFileText(const std::string &file_name) {
             , std::istream_iterator<std::string>()) > MAX_WORDS_NUMBER) {
 
         throw std::length_error("Number of words in file "
-                                + file_name + " greater than "
+                                + file_path + " greater than "
                                 + std::to_string(MAX_WORDS_NUMBER));
     }
 
@@ -50,24 +49,21 @@ std::string custom::getFileText(const std::string &file_name) {
     std::string text; //storage for text
 
     // reserve memory
-    text.reserve(std::filesystem::file_size(file_name));
+    text.reserve(std::filesystem::file_size(file_path));
 
     while (ifs >> buf) {
 
         //check word's length
         if (buf.length() > MAX_WORD_LENGTH) {
-            throw std::length_error("one of words from file:"
-                                    + file_name
+            throw std::length_error("One of words from file:"
+                                    + file_path
                                     + " has length greater than "
                                     + std::to_string(MAX_WORD_LENGTH));
         }
 
         text += buf + " ";
     }
-
     ifs.close();
-
-    formatString(text);
 
     return text;
 }
@@ -193,7 +189,8 @@ std::string custom::getFileName(std::string s) {
     return s;
 }
 
-size_t custom::countOccurrences(const std::string &text, const std::string &word) {
+size_t custom::countOccurrences(const std::string &text
+                                , const std::string &word) {
     size_t walk = 0;
     size_t occur_counter = 0;
 
@@ -223,14 +220,14 @@ size_t custom::countOccurrences(const std::string &text, const std::string &word
     return occur_counter;
 }
 
-std::vector<std::string> custom::getUniqueWords(const std::string &text) {
+std::list<std::string> custom::getUniqueWords(const std::string &text) {
     std::list<std::string> unique_words;
     std::stringstream data(text);
     std::string buf;
     while (data >> buf) {
         unique_words.push_back(buf);
     }
-    return { unique_words.begin(), unique_words.end() };
+    return unique_words;
 }
 
 double custom::round(double num, int precision) {

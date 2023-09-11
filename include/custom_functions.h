@@ -1,12 +1,13 @@
-#ifndef SEARCH_ENGINE
-#define SEARCH_ENGINE
+#ifndef CUSTOM_FUNCTIONS
+#define CUSTOM_FUNCTIONS
 
-#include <string> // string
 #include <cstdint> // uint8_t
+#include <string>
+#include <list>
 
 #include "nlohmann/json.hpp" // json
 
-/*
+/**
  * namespace with a functions for working with files
  * and formatting strings for later writing or
  * extracting from files
@@ -15,10 +16,10 @@ namespace custom {
 
     /**
      * extract the content of the file
-     * @param file_name string containing path of file
-     * @return string with text from the file
+     * @param file_path path to the file
+     * @return string with text from the file, throws
      */
-    std::string getFileText(const std::string &file_name);
+    std::string getFileText(const std::string &file_path);
 
     /**
      * delete punctuation marks, extra spaces and lowercase all letters
@@ -83,7 +84,7 @@ namespace custom {
      * @param text string of one or more words
      * @return list of unique words
      */
-    std::vector<std::string> getUniqueWords(const std::string &text);
+    std::list<std::string> getUniqueWords(const std::string &text);
 
     /**
      * rounds the number up to n decimal place
@@ -136,4 +137,4 @@ namespace custom {
     void print_blue(const std::string &msg);
 
 }
-#endif //SEARCH_ENGINE
+#endif //CUSTOM_FUNCTIONS
