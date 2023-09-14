@@ -205,7 +205,7 @@ void ScreenWriter::showStat() {
     std::cout << "Current config.json: ";
     custom::print_green(pconverter->getConfigPath());
 
-    std::cout << "Current requests.json ";
+    std::cout << "Current requests.json: ";
     custom::print_green(pconverter->getRequestsPath());
 
     if (checkUpdate())
