@@ -12,7 +12,7 @@ ScreenWriter::ScreenWriter(ArgsList args) : srv(document_base) {
     } else if (flag == "-d") {
         pconverter = makeConverter(args.front());
     } else {
-        pconverter = makeConverter(std::filesystem::current_path());
+        pconverter = makeConverter(std::filesystem::current_path().string());
     }
     if (!pconverter) {
         throw std::runtime_error("Program stopped");
