@@ -9,7 +9,7 @@
 int main() {
     try {
         auto converter = ScreenWriter::makeConverter(
-                std::filesystem::current_path());
+                std::filesystem::current_path().string());
         if (!converter) {
             custom::print_red("Search canceled.");
             return 1;
