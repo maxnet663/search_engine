@@ -7,10 +7,9 @@
 
 #include "include/custom_functions.h"
 
-const std::vector<Entry> InvertedIndex::nfound;
+const Frequency InvertedIndex::nfound;
 
-void InvertedIndex::updateDocumentBase(
-        const std::vector<std::string> &input_docs) {
+void InvertedIndex::updateDocumentBase(const PathsList &input_docs) {
     if (input_docs.empty()) {
         custom::print_yellow("DB: no documents to update");
         return;
@@ -40,15 +39,14 @@ void InvertedIndex::updateDocumentBase(
     }
 }
 
-const std::vector<Entry>& InvertedIndex::getWordCount(
+const Frequency & InvertedIndex::getWordCount(
         const std::string &word) const {
     auto it = freq_dictionary.find(word);
     return it == freq_dictionary.end() ? nfound : it->second;
 }
 
-std::vector<Entry>
-InvertedIndex::getWordFrequency(const std::string &word) const {
-    std::vector<Entry> result;
+Frequency InvertedIndex::getWordFrequency(const std::string &word) const {
+    Frequency result;
 
     for (size_t i = 0; i < docs_texts.size(); ++i) {
         auto occurrences = custom::countOccurrences(docs_texts[i], word);
@@ -91,8 +89,8 @@ void InvertedIndex::addUniqueWords(const std::string &text) {
     }
 }
 
-std::vector<std::string> InvertedIndex::getFilesTexts(
-        const std::vector<std::string> &input_docs) const {
+TextsList InvertedIndex::getFilesTexts(
+        const PathsList &input_docs) const {
 
     //it is faster, in case when we have a lot if docs
     std::list<std::string> texts;

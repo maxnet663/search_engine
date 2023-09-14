@@ -6,6 +6,13 @@
 #include <string>
 #include <mutex>
 
+struct Entry;
+
+typedef std::vector<std::string> TextsList;
+typedef std::vector<std::string> PathsList;
+typedef std::unordered_map<std::string, std::vector<Entry>> DictionaryType;
+typedef std::vector<Entry> Frequency;
+
 // a record with the document number and
 // the number of occurrences of a certain word in it
 struct Entry {
@@ -20,8 +27,8 @@ struct Entry {
 
 class InvertedIndex {
 
-    std::vector<std::string> docs_texts;
-    std::unordered_map<std::string, std::vector<Entry>> freq_dictionary;
+    TextsList docs_texts;
+    DictionaryType freq_dictionary;
     std::mutex dict_access; // mutex to manage access to freq_dictionary
 
 public:
@@ -29,7 +36,7 @@ public:
     /**
      * default return value for queries that are not in the dictionary
      */
-    static const std::vector<Entry> nfound;
+    static const Frequency nfound;
 
     InvertedIndex() = default;
 
@@ -55,7 +62,7 @@ public:
      * on which we will then search
      * @param input_docs paths to documents
      */
-    void updateDocumentBase(const std::vector<std::string> &input_docs);
+    void updateDocumentBase(const PathsList &input_docs);
 
     /**
      * method determines the number of occurrences
@@ -63,7 +70,7 @@ public:
      * @param word the word whose occurrence frequency is to be determined
      * @return const ref to a list with word frequency or nfound
      */
-    const std::vector<Entry>& getWordCount(const std::string &word) const;
+    const Frequency& getWordCount(const std::string &word) const;
 
 private:
 
@@ -80,15 +87,14 @@ private:
      * @param word
      * @return frequency of the word
      */
-    std::vector<Entry> getWordFrequency(const std::string &word) const;
+    Frequency getWordFrequency(const std::string &word) const;
 
     /**
      * extract texts from each docs in input_docs list
      * @param input_docs list of paths to documents
      * @return list of texts in the same order
      */
-    std::vector<std::string> getFilesTexts(
-            const std::vector<std::string> &input_docs) const;
+    TextsList getFilesTexts(const PathsList &input_docs) const;
 
 };
 
