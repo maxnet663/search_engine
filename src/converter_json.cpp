@@ -6,7 +6,7 @@
 #include "include/custom_functions.h"
 #include "include/project_constants.h"
 
-ConverterJSON::ConverterJSON(const std::string &jsons_dir) {
+ConverterJSON::ConverterJSON(const PathType &jsons_dir) {
     if (!std::filesystem::is_directory(jsons_dir)) {
         throw std::filesystem::filesystem_error(
                 "Wrong path"
@@ -31,7 +31,7 @@ ConverterJSON::ConverterJSON(const std::string &jsons_dir) {
     requests = makeRequestsJson(requests_path);
 }
 
-ConverterJSON::ConverterJSON(std::string conf_p, std::string req_p)
+ConverterJSON::ConverterJSON(PathType conf_p, PathType req_p)
 : config_path(std::move(conf_p)), requests_path(std::move(req_p)) {
     config = makeConfigJson(config_path);
     requests = makeRequestsJson(requests_path);
@@ -39,18 +39,18 @@ ConverterJSON::ConverterJSON(std::string conf_p, std::string req_p)
     custom::print_green("requests.json found successfully");
 }
 
-std::vector<std::string> ConverterJSON::getTextDocuments() const {
+PathsList ConverterJSON::getTextDocuments() const {
     if (config.is_null())
         return { };
     else
         return { config["files"].begin(), config["files"].end() };
 }
 
-std::vector<std::string> ConverterJSON::getRequests() const {
+RequestsList ConverterJSON::getRequests() const {
     if (requests.is_null())
         return { };
 
-    std::vector<std::string> requests_list; // result data
+    RequestsList requests_list; // result data
     requests_list.reserve(requests["requests"].size());
 
     for (const auto &i : requests["requests"]) {
@@ -69,9 +69,8 @@ int ConverterJSON::getResponsesLimit() const {
         return config["config"]["max_responses"];
 }
 
-void ConverterJSON::putAnswers(
-        const std::vector<std::vector<RelativeIndex>> &answers) const {
-    nlohmann::json json_file;
+void ConverterJSON::putAnswers(const AnswersLists &answers) const {
+    json json_file;
 
     // get round all the elements of the answers
     // and write them down in the final structure
@@ -104,7 +103,7 @@ void ConverterJSON::putAnswers(
                 auto limit = static_cast<size_t>(getResponsesLimit());
                 for (size_t j = 0; j < limit && j < answers[i].size(); ++j) {
                     // element of relevance array
-                    nlohmann::json field;
+                    json field;
                     field = {
                             {"docid", answers[i][j].doc_id},
                             {"rank",  custom::round(answers[i][j].rank, 2)}
@@ -132,7 +131,7 @@ void ConverterJSON::putAnswers(
     }
 }
 
-void ConverterJSON::updateConfig(const std::string &path) {
+void ConverterJSON::updateConfig(const PathType &path) {
     try {
         if (path.empty())
             config = makeConfigJson(config_path);
@@ -145,7 +144,7 @@ void ConverterJSON::updateConfig(const std::string &path) {
     }
 }
 
-void ConverterJSON::updateRequests(const std::string &path) {
+void ConverterJSON::updateRequests(const PathType &path) {
     try {
         if (path.empty())
             requests = makeRequestsJson(requests_path);
@@ -158,7 +157,7 @@ void ConverterJSON::updateRequests(const std::string &path) {
     }
 }
 
-nlohmann::json ConverterJSON::openJson(const std::string &path) {
+json ConverterJSON::openJson(const PathType &path) {
     if (!std::filesystem::exists(path) || !custom::isReadable(path)) {
         custom::print_yellow(
                 "Could not open file " + path + ". Check the file");
@@ -173,15 +172,15 @@ nlohmann::json ConverterJSON::openJson(const std::string &path) {
         custom::print_yellow("Attempt to open the file " + path + " failed");
         return nullptr;
     }
-    nlohmann::json result;
+    json result;
     reader >> result;
     reader.close();
 
     return result;
 }
 
-std::string ConverterJSON::findFile(const std::string &file_name
-                                    , const std::string &dir) {
+PathType ConverterJSON::findFile(const std::string &file_name
+                                    , const PathType &dir) {
     auto dir_tree = std::filesystem::recursive_directory_iterator(dir);
     for (const auto &entry : dir_tree) {
         if (entry.path().filename() == file_name)
@@ -190,7 +189,7 @@ std::string ConverterJSON::findFile(const std::string &file_name
     return { };
 }
 
-bool ConverterJSON::checkConfigProperties(const nlohmann::json &json_file) {
+bool ConverterJSON::checkConfigProperties(const json &json_file) {
 
     if (!json_file.contains("config") || json_file["config"].empty()) {
         throw std::invalid_argument("Config file is empty");
@@ -209,7 +208,7 @@ bool ConverterJSON::checkConfigProperties(const nlohmann::json &json_file) {
     return true;
 }
 
-nlohmann::json ConverterJSON::makeConfigJson(const std::string &path) {
+json ConverterJSON::makeConfigJson(const PathType &path) {
     auto json_file = openJson(path);
     if (json_file.is_null()) {
         throw std::filesystem::filesystem_error(
@@ -223,7 +222,7 @@ nlohmann::json ConverterJSON::makeConfigJson(const std::string &path) {
     return json_file;
 }
 
-bool ConverterJSON::checkRequestsProperties(const nlohmann::json &json_file) {
+bool ConverterJSON::checkRequestsProperties(const json &json_file) {
 
     // throws if the contents of the files do not match the conditions
 
@@ -247,7 +246,7 @@ bool ConverterJSON::checkRequestsProperties(const nlohmann::json &json_file) {
     return true;
 }
 
-nlohmann::json ConverterJSON::makeRequestsJson(const std::string &path) {
+json ConverterJSON::makeRequestsJson(const PathType &path) {
     auto json_file = openJson(path);
     if (json_file.is_null()) {
         throw std::filesystem::filesystem_error(
