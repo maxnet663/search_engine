@@ -84,7 +84,7 @@ namespace custom {
      * @param text string of one or more words
      * @return list of unique words
      */
-    std::list<std::string> getUniqueWords(const std::string &text);
+    std::vector<std::string> getUniqueWords(const std::string &text);
 
     /**
      * rounds the number up to n decimal place

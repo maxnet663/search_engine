@@ -220,14 +220,14 @@ size_t custom::countOccurrences(const std::string &text
     return occur_counter;
 }
 
-std::list<std::string> custom::getUniqueWords(const std::string &text) {
+std::vector<std::string> custom::getUniqueWords(const std::string &text) {
     std::list<std::string> unique_words;
     std::stringstream data(text);
     std::string buf;
     while (data >> buf) {
         unique_words.push_back(buf);
     }
-    return unique_words;
+    return { unique_words.begin(), unique_words.end() };
 }
 
 double custom::round(double num, int precision) {
