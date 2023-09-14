@@ -6,11 +6,11 @@
 int main() {
     std::string input;
     custom::print_green("Prepare to run...");
-    auto help_msg = "Input path (relative or absolute) to json files."
-                    "Type:\n\"-d path/where/search/jsons\" or \"default\" "
-                    "[-def] to find json files in current dir.\n"
-                    "\"-p /path/to/config.json /path/to/requests.json\" "
-                    "to set paths explicitly";
+    auto help_msg =
+            "Input path (relative or absolute) to json files.Type:\n"
+            "\"-d path/where/search/jsons\" or \"default\" [-def] to find json files in current"
+            "\n directory.\n"
+            "\"-p /path/to/config.json /path/to/requests.json\" to set paths explicitly";
     std::cout << help_msg << std::endl;
     PRINT_INVITATION
 
@@ -37,18 +37,19 @@ int main() {
         }
         catch (std::exception &ex) {
             custom::print_red(ex.what());
-            std::cout << "Looks like something went wrong\n"
-                         "Continue work?[y/n]:";
-            std::getline(std::cin, input);
-            custom::deleteExtraSpaces(input);
-            custom::toLowerCase(input);
-            if (input == "y" || input == "yes") {
-                std::cout << help_msg << std::endl;
-                PRINT_INVITATION
-                continue;
+            if (std::string("Program stopped") == ex.what()) {
+                std::cout << "Looks like something went wrong\n"
+                             "Continue work?[y/n]:";
+                std::getline(std::cin, input);
+                custom::deleteExtraSpaces(input);
+                custom::toLowerCase(input);
+                if (input == "y" || input == "yes") {
+                    std::cout << help_msg << std::endl;
+                    PRINT_INVITATION
+                    continue;
+                } else
+                    std::cin.setstate(std::ios_base::eofbit);
             }
-            else
-                std::cin.setstate(std::ios_base::eofbit);
         }
     }
     return 0;
