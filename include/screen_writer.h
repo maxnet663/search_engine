@@ -18,18 +18,23 @@
  */
 #define PRINT_INVITATION std::cout << "> ";
 
+typedef std::string PathType;
+typedef std::filesystem::file_time_type UpdatedTime;
+typedef std::queue<std::string> ArgsList;
+typedef std::unique_ptr<ConverterJSON> ConverterPtr;
+
 class ScreenWriter {
-    std::unique_ptr<ConverterJSON> pconverter;
+    ConverterPtr pconverter;
     InvertedIndex document_base;
     SearchServer srv;
 
     std::string engine_name;
     std::string engine_version;
-    std::vector<std::string> indexed_documents;
-    std::string config_path;
-    std::string requests_path;
-    std::filesystem::file_time_type last_changes_config;
-    std::filesystem::file_time_type last_changes_requests;
+    PathsList indexed_documents;
+    PathType config_path;
+    PathType requests_path;
+    UpdatedTime last_changes_config;
+    UpdatedTime last_changes_requests;
 
     std::map<std::string, void(ScreenWriter::*)()> commands;
 
@@ -37,7 +42,7 @@ public:
 
     ScreenWriter() : ScreenWriter(std::queue<std::string>()) {}
 
-    explicit ScreenWriter(std::queue<std::string> args);
+    explicit ScreenWriter(ArgsList args);
 
     void operator()();
 
@@ -49,21 +54,21 @@ public:
      * @return unique_ptr to a ConverterJson
      */
     template<class... Args>
-    static std::unique_ptr<ConverterJSON> makeConverter(Args&&... args);
+    static ConverterPtr makeConverter(Args&&... args);
 
     /**
      * An alternative way to construct an object
      * through dialogue with the user
      * @return
      */
-    static std::unique_ptr<ConverterJSON> handMakeConverter();
+    static ConverterPtr handMakeConverter();
 
     /**
      * turns a string into a sequence of commands
      * @param cmd string containing commands
      * @return queue containing commands
      */
-    static std::queue<std::string> commandParser(const std::string &cmd);
+    static ArgsList commandParser(const std::string &cmd);
 
 private:
 
@@ -132,7 +137,7 @@ private:
      * of answers
      * @param answers json object in answers form
      */
-    void printAnswers(const nlohmann::json &answers);
+    void printAnswers(const json &answers);
 
     /**
      * the method replaces relative paths with absolute ones;
@@ -141,7 +146,7 @@ private:
      * @param paths path's list
      * @return list of absolute paths to existing files
      */
-    std::vector<std::string> makeAbsolute(std::vector<std::string> paths);
+    PathsList makeAbsolute(PathsList paths);
 
     /**
      * The method sets the eof bit, preventing the resumption
@@ -155,7 +160,7 @@ private:
  * because it requires instantiation
  */
 template<class... Args>
-std::unique_ptr<ConverterJSON> ScreenWriter::makeConverter(Args&&... args) {
+ConverterPtr ScreenWriter::makeConverter(Args&&... args) {
         try {
             auto converter = std::make_unique<ConverterJSON>(
                     std::forward<Args>(args)...);

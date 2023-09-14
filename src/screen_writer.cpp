@@ -1,6 +1,6 @@
 #include "include/screen_writer.h"
 
-ScreenWriter::ScreenWriter(std::queue<std::string> args) : srv(document_base) {
+ScreenWriter::ScreenWriter(ArgsList args) : srv(document_base) {
     auto flag = args.front();
     args.pop();
     if (flag == "-p") {
@@ -48,7 +48,7 @@ void ScreenWriter::operator()() {
     }
 }
 
-std::unique_ptr<ConverterJSON> ScreenWriter::handMakeConverter() {
+ConverterPtr ScreenWriter::handMakeConverter() {
     std::cout << "Indicate how to search for configuration json files\n"
                  "Enter: \"-d directory/to/search\"\n"
                  "or enter: \"-p path/to/search/config "
@@ -104,14 +104,13 @@ std::unique_ptr<ConverterJSON> ScreenWriter::handMakeConverter() {
         if (flag == "quit" || flag == "q") { // exit
             return nullptr;
         }
-        // handle wrong input
-        custom::print_yellow("Wrong input. Try again");
+        custom::print_yellow("Wrong input. Try again"); // handle wrong input
         PRINT_INVITATION
     }
     return nullptr;
 }
 
-std::queue<std::string> ScreenWriter::commandParser(const std::string &cmd) {
+ArgsList ScreenWriter::commandParser(const std::string &cmd) {
     std::stringstream line(cmd);
     std::string buf;
     std::queue<std::string> args;
@@ -152,7 +151,7 @@ void ScreenWriter::updateDB() {
                 pconverter->getConfigPath());
         pconverter->updateConfig();
 
-        std::vector<std::string> new_indexed_documents = makeAbsolute(
+        PathsList new_indexed_documents = makeAbsolute(
                 pconverter->getConfig()["files"]);
 
         if (indexed_documents != new_indexed_documents) {
@@ -179,8 +178,10 @@ void ScreenWriter::updateRequests() {
 bool ScreenWriter::checkUpdate() {
     auto conf_path = pconverter->getConfigPath();
     auto req_path = pconverter->getRequestsPath();
-    return std::filesystem::last_write_time(conf_path) != last_changes_config
-           || std::filesystem::last_write_time(req_path) != last_changes_requests;
+    return std::filesystem::last_write_time(pconverter->getConfigPath())
+    != last_changes_config
+    || std::filesystem::last_write_time(pconverter->getRequestsPath())
+    != last_changes_requests;
 }
 
 void ScreenWriter::showHelp() {
@@ -254,7 +255,7 @@ void ScreenWriter::showAnswers() {
     printAnswers(answers["answers"]);
 }
 
-void ScreenWriter::printAnswers(const nlohmann::json &answers) {
+void ScreenWriter::printAnswers(const json &answers) {
 
     for (auto it = answers.begin(); it != answers.end(); it++) {
         custom::print_blue(it.key());
@@ -285,8 +286,8 @@ void ScreenWriter::printAnswers(const nlohmann::json &answers) {
     }
 }
 
-std::vector<std::string> ScreenWriter::makeAbsolute(
-        std::vector<std::string> paths) {
+PathsList ScreenWriter::makeAbsolute(
+        PathsList paths) {
     if (!paths.empty()) {
         // moves invalid paths to the end of the vector
         auto new_end = std::remove_if(paths.begin()
