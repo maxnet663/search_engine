@@ -9,17 +9,14 @@
 
 const std::vector<Entry> InvertedIndex::nfound;
 
-void InvertedIndex::updateDocumentBase(const std::vector<std::string> &input_docs) {
+void InvertedIndex::updateDocumentBase(
+        const std::vector<std::string> &input_docs) {
     if (input_docs.empty()) {
         custom::print_yellow("DB: no documents to update");
         return;
     }
-    if (!docs_texts.empty()) {
-        docs_texts.clear();
-    }
-    if (!freq_dictionary.empty()) {
-        freq_dictionary.clear();
-    }
+    docs_texts.clear();
+    freq_dictionary.clear();
 
 #ifdef TEST // for comfort testing
     docs_texts = std::move(input_docs);
@@ -43,7 +40,8 @@ void InvertedIndex::updateDocumentBase(const std::vector<std::string> &input_doc
     }
 }
 
-const std::vector<Entry>& InvertedIndex::getWordCount(const std::string &word) const {
+const std::vector<Entry>& InvertedIndex::getWordCount(
+        const std::string &word) const {
     auto it = freq_dictionary.find(word);
     return it == freq_dictionary.end() ? nfound : it->second;
 }
@@ -101,7 +99,9 @@ std::vector<std::string> InvertedIndex::getFilesTexts(
     for (const auto &docs_path : input_docs) {
         if (std::filesystem::exists(docs_path)) {
             try {
-                texts.push_back(custom::getFileText(docs_path));
+                auto txt = custom::getFileText(docs_path);
+                custom::formatString(txt);
+                texts.push_back(txt);
             }
             catch (std::length_error &ex) {
                 custom::print_yellow(ex.what());
@@ -126,5 +126,3 @@ InvertedIndex& InvertedIndex::operator=(const InvertedIndex &right) {
     }
     return *this;
 }
-
-

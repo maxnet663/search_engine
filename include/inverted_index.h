@@ -53,7 +53,7 @@ public:
     /**
      * update or fill in the database of documents
      * on which we will then search
-     * @param input_docs document's content
+     * @param input_docs paths to documents
      */
     void updateDocumentBase(const std::vector<std::string> &input_docs);
 
