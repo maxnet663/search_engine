@@ -175,8 +175,10 @@ ConverterPtr ScreenWriter::makeConverter(Args&&... args) {
             std::getline(std::cin, input);
             custom::deleteExtraSpaces(input);
             custom::toLowerCase(input);
-            if (input == "y" || input == "yes")
+            if (input == "y" || input == "yes") {
+                std::cout << std::endl;
                 return handMakeConverter();
+            }
         }
     return nullptr;
 }
