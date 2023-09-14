@@ -31,7 +31,7 @@ target_compile_definitions(test_main PRIVATE TEST -DTESTS_DIR="${PROJECT_SOURCE_
 
 target_include_directories(
         test_main
-        PUBLIC
+        PRIVATE
         "${PROJECT_SOURCE_DIR}/src"
 )
 

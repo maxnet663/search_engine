@@ -1,8 +1,9 @@
+#include "gtest/gtest.h"
+
 #include "custom_functions.cpp"
 #include "converter_json.cpp"
 #include "inverted_index.cpp"
 #include "search_server.cpp"
-#include "gtest/gtest.h"
 
 TEST(ConverterJSONTest, EmptyDocumentsListTest) {
     ConverterJSON cj(TESTS_DIR);
@@ -60,7 +61,7 @@ void TestInvertedIndexFunctionality(
     idx.updateDocumentBase(docs);
 
     for (auto &request : requests) {
-        std::vector<Entry> word_count = idx.getWordCount(request);
+        const std::vector<Entry>& word_count = idx.getWordCount(request);
         result.push_back((word_count));
     }
 
