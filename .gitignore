@@ -3,3 +3,4 @@ cmake-build-debug/
 JSONs/answers.json
 test/JSONs_test/answers.json
 .gitignore
+build/
