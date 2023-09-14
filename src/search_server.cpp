@@ -77,7 +77,10 @@ std::vector<std::vector<RelativeIndex>> SearchServer::search(
 
     std::queue<std::future<std::vector<RelativeIndex>>> threads_pool;
     for (const auto &query : queries_input) {
-        threads_pool.push(std::async(&SearchServer::makeRequest, this, query));
+        threads_pool.push(std::async(std::launch::async
+                                        , &SearchServer::makeRequest
+                                        , this
+                                        , query));
     }
     while (!threads_pool.empty()) {
         search_results.push_back(threads_pool.front().get());
