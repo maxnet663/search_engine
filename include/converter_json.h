@@ -16,10 +16,10 @@ typedef std::vector<std::vector<RelativeIndex>> AnswersLists;
 
 // Class for working with json files
 class ConverterJSON {
-    std::string config_path;
-    std::string requests_path;
-    nlohmann::json config;
-    nlohmann::json requests;
+    PathType config_path;
+    PathType requests_path;
+    json config;
+    json requests;
 
 public:
 
