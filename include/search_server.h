@@ -3,6 +3,12 @@
 
 #include "include/inverted_index.h"
 
+struct RelativeIndex;
+
+typedef std::vector<std::string> RequestsList;
+typedef std::vector<std::vector<RelativeIndex>> AnswersLists;
+
+
 /**
  * Structure for forming the relevance of documents
  */
@@ -52,7 +58,7 @@ public:
      * @return returns a sorted list of relevant
      * responses for given requests
      */
-    std::vector<std::vector<RelativeIndex>> search(
+    AnswersLists search(
             const std::vector<std::string> &queries_input);
 
 private:
@@ -64,7 +70,7 @@ private:
      * @return list of relevant documents
      */
     std::vector<DocRelevance> getRelevantDocs(
-            const std::vector<std::string> &unique_queries);
+            const RequestsList &unique_queries);
 
     /**
      * get a relevance index of doc relatively the query

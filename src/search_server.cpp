@@ -7,8 +7,27 @@
 
 #include "include/custom_functions.h"
 
+AnswersLists SearchServer::search(
+        const std::vector<std::string> &queries_input) {
+
+    std::list<std::vector<RelativeIndex>> search_results;
+
+    std::queue<std::future<std::vector<RelativeIndex>>> threads_pool;
+    for (const auto &query : queries_input) {
+        threads_pool.push(std::async(std::launch::async
+                , &SearchServer::makeRequest
+                , this
+                , query));
+    }
+    while (!threads_pool.empty()) {
+        search_results.push_back(threads_pool.front().get());
+        threads_pool.pop();
+    }
+    return { search_results.begin(), search_results.end() };
+}
+
 std::vector<DocRelevance> SearchServer::getRelevantDocs(
-        const std::vector<std::string> &unique_queries) {
+        const RequestsList &unique_queries) {
 
     // unordered_map<doc_id, Relevance>
     std::unordered_map<size_t, size_t> result;
@@ -49,11 +68,8 @@ std::vector<RelativeIndex> SearchServer::makeRequest(const std::string &query) {
 
     // if in the end there is not a single document left - add empty list
     if (answers.empty()) {
-
-        return {};
-
+        return { };
     } else {
-
         // sorts documents in descending order of relevance
         std::sort(answers.begin(), answers.end(), std::greater());
 
@@ -68,23 +84,4 @@ std::vector<RelativeIndex> SearchServer::makeRequest(const std::string &query) {
         }
         return results;
     }
-}
-
-std::vector<std::vector<RelativeIndex>> SearchServer::search(
-        const std::vector<std::string> &queries_input) {
-
-    std::list<std::vector<RelativeIndex>> search_results;
-
-    std::queue<std::future<std::vector<RelativeIndex>>> threads_pool;
-    for (const auto &query : queries_input) {
-        threads_pool.push(std::async(std::launch::async
-                                        , &SearchServer::makeRequest
-                                        , this
-                                        , query));
-    }
-    while (!threads_pool.empty()) {
-        search_results.push_back(threads_pool.front().get());
-        threads_pool.pop();
-    }
-    return { search_results.begin(), search_results.end() };
 }
