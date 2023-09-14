@@ -1,7 +1,7 @@
 #include "include/converter_json.h"
 
 #include <fstream> // ifs, ofs
-#include <iostream> //cerr
+#include <iostream> // cerr
 
 #include "include/custom_functions.h"
 #include "include/project_constants.h"
@@ -11,36 +11,46 @@ ConverterJSON::ConverterJSON(const std::string &jsons_dir) {
         throw std::filesystem::filesystem_error(
                 "Wrong path"
                 , jsons_dir
-                , std::make_error_code(std::errc::no_such_file_or_directory));
+                ,std::make_error_code(std::errc::not_a_directory));
     }
 
     // try to find paths to json files
-    config_path = findFile(jsons_dir, CONFIG_FILE_NAME);
+    config_path = findFile(CONFIG_FILE_NAME, jsons_dir );
     if (config_path.empty()) {
         throw std::invalid_argument("Could not find " CONFIG_FILE_NAME);
     }
+    custom::print_green("config.json found successfully");
 
-    requests_path = findFile(jsons_dir, REQUESTS_FILE_NAME);
+    requests_path = findFile(REQUESTS_FILE_NAME, jsons_dir);
     if (requests_path.empty()) {
         throw std::invalid_argument("Could not find " REQUESTS_FILE_NAME);
     }
+    custom::print_green("requests.json found successfully");
 
     config = makeConfigJson(config_path);
     requests = makeRequestsJson(requests_path);
 }
 
-std::vector<std::string> ConverterJSON::getTextDocuments() const {
-    return { config["files"].begin(), config["files"].end() };
+ConverterJSON::ConverterJSON(std::string conf_p, std::string req_p)
+: config_path(std::move(conf_p)), requests_path(std::move(req_p)) {
+    config = makeConfigJson(config_path);
+    requests = makeRequestsJson(requests_path);
+    custom::print_green("config.json found successfully");
+    custom::print_green("requests.json found successfully");
 }
 
-inline int ConverterJSON::getResponsesLimit() const {
-    return config["config"]["max_responses"];
+std::vector<std::string> ConverterJSON::getTextDocuments() const {
+    if (config.is_null())
+        return { };
+    else
+        return { config["files"].begin(), config["files"].end() };
 }
 
 std::vector<std::string> ConverterJSON::getRequests() const {
+    if (requests.is_null())
+        return { };
 
     std::vector<std::string> requests_list; // result data
-
     requests_list.reserve(requests["requests"].size());
 
     for (const auto &i : requests["requests"]) {
@@ -50,6 +60,13 @@ std::vector<std::string> ConverterJSON::getRequests() const {
     }
 
     return requests_list;
+}
+
+int ConverterJSON::getResponsesLimit() const {
+    if (config.is_null())
+        return -1;
+    else
+        return config["config"]["max_responses"];
 }
 
 void ConverterJSON::putAnswers(
@@ -105,28 +122,56 @@ void ConverterJSON::putAnswers(
     }
     catch (std::filesystem::filesystem_error &ex) {
         custom::print_yellow(ex.what());
-        std::string msg = "Could not write to the file \"answers.json\"\n"
-                          "Result have written to \"answers_safe.json\"\n";
-        custom::print_yellow(msg);
-        custom::writeJsonToFile(json_file, EXCEPTION_ANSWERS_FILE_NAME);
+        custom::print_yellow("Could not write to the file \"answers.json\"\n"
+                             "Result have written to \"answers_safe.json\"\n");
+
+        custom::writeJsonToFile(json_file, RESERVE_ANSWERS_FILE_NAME);
         custom::print_green(
                 (std::filesystem::current_path()
-                / EXCEPTION_ANSWERS_FILE_NAME).string());
+                 / RESERVE_ANSWERS_FILE_NAME).string());
     }
 }
 
- nlohmann::json ConverterJSON::openJson(const std::string &path) {
-    if (!std::filesystem::exists(path) || !custom::isReadable(path)
-        || std::filesystem::path(path).extension() != ".json") {
+void ConverterJSON::updateConfig(const std::string &path) {
+    try {
+        if (path.empty())
+            config = makeConfigJson(config_path);
+        else
+            config = makeConfigJson(path);
+   }
+    catch (std::exception &ex) {
+        custom::print_yellow(ex.what());
+        config = nullptr;
+    }
+}
+
+void ConverterJSON::updateRequests(const std::string &path) {
+    try {
+        if (path.empty())
+            requests = makeRequestsJson(requests_path);
+        else
+            requests = makeRequestsJson(path);
+    }
+    catch (std::exception &ex) {
+        custom::print_yellow(ex.what());
+        config = nullptr;
+    }
+}
+
+nlohmann::json ConverterJSON::openJson(const std::string &path) {
+    if (!std::filesystem::exists(path) || !custom::isReadable(path)) {
+        custom::print_yellow(
+                "Could not open file " + path + ". Check the file");
+        return nullptr;
+    }
+    if (std::filesystem::path(path).extension() != ".json") {
+        custom::print_yellow("The file " + path + " must be in json format");
         return nullptr;
     }
     std::ifstream reader(path);
     if (!reader.is_open()) {
-        throw std::filesystem::filesystem_error(
-                "Can not read file " + path
-                , path
-                , custom::getFileName(path)
-                , std::make_error_code(std::errc::bad_file_descriptor));
+        custom::print_yellow("Attempt to open the file " + path + " failed");
+        return nullptr;
     }
     nlohmann::json result;
     reader >> result;
@@ -135,18 +180,8 @@ void ConverterJSON::putAnswers(
     return result;
 }
 
-std::string ConverterJSON::findFile(const std::string &file_name) {
-    auto dir_tree = std::filesystem::recursive_directory_iterator(
-            std::filesystem::current_path());
-    for (const auto &entry : dir_tree) {
-        if (entry.path().filename() == file_name)
-            return absolute(entry.path()).string();
-    }
-    return { };
-}
-
-std::string ConverterJSON::findFile(const std::string &dir
-                                    , const std::string &file_name) {
+std::string ConverterJSON::findFile(const std::string &file_name
+                                    , const std::string &dir) {
     auto dir_tree = std::filesystem::recursive_directory_iterator(dir);
     for (const auto &entry : dir_tree) {
         if (entry.path().filename() == file_name)
@@ -155,16 +190,7 @@ std::string ConverterJSON::findFile(const std::string &dir
     return { };
 }
 
-bool ConverterJSON::checkConfigFile(const std::filesystem::path &path) {
-    return exists(path) && is_regular_file(path);
-}
-
 bool ConverterJSON::checkConfigProperties(const nlohmann::json &json_file) {
-
-    // if file still do not open
-    if (json_file == nullptr) {
-        return false;
-    }
 
     if (!json_file.contains("config") || json_file["config"].empty()) {
         throw std::invalid_argument("Config file is empty");
@@ -183,40 +209,18 @@ bool ConverterJSON::checkConfigProperties(const nlohmann::json &json_file) {
     return true;
 }
 
-nlohmann::json ConverterJSON::makeConfigJson(const std::filesystem::path &path) {
-
-    if (!checkConfigFile(path)) {
+nlohmann::json ConverterJSON::makeConfigJson(const std::string &path) {
+    auto json_file = openJson(path);
+    if (json_file.is_null()) {
         throw std::filesystem::filesystem_error(
                 "Config file is missing"
                 , path
                 , CONFIG_FILE_NAME
-                , std::make_error_code(std::errc::no_such_file_or_directory)
-                );
+                , std::make_error_code(std::errc::no_such_file_or_directory));
     }
-
-    if (!custom::isReadable(path.string())) {
-        throw std::filesystem::filesystem_error(
-                CONFIG_FILE_NAME " permission denied"
-                , path
-                , CONFIG_FILE_NAME
-                , std::make_error_code(std::errc::permission_denied)
-        );
-    }
-
-    // make a json
-    std::ifstream json_reader(path);
-    nlohmann::json json_file;
-    json_reader >> json_file;
-    json_reader.close();
-
-    // check if properties are valid
     checkConfigProperties(json_file); // throws if config has invalid properties
 
     return json_file;
-}
-
-bool ConverterJSON::checkRequestsFile(const std::filesystem::path &path) {
-    return exists(path) && is_regular_file(path);
 }
 
 bool ConverterJSON::checkRequestsProperties(const nlohmann::json &json_file) {
@@ -243,36 +247,17 @@ bool ConverterJSON::checkRequestsProperties(const nlohmann::json &json_file) {
     return true;
 }
 
-nlohmann::json ConverterJSON::makeRequestsJson(const std::filesystem::path &path) {
-
-    if (!custom::isReadable(path.string())) {
-        throw std::filesystem::filesystem_error(
-                REQUESTS_FILE_NAME " permission denied"
-                , path
-                , REQUESTS_FILE_NAME
-                , std::make_error_code(std::errc::permission_denied));
-    }
-
-    if (!checkRequestsFile(path)) {
+nlohmann::json ConverterJSON::makeRequestsJson(const std::string &path) {
+    auto json_file = openJson(path);
+    if (json_file.is_null()) {
         throw std::filesystem::filesystem_error(
                 "Requests file is missing"
                 , path
                 , REQUESTS_FILE_NAME
                 , std::make_error_code(std::errc::no_such_file_or_directory));
     }
-
-    // make a json
-    std::ifstream json_reader(path);
-    nlohmann::json json_file;
-    json_reader >> json_file;
-    json_reader.close();
-
-    // check if properties are valid
-    checkRequestsProperties(json_file); // throws if requests has invalid properties
+    // throws if requests has invalid properties
+    checkRequestsProperties(json_file);
 
     return json_file;
 }
-
-
-
-

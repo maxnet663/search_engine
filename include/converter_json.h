@@ -10,7 +10,6 @@
 
 // Class for working with json files
 class ConverterJSON {
-
     std::string config_path;
     std::string requests_path;
     nlohmann::json config;
@@ -18,28 +17,23 @@ class ConverterJSON {
 
 public:
 
-    ConverterJSON() : ConverterJSON(
-            std::filesystem::current_path().string()) {}
+    ConverterJSON() : config(nullptr), requests(nullptr) {};
 
     ConverterJSON(const std::string &jsons_dir);
+
+    ConverterJSON(std::string conf_p, std::string req_p);
 
     /**
      * config getter
      * @return json object config.json
      */
-    inline const nlohmann::json& getConfig() const { return config; }
+    const nlohmann::json& getConfig() const { return config; }
 
     /**
-     * config_path getter
-     * @return path to current config.json
-     */
-    inline std::string getConfigPath() const { return config_path; }
-
-    /**
-     * requests_path getter
-     * @return path to current requests.json
-     */
-    inline std::string getRequestsPath() const { return requests_path; }
+    * Method for receiving requests from the requests.json file
+    * @return a list of requests from the requests.json file
+    */
+    std::vector<std::string> getRequests() const;
 
     /**
     * @return a list with the paths to documents to search
@@ -52,25 +46,39 @@ public:
     * number of responses per request
     *@return max_responses
     */
-    inline int getResponsesLimit() const;
+    int getResponsesLimit() const;
 
     /**
-    * Method for receiving requests from the requests.json file
-    * @return a list of requests from the requests.json file
-    */
-    std::vector<std::string> getRequests() const;
-
-    /**
-    * Put search results in the answers.json file
-    */
+     * Method writes answers to the file answers.json in json format
+     * @param answer a data array containing answers to queries to
+     * the database of indexed documents
+     */
     void putAnswers(
              const std::vector<std::vector<RelativeIndex>> &answers) const;
 
-    void updateConfig()
-    { config = makeConfigJson(config_path); }
+   /**
+    * overwrites the current config file according to the path
+    * @param path path to json file
+    */
+    void updateConfig(const std::string &path = "");
 
-    void updateRequests()
-    { requests = makeRequestsJson(requests_path); }
+    /**
+     * overwrites the current requests file according to the path
+     * @param path path to json file
+     */
+    void updateRequests(const std::string &path = "");
+
+    /**
+     * config_path getter
+     * @return config_path member
+     */
+    std::string getConfigPath() const { return config_path; }
+
+    /**
+     * requests_path getter
+     * @return requests_path member
+     */
+    std::string getRequestsPath() const {return requests_path; }
 
     /**
      * creates json object from a file under path
@@ -82,20 +90,13 @@ public:
     static nlohmann::json openJson(const std::string &path);
 
     /**
-     * searches for file_name
-     * @param file_name
-     * @return absolute path to file or empty string otherwise
-     */
-    static std::string findFile(const std::string &file_name);
-
-    /**
      * searches for file_name in directory tree with root in dir
-     * @param dir start dir
      * @param file_name name of the file
+     * @param dir start dir
      * @return absolute path to a file or empty string
      */
-    static std::string findFile(const std::string &dir
-                                , const std::string &file_name);
+    static std::string findFile(const std::string &file_name
+                                , const std::string &dir = ".");
 
 private:
 
@@ -107,20 +108,12 @@ private:
     bool checkConfigProperties(const nlohmann::json &json_file);
 
     /**
-     * check if config.json exists
-     * @param path path to config.json
-     * @return true if config.json exists
-     * false otherwise
-     */
-    bool checkConfigFile(const std::filesystem::path &path);
-
-    /**
       * make a json object from config.json
       * @param path path to a config.json
       * @return json object made of config.json
       * throws filesystem_error or invalid_argument otherwise
       */
-    nlohmann::json makeConfigJson(const std::filesystem::path &path);
+    nlohmann::json makeConfigJson(const std::string &path);
 
     /**
      * check if requests properties is valid
@@ -130,20 +123,12 @@ private:
     bool checkRequestsProperties(const nlohmann::json &json_file);
 
     /**
-     * check if requests.json exists
-     * * @param path to requests.json
-     * @return true if requests.json exists false otherwise
-     */
-    bool checkRequestsFile(const std::filesystem::path &path);
-
-    /**
      * make a json object from requests.json
      * @param path to requests.json
      * @return json object made of request.json throws
      * filesystem_error or invalid_argument otherwise
      */
-    nlohmann::json makeRequestsJson(const std::filesystem::path &path);
-
+    nlohmann::json makeRequestsJson(const std::string &path);
 };
 
 #endif //CONVERTER_JSON_H
