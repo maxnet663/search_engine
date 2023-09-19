@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.21)
+cmake_minimum_required(VERSION 3.26)
 
 project (search_engine VERSION 1.0)
 
@@ -8,16 +8,12 @@ add_subdirectory(src)
 
 # add targets search_engine_session_simulator
 add_executable(search_engine_session_simulator ${PROJECT_SOURCE_DIR}/src/main_ss.cpp)
-
 target_include_directories(search_engine_session_simulator PUBLIC ${PROJECT_SOURCE_DIR})
-
 target_link_libraries(search_engine_session_simulator PRIVATE engine_lib)
 
 # add targets search_engine
 add_executable(search_engine ${PROJECT_SOURCE_DIR}/src/main.cpp)
-
 target_include_directories(search_engine PUBLIC ${PROJECT_SOURCE_DIR})
-
 target_link_libraries(search_engine PRIVATE engine_lib)
 
 #uncomment if installing without using a script
