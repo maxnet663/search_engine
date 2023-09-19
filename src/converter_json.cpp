@@ -27,15 +27,15 @@ ConverterJSON::ConverterJSON(const PathType &jsons_dir) {
     }
     custom::print_green("requests.json found successfully");
 
-    config = makeConfigJson(config_path);
-    requests = makeRequestsJson(requests_path);
+    config = loadConfigJson(config_path);
+    requests = loadRequestsJson(requests_path);
 }
 
 ConverterJSON::ConverterJSON(PathType conf_p, PathType req_p)
 : config_path(std::move(conf_p)), requests_path(std::move(req_p)) {
-    config = makeConfigJson(config_path);
-    requests = makeRequestsJson(requests_path);
+    config = loadConfigJson(config_path);
     custom::print_green("config.json found successfully");
+    requests = loadRequestsJson(requests_path);
     custom::print_green("requests.json found successfully");
 }
 
@@ -81,24 +81,25 @@ void ConverterJSON::putAnswers(const AnswersLists &answers) const {
         std::string number(std::to_string(i + 1)); // 1 <= number <= 1000
         // fill spaces by zeroes
         number.insert(0, std::string(4 - number.length(), '0'));
-        request.append(number); // get "request...."
+        request.append(number); // get "requestNNNN"
 
+        bool search_result = !answers.empty();
         // if nothing is found for this request
-        if (answers[i].empty()) {
-            json_file["answers"][request]["result"] = !answers[i].empty();
+        if (search_result) {
+            json_file["answers"][request]["result"] = search_result;
 
         } else {
 
             //if only one answer is found
             if (answers[i].size() == 1) {
-                json_file["answers"][request]["result"] = !answers.empty();
+                json_file["answers"][request]["result"] = search_result;
                 json_file["answers"][request]["docid"] = answers[i][0].doc_id;
                 json_file["answers"][request]["rank"] = answers[i][0].rank;
 
             } else {
 
                 // if multiple results are found, add a field relevance
-                json_file["answers"][request]["result"] = !answers[i].empty();
+                json_file["answers"][request]["result"] = search_result;
 
                 auto limit = static_cast<size_t>(getResponsesLimit());
                 for (size_t j = 0; j < limit && j < answers[i].size(); ++j) {
@@ -121,22 +122,20 @@ void ConverterJSON::putAnswers(const AnswersLists &answers) const {
     }
     catch (std::filesystem::filesystem_error &ex) {
         custom::print_yellow(ex.what());
+        custom::writeJsonToFile(json_file, RESERVE_ANSWERS_FILE_NAME);
+        custom::print_green((std::filesystem::current_path()
+                                    / RESERVE_ANSWERS_FILE_NAME).string());
         custom::print_yellow("Could not write to the file \"answers.json\"\n"
                              "Result have written to \"answers_safe.json\"\n");
-
-        custom::writeJsonToFile(json_file, RESERVE_ANSWERS_FILE_NAME);
-        custom::print_green(
-                (std::filesystem::current_path()
-                 / RESERVE_ANSWERS_FILE_NAME).string());
     }
 }
 
 void ConverterJSON::updateConfig(const PathType &path) {
     try {
         if (path.empty())
-            config = makeConfigJson(config_path);
+            config = loadConfigJson(config_path);
         else
-            config = makeConfigJson(path);
+            config = loadConfigJson(path);
    }
     catch (std::exception &ex) {
         custom::print_yellow(ex.what());
@@ -147,9 +146,9 @@ void ConverterJSON::updateConfig(const PathType &path) {
 void ConverterJSON::updateRequests(const PathType &path) {
     try {
         if (path.empty())
-            requests = makeRequestsJson(requests_path);
+            requests = loadRequestsJson(requests_path);
         else
-            requests = makeRequestsJson(path);
+            requests = loadRequestsJson(path);
     }
     catch (std::exception &ex) {
         custom::print_yellow(ex.what());
@@ -208,7 +207,7 @@ bool ConverterJSON::checkConfigProperties(const json &json_file) {
     return true;
 }
 
-json ConverterJSON::makeConfigJson(const PathType &path) {
+json ConverterJSON::loadConfigJson(const PathType &path) {
     auto json_file = openJson(path);
     if (json_file.is_null()) {
         throw std::filesystem::filesystem_error(
@@ -246,7 +245,7 @@ bool ConverterJSON::checkRequestsProperties(const json &json_file) {
     return true;
 }
 
-json ConverterJSON::makeRequestsJson(const PathType &path) {
+json ConverterJSON::loadRequestsJson(const PathType &path) {
     auto json_file = openJson(path);
     if (json_file.is_null()) {
         throw std::filesystem::filesystem_error(

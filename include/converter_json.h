@@ -118,7 +118,7 @@ private:
       * @return json object made of config.json
       * throws filesystem_error or invalid_argument otherwise
       */
-    json makeConfigJson(const PathType &path);
+    json loadConfigJson(const PathType &path);
 
     /**
      * check if requests properties is valid
@@ -133,7 +133,7 @@ private:
      * @return json object made of request.json throws
      * filesystem_error or invalid_argument otherwise
      */
-    json makeRequestsJson(const PathType &path);
+    json loadRequestsJson(const PathType &path);
 };
 
 #endif //CONVERTER_JSON_H
