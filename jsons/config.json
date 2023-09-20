@@ -5,6 +5,7 @@
     "max_responses":5
   },
   "files": [
+    "../resources/russian_text.txt",
     "../resources/file001.txt",
     "../resources/file002.txt",
     "../resources/file003.txt",
