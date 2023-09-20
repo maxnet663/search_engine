@@ -4,7 +4,7 @@ import sys
 
 
 def check_installed(cmd):
-    return not(shutil.which(cmd) is None)
+    return not (shutil.which(cmd) is None)
 
 
 if len(sys.argv) < 2:
@@ -13,13 +13,13 @@ if len(sys.argv) < 2:
 
 install_path = sys.argv[1]
 
-if not(check_installed("cmake")):
+if not (check_installed("cmake")):
     print("Could not find cmake")
     exit()
-if not(check_installed("g++")):
+if not (check_installed("g++")):
     print("Could not find g++")
     exit()
-if not(check_installed("make")):
+if not (check_installed("make")):
     print("Could not find make")
     exit()
 
