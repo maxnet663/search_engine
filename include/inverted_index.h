@@ -8,22 +8,13 @@
 
 struct Entry;
 
+
+typedef
+std::unordered_map<std::string, std::unordered_map<size_t, size_t>> DictionaryType;
+typedef std::string Text;
 typedef std::vector<std::string> TextsList;
 typedef std::vector<std::string> PathsList;
-typedef std::unordered_map<std::string, std::vector<Entry>> DictionaryType;
-typedef std::vector<Entry> Frequency;
-
-// a record with the document number and
-// the number of occurrences of a certain word in it
-struct Entry {
-    size_t doc_id;
-    size_t count;
-
-    // the operator is required for tests
-    bool operator==(const Entry &other) const {
-        return (doc_id == other.doc_id && count == other.count);
-    }
-};
+typedef std::unordered_map<size_t, size_t> Frequency;
 
 class InvertedIndex {
 
@@ -46,14 +37,13 @@ public:
      * @param other another instance of InvertedIndex class
      */
     InvertedIndex(const InvertedIndex &other)
-        : docs_texts(other.docs_texts)
-        , freq_dictionary(other.freq_dictionary) {};
+    : docs_texts(other.docs_texts), freq_dictionary(other.freq_dictionary) {};
 
     InvertedIndex& operator=(const InvertedIndex &right);
 
     InvertedIndex(InvertedIndex&& other) noexcept
-        : docs_texts(std::move(other.docs_texts))
-        , freq_dictionary(std::move(other.freq_dictionary)) {};
+    : docs_texts(std::move(other.docs_texts))
+    , freq_dictionary(std::move(other.freq_dictionary)) {};
 
     InvertedIndex& operator=(InvertedIndex&& right) noexcept;
 
@@ -79,7 +69,7 @@ private:
      * !uses for threads!
      * @param text file's text to get unique words
      */
-    void addUniqueWords(const std::string &text);
+    void parseInWords(const Text &text);
 
     /**
      * searches for occurrences of a word in array docs of document texts
@@ -94,7 +84,15 @@ private:
      * @param input_docs list of paths to documents
      * @return list of texts in the same order
      */
-    TextsList getFilesTexts(const PathsList &input_docs) const;
+    Text loadText(const std::string &doc_path);
+
+    /**
+     * loads texts from file's list to dest
+     * !dest will be cleared!
+     * @param docs_paths list of paths to files
+     * @param dest destination to load
+     */
+    void loadFilesText(const PathsList &docs_paths, TextsList &dest);
 
 };
 
