@@ -1,84 +1,12 @@
 #include "include/custom_functions.h"
 
+#include <cstdint> // uint8_t
+#include <list>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
 
-#include "include/project_constants.h"
 #include "termcolor/termcolor.hpp"
-
-std::string custom::getFileText(const std::string &file_path) {
-
-    if (!std::filesystem::exists(file_path)) {
-        throw std::filesystem::filesystem_error(
-                "File does not exist"
-                , file_path
-                , std::make_error_code(std::errc::no_such_file_or_directory));
-    }
-    if (!isReadable(file_path)) {
-        throw std::filesystem::filesystem_error(
-                "Could not open the file"
-                , file_path
-                , std::make_error_code(std::errc::permission_denied));
-    }
-
-    // open stream for reading
-    std::ifstream ifs(file_path);
-
-    if (!ifs.is_open()) {
-        throw std::filesystem::filesystem_error(
-                "Could not open the file"
-                , file_path
-                , std::make_error_code(std::errc::bad_file_descriptor));
-    }
-
-    //check words number in file
-    if (std::distance(std::istream_iterator<std::string>(ifs)
-            , std::istream_iterator<std::string>()) > MAX_WORDS_NUMBER) {
-
-        throw std::length_error("Number of words in file "
-                                + file_path + " greater than "
-                                + std::to_string(MAX_WORDS_NUMBER));
-    }
-
-    // back to the start of file
-    ifs.clear();
-    ifs.seekg(0);
-
-    std::string buf; // buffer for word processing
-    std::string text; //storage for text
-
-    // reserve memory
-    text.reserve(std::filesystem::file_size(file_path));
-
-    while (ifs >> buf) {
-
-        //check word's length
-        if (buf.length() > MAX_WORD_LENGTH) {
-            throw std::length_error("One of words from file:"
-                                    + file_path
-                                    + " has length greater than "
-                                    + std::to_string(MAX_WORD_LENGTH));
-        }
-
-        text += buf + " ";
-    }
-    ifs.close();
-
-    return text;
-}
-
-void custom::formatString(std::string &s)  {
-    if (s.length() == 0) {
-        return;
-    }
-
-    deletePunctuationMarks(s);
-
-    toLowerCase(s);
-
-    deleteExtraSpaces(s);
-}
 
 size_t custom::wordsCounter(const std::string &s) {
     bool is_word = false;
@@ -103,70 +31,6 @@ size_t custom::wordsCounter(const std::string &s) {
 
     // if the string ends with a word
     return words_counter + is_word;
-}
-
-void custom::toLowerCase(std::string &s) {
-
-    std::for_each(s.begin()
-                  , s.end()
-                  , [](char &ch){ ch = tolower(ch); });
-
-}
-
-void custom::deletePunctuationMarks(std::string &s) {
-    s.erase(std::remove_if(s.begin()
-                    , s.end()
-                    , [](char &ch){return std::ispunct(ch);})
-            , s.end());
-}
-
-void custom::deleteExtraSpaces(std::string &s) {
-
-    // use two pointers
-    auto back = s.begin();
-    auto front = s.begin();
-
-    // search first non space ch
-    while (*front == ' ') {
-        ++front;
-    }
-
-    while (*front) {
-
-        // if met one space and prev ch not space
-        // write the ch
-        if (*front != ' ' || *(front - 1) != ' ') {
-            *back++ = *front;
-        }
-
-        // move on the string
-        front++;
-    }
-
-    // delete extra ch
-    s.resize(back - s.begin());
-
-    // if last ch is space delete it
-    if (*(s.end() - 1) == ' ') {
-        s.pop_back();
-    }
-}
-
-void custom::writeJsonToFile(const nlohmann::json &json_text
-                             , const std::string &path) {
-    if (std::filesystem::exists(path)) {
-        if (!isWriteable(path)) {
-            throw std::filesystem::filesystem_error(
-                    "Can not write to the file " + path
-                    , path
-                    , std::make_error_code(std::errc::permission_denied));
-        }
-    }
-
-    std::ofstream dest(path, std::ios::out | std::ios::trunc);
-    dest << std::setw(2) << json_text;
-    dest.close();
-
 }
 
 std::string custom::getFileName(std::string s) {
