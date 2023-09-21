@@ -53,15 +53,15 @@ TEST(ConverterJSONTest, putAnswersTest) {
 void TestInvertedIndexFunctionality(
         const std::vector<std::string> &docs,
         const std::vector<std::string> &requests,
-        const std::vector<std::vector<Entry>> &expected
+        const std::vector<Frequency> &expected
         ) {
-    std::vector<std::vector<Entry>> result;
+    std::vector<Frequency> result;
     InvertedIndex idx;
 
     idx.updateDocumentBase(docs);
 
     for (auto &request : requests) {
-        const std::vector<Entry>& word_count = idx.getWordCount(request);
+        auto& word_count = idx.getWordCount(request);
         result.push_back((word_count));
     }
 
@@ -74,7 +74,7 @@ TEST(TestCaseInvertedIndex, TestBasic) {
             "big ben is the nickname for the great bell of the striking clock"
     };
     const std::vector<std::string> requests = {"london", "the"};
-    const std::vector<std::vector<Entry>> expected = {
+    const std::vector<Frequency> expected = {
             { {0, 1} },
             { {0, 1}, {1, 3} }
     };
@@ -87,7 +87,7 @@ TEST(TestCaseInvertedIndex, TestInvertedIndexMissingWord) {
            "statement"
    };
    const std::vector<std::string> requests = {"m", "statement"};
-   const std::vector<std::vector<Entry>> expected = {
+   const std::vector<Frequency> expected = {
            { },
            { {1, 1} }
    };

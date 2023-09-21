@@ -58,8 +58,8 @@ ConverterPtr ScreenWriter::handMakeConverter() {
     // start dialog and wait for command
     while (!std::getline(std::cin, input).eof()) {
         // format input
-        custom::deleteExtraSpaces(input);
-        custom::toLowerCase(input);
+        format::utf::deleteExtraSpaces(input);
+        format::utf::toLowerCase(input);
         if (input.empty()) {
             custom::print_yellow("Arguments required");
             PRINT_INVITATION
@@ -122,8 +122,8 @@ ArgsList ScreenWriter::commandParser(const std::string &cmd) {
 
 void ScreenWriter::handler(std::string &cmd) {
     // format command
-    custom::deleteExtraSpaces(cmd);
-    custom::toLowerCase(cmd);
+    format::utf::deleteExtraSpaces(cmd);
+    format::utf::toLowerCase(cmd);
     if (!cmd.empty()) {
 
         if (cmd == "q")

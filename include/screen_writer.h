@@ -12,6 +12,7 @@
 #include "include/inverted_index.h"
 #include "include/search_server.h"
 #include "include/project_constants.h"
+#include "include/formatting.h"
 
 /**
  * invite the user to enter
@@ -173,8 +174,8 @@ ConverterPtr ScreenWriter::makeConverter(Args&&... args) {
                          "Try to find the files manually?[y/n]:";
             std::string input;
             std::getline(std::cin, input);
-            custom::deleteExtraSpaces(input);
-            custom::toLowerCase(input);
+            format::utf::deleteExtraSpaces(input);
+            format::utf::toLowerCase(input);
             if (input == "y" || input == "yes") {
                 std::cout << std::endl;
                 return handMakeConverter();
