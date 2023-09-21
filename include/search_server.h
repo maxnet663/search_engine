@@ -4,8 +4,11 @@
 #include "include/inverted_index.h"
 
 struct RelativeIndex;
+struct DocRelevance;
 
 typedef std::vector<std::string> RequestsList;
+typedef std::vector<DocRelevance> RelevantDocs;
+typedef std::vector<RelativeIndex> Answer;
 typedef std::vector<std::vector<RelativeIndex>> AnswersLists;
 
 
@@ -58,8 +61,7 @@ public:
      * @return returns a sorted list of relevant
      * responses for given requests
      */
-    AnswersLists search(
-            const std::vector<std::string> &queries_input);
+    AnswersLists search(const std::vector<std::string> &queries_input);
 
 private:
 
@@ -69,24 +71,15 @@ private:
      * @param unique_queries list of unique requests
      * @return list of relevant documents
      */
-    std::vector<DocRelevance> getRelevantDocs(
-            const RequestsList &unique_queries);
-
-    /**
-     * get a relevance index of doc relatively the query
-     * @param doc_id
-     * @param query
-     * @return relevance of doc
-     */
-    size_t getDocRelevance(const size_t &doc_id, const std::string &query);
+    RelevantDocs getRelevantDocs(const RequestsList &unique_queries);
 
     /**
      * uses for async computing
-     * method returns answer to the query
+     * method makes request to the db, returns answer to the query
      * @param query string which represents a request
-     * @return list with relative docs with their relevance
+     * @return list with relevant docs with their relevance
      */
-    std::vector<RelativeIndex> makeRequest(const std::string &query);
+    Answer makeRequest(const std::string &query);
 
 };
 

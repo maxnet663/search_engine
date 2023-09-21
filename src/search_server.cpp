@@ -7,27 +7,27 @@
 
 #include "include/custom_functions.h"
 
-AnswersLists SearchServer::search(
-        const std::vector<std::string> &queries_input) {
+AnswersLists
+SearchServer::search(const std::vector<std::string> &queries_input) {
 
     std::list<std::vector<RelativeIndex>> search_results;
 
-    std::queue<std::future<std::vector<RelativeIndex>>> threads_pool;
+    std::queue<std::future<std::vector<RelativeIndex>>> requests_pool;
     for (const auto &query : queries_input) {
-        threads_pool.push(std::async(std::launch::async
-                , &SearchServer::makeRequest
-                , this
-                , query));
+        requests_pool.push(std::async(std::launch::async
+                                      , &SearchServer::makeRequest
+                                      , this
+                                      , query));
     }
-    while (!threads_pool.empty()) {
-        search_results.push_back(threads_pool.front().get());
-        threads_pool.pop();
+    while (!requests_pool.empty()) {
+        search_results.push_back(requests_pool.front().get());
+        requests_pool.pop();
     }
     return { search_results.begin(), search_results.end() };
 }
 
-std::vector<DocRelevance> SearchServer::getRelevantDocs(
-        const RequestsList &unique_queries) {
+RelevantDocs
+SearchServer::getRelevantDocs(const RequestsList &unique_queries) {
 
     // unordered_map<doc_id, Relevance>
     std::unordered_map<size_t, size_t> result;
@@ -38,10 +38,10 @@ std::vector<DocRelevance> SearchServer::getRelevantDocs(
         for (const auto &entry : query_freq) {
             // enter the document and its relevance
             // relatively the query into the table
-            if (result.find(entry.doc_id) == result.end()) {
-                result[entry.doc_id] = getDocRelevance(entry.doc_id, query);
+            if (result.find(entry.first) == result.end()) {
+                result[entry.first] = entry.second;
             } else {
-                result[entry.doc_id] += getDocRelevance(entry.doc_id, query);
+                result[entry.first] += entry.second;
             }
         }
     }
@@ -49,20 +49,7 @@ std::vector<DocRelevance> SearchServer::getRelevantDocs(
     return { result.begin(), result.end() };
 }
 
-size_t SearchServer::getDocRelevance(const size_t &doc_id
-                                     , const std::string &query) {
-    // function answers the question:
-    // how many times the query occurs in the document?
-    auto &query_freq = _index.getWordCount(query);
-    auto found = std::find_if(
-            query_freq.begin()
-            , query_freq.end()
-            , [&](const Entry &entry)
-            { return entry.doc_id == doc_id; });
-    return found == query_freq.end() ? 0 : found->count;
-}
-
-std::vector<RelativeIndex> SearchServer::makeRequest(const std::string &query) {
+Answer SearchServer::makeRequest(const std::string &query) {
     auto unique_queries = custom::getUniqueWords(query);
     auto answers = getRelevantDocs(unique_queries);
 
