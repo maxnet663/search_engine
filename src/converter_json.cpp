@@ -1,9 +1,11 @@
 #include "include/converter_json.h"
 
+#include <filesystem> //path
 #include <fstream> // ifs, ofs
 #include <iostream> // cerr
 
 #include "include/custom_functions.h"
+#include "include/formatting.h"
 #include "include/project_constants.h"
 
 ConverterJSON::ConverterJSON(const PathType &jsons_dir) {
@@ -11,7 +13,7 @@ ConverterJSON::ConverterJSON(const PathType &jsons_dir) {
         throw std::filesystem::filesystem_error(
                 "Wrong path"
                 , jsons_dir
-                ,std::make_error_code(std::errc::not_a_directory));
+                , std::make_error_code(std::errc::not_a_directory));
     }
 
     // try to find paths to json files
@@ -19,13 +21,17 @@ ConverterJSON::ConverterJSON(const PathType &jsons_dir) {
     if (config_path.empty()) {
         throw std::invalid_argument("Could not find " CONFIG_FILE_NAME);
     }
+#ifndef TEST
     custom::print_green("config.json found successfully");
+#endif
 
     requests_path = findFile(REQUESTS_FILE_NAME, jsons_dir);
     if (requests_path.empty()) {
         throw std::invalid_argument("Could not find " REQUESTS_FILE_NAME);
     }
+#ifndef TEST
     custom::print_green("requests.json found successfully");
+#endif
 
     config = loadConfigJson(config_path);
     requests = loadRequestsJson(requests_path);
@@ -34,9 +40,13 @@ ConverterJSON::ConverterJSON(const PathType &jsons_dir) {
 ConverterJSON::ConverterJSON(PathType conf_p, PathType req_p)
 : config_path(std::move(conf_p)), requests_path(std::move(req_p)) {
     config = loadConfigJson(config_path);
+#ifndef TEST
     custom::print_green("config.json found successfully");
+#endif
     requests = loadRequestsJson(requests_path);
+#ifndef TEST
     custom::print_green("requests.json found successfully");
+#endif
 }
 
 PathsList ConverterJSON::getTextDocuments() const {
@@ -55,7 +65,7 @@ RequestsList ConverterJSON::getRequests() const {
 
     for (const auto &i : requests["requests"]) {
         std::string buf = to_string(i); // get request
-        custom::formatString(buf); // format it
+        format::utf::formatString(buf); // format it
         requests_list.push_back(std::move(buf)); // write to requests_list
     }
 
@@ -70,7 +80,7 @@ int ConverterJSON::getResponsesLimit() const {
 }
 
 void ConverterJSON::putAnswers(const AnswersLists &answers) const {
-    json json_file;
+    json ans_json;
 
     // get round all the elements of the answers
     // and write them down in the final structure
@@ -83,76 +93,87 @@ void ConverterJSON::putAnswers(const AnswersLists &answers) const {
         number.insert(0, std::string(4 - number.length(), '0'));
         request.append(number); // get "requestNNNN"
 
-        bool search_result = !answers.empty();
-        // if nothing is found for this request
-        if (search_result) {
-            json_file["answers"][request]["result"] = search_result;
+        bool search_result = !answers[i].empty();
+
+        if (!search_result) { // if nothing is found for this request
+
+            ans_json["answers"][request]["result"] = search_result;
 
         } else {
 
-            //if only one answer is found
-            if (answers[i].size() == 1) {
-                json_file["answers"][request]["result"] = search_result;
-                json_file["answers"][request]["docid"] = answers[i][0].doc_id;
-                json_file["answers"][request]["rank"] = answers[i][0].rank;
+            if (answers[i].size() == 1) { // if only one answer is found
+                ans_json["answers"][request]["result"] = search_result;
+                ans_json["answers"][request]["docid"] = answers[i][0].doc_id;
+                ans_json["answers"][request]["rank"] = answers[i][0].rank;
 
-            } else {
+            } else { // if multiple results are found, add a field relevance
 
-                // if multiple results are found, add a field relevance
-                json_file["answers"][request]["result"] = search_result;
-
+                ans_json["answers"][request]["result"] = search_result;
                 auto limit = static_cast<size_t>(getResponsesLimit());
                 for (size_t j = 0; j < limit && j < answers[i].size(); ++j) {
-                    // element of relevance array
-                    json field;
-                    field = {
+                    json field = {
                             {"docid", answers[i][j].doc_id},
                             {"rank",  custom::round(answers[i][j].rank, 2)}
                     };
-                    json_file["answers"][request]["relevance"].push_back(field);
+                    ans_json["answers"][request]["relevance"].push_back(field);
                 }
             }
         }
     }
-    try {
-        custom::writeJsonToFile(json_file, ANSWERS_FILE_NAME);
-        custom::print_green("Result have written to " +
-                            (std::filesystem::current_path()
-                            / ANSWERS_FILE_NAME).string());
+#ifdef TEST
+    writeJsonToFile(ans_json, ANSWERS_FILE_NAME);
+#else
+    auto written = writeJsonToFile(ans_json, ANSWERS_FILE_NAME);
+    if (!written) {
+        written = writeJsonToFile(ans_json, RESERVE_ANSWERS_FILE_NAME);
+        if (!written) {
+            throw std::filesystem::filesystem_error("Could not write answers"
+                                                    , ANSWERS_FILE_NAME
+                                                    , RESERVE_ANSWERS_FILE_NAME
+                                                    , std::make_error_code
+                                                    (std::errc::bad_address));
+        } else {
+            custom::print_yellow("Could not write search results to "
+                                 ANSWERS_FILE_NAME);
+            std::cout << "Results have written to "
+                      << RESERVE_ANSWERS_FILE_NAME;
+        }
+    } else {
+        std::cout << "Search results have written to " << ANSWERS_FILE_NAME
+                  << std::endl;
     }
-    catch (std::filesystem::filesystem_error &ex) {
-        custom::print_yellow(ex.what());
-        custom::writeJsonToFile(json_file, RESERVE_ANSWERS_FILE_NAME);
-        custom::print_green((std::filesystem::current_path()
-                                    / RESERVE_ANSWERS_FILE_NAME).string());
-        custom::print_yellow("Could not write to the file \"answers.json\"\n"
-                             "Result have written to \"answers_safe.json\"\n");
-    }
+#endif
 }
 
 void ConverterJSON::updateConfig(const PathType &path) {
+    json new_config;
     try {
-        if (path.empty())
-            config = loadConfigJson(config_path);
-        else
-            config = loadConfigJson(path);
+        if (path.empty()) {
+            new_config = loadConfigJson(config_path);
+        } else {
+            new_config = loadConfigJson(path);
+            config_path = path;
+        }
+        config = std::move(new_config);
    }
     catch (std::exception &ex) {
         custom::print_yellow(ex.what());
-        config = nullptr;
     }
 }
 
 void ConverterJSON::updateRequests(const PathType &path) {
+    json new_requests;
     try {
-        if (path.empty())
-            requests = loadRequestsJson(requests_path);
-        else
-            requests = loadRequestsJson(path);
+        if (path.empty()) {
+            new_requests = loadRequestsJson(requests_path);
+        } else {
+            new_requests = loadRequestsJson(path);
+            requests_path = path;
+        }
+        requests = std::move(new_requests);
     }
     catch (std::exception &ex) {
         custom::print_yellow(ex.what());
-        config = nullptr;
     }
 }
 
@@ -176,6 +197,36 @@ json ConverterJSON::openJson(const PathType &path) {
     reader.close();
 
     return result;
+}
+
+bool ConverterJSON::writeJsonToFile(json &json_obj, const std::string &path) {
+#ifndef TEST
+    if (std::filesystem::exists(path)) {
+        if (std::filesystem::is_directory(path)) {
+            custom::print_yellow(path + " is a directory");
+            return false;
+        }
+        if (!custom::isWriteable(path)) {
+            custom::print_yellow("Can not write to the file "
+                                + path
+                                + " permission denied");
+            return false;
+        } else {
+            std::string input;
+            std::cout << "File " + path + " already exists" << std::endl
+                      << "Do you want to overwrite it?[y/n]: ";
+            std::getline(std::cin, input);
+            format::utf::deleteExtraSpaces(input);
+            format::utf::toLowerCase(input);
+            if (input == "n" || input == "no")
+                return true;
+        }
+    }
+#endif
+    std::ofstream dest(path, std::ios::out | std::ios::trunc);
+    dest << std::setw(2) << json_obj;
+    dest.close();
+    return true;
 }
 
 PathType ConverterJSON::findFile(const std::string &file_name

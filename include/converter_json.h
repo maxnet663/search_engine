@@ -1,7 +1,6 @@
 #ifndef CONVERTER_JSON_H
 #define CONVERTER_JSON_H
 
-#include <filesystem> //path
 #include <string> // string
 
 #include "nlohmann/json.hpp" // json
@@ -93,6 +92,14 @@ public:
      * @return json object
      */
     static json openJson(const PathType &path);
+
+    /**
+     * if file path exists overwriting it by file,
+     * create new file in path otherwise
+     * @param file file to write
+     * @param path path to new file
+     */
+    static bool writeJsonToFile(json &json_obj, const std::string &path);
 
     /**
      * searches for file_name in directory tree with root in dir
