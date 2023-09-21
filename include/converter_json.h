@@ -99,7 +99,7 @@ public:
      * @param file file to write
      * @param path path to new file
      */
-    static bool writeJsonToFile(json &json_obj, const std::string &path);
+    static int writeJsonToFile(json &json_obj, const std::string &path);
 
     /**
      * searches for file_name in directory tree with root in dir

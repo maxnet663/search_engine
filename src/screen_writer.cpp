@@ -50,9 +50,9 @@ void ScreenWriter::operator()() {
 
 ConverterPtr ScreenWriter::handMakeConverter() {
     std::cout << "Indicate how to search for configuration json files\n"
-                 "Enter: \"-d directory/to/search\"\n"
-                 "or enter: \"-p path/to/search/config "
-                 "/path/to/search/requests\"\n"
+                 "Enter: -d <directory/to/search>\n"
+                 "or enter: -p <path/to/search/config> "
+                 "</path/to/search/requests>\n"
                  "Enter quit or q to exit\n> ";
     std::string input;
     // start dialog and wait for command

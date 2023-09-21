@@ -124,24 +124,12 @@ void ConverterJSON::putAnswers(const AnswersLists &answers) const {
     writeJsonToFile(ans_json, ANSWERS_FILE_NAME);
 #else
     auto written = writeJsonToFile(ans_json, ANSWERS_FILE_NAME);
-    if (!written) {
-        written = writeJsonToFile(ans_json, RESERVE_ANSWERS_FILE_NAME);
-        if (!written) {
-            throw std::filesystem::filesystem_error("Could not write answers"
-                                                    , ANSWERS_FILE_NAME
-                                                    , RESERVE_ANSWERS_FILE_NAME
-                                                    , std::make_error_code
-                                                    (std::errc::bad_address));
-        } else {
-            custom::print_yellow("Could not write search results to "
-                                 ANSWERS_FILE_NAME);
-            std::cout << "Results have written to "
-                      << RESERVE_ANSWERS_FILE_NAME;
-        }
-    } else {
+    if (written == 1)
         std::cout << "Search results have written to " << ANSWERS_FILE_NAME
                   << std::endl;
-    }
+    if (written == 0)
+        custom::print_yellow("Could not write search results to "
+                             ANSWERS_FILE_NAME);
 #endif
 }
 
@@ -199,18 +187,18 @@ json ConverterJSON::openJson(const PathType &path) {
     return result;
 }
 
-bool ConverterJSON::writeJsonToFile(json &json_obj, const std::string &path) {
+int ConverterJSON::writeJsonToFile(json &json_obj, const std::string &path) {
 #ifndef TEST
     if (std::filesystem::exists(path)) {
         if (std::filesystem::is_directory(path)) {
             custom::print_yellow(path + " is a directory");
-            return false;
+            return 0;
         }
         if (!custom::isWriteable(path)) {
             custom::print_yellow("Can not write to the file "
                                 + path
                                 + " permission denied");
-            return false;
+            return 0;
         } else {
             std::string input;
             std::cout << "File " + path + " already exists" << std::endl
@@ -219,14 +207,14 @@ bool ConverterJSON::writeJsonToFile(json &json_obj, const std::string &path) {
             format::utf::deleteExtraSpaces(input);
             format::utf::toLowerCase(input);
             if (input == "n" || input == "no")
-                return true;
+                return -1;
         }
     }
 #endif
     std::ofstream dest(path, std::ios::out | std::ios::trunc);
     dest << std::setw(2) << json_obj;
     dest.close();
-    return true;
+    return 1;
 }
 
 PathType ConverterJSON::findFile(const std::string &file_name
