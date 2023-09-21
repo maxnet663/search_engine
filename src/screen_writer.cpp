@@ -240,11 +240,6 @@ void ScreenWriter::search() {
 void ScreenWriter::showAnswers() {
     auto answers= ConverterJSON::openJson(ANSWERS_FILE_NAME);
 
-    // if unsuccessful to open answers.json, check if a backup exists
-    if (answers == nullptr) {
-        answers = ConverterJSON::openJson(RESERVE_ANSWERS_FILE_NAME);
-    }
-
     if (answers == nullptr) { // answers.json does not exist
         std::string msg = "Oops, looks like file \"answers.json\" does not "
                           "exists;\n The file may have been moved or the search"
