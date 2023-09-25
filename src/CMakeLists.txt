@@ -15,13 +15,6 @@ FetchContent_Declare(
         https://github.com/ikalnytskyi/termcolor/archive/refs/heads/master.zip)
 FetchContent_MakeAvailable(termcolor)
 
-# connect ICU lib
-FetchContent_Declare(
-        icu
-        GIT_REPOSITORY https://github.com/unicode-org/icu.git
-        GIT_TAG        release-73-2
-)
-
 add_library(
         engine_lib
         converter_json.cpp
