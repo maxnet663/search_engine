@@ -15,7 +15,7 @@ cd $build
 
 # configure
 cmake -DINSTALL_GMOCK:BOOL=OFF -DCMAKE_INSTALL_PREFIX:PATH=$install_path ../
-cmake --build .
+cmake --build . -j 6
 
 # Install the project
 make install/local

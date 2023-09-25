@@ -1,6 +1,7 @@
 import shutil
 import os
 import sys
+import re
 
 
 def check_installed(cmd):
@@ -11,27 +12,52 @@ if len(sys.argv) < 2:
     print("Installation path required")
     exit()
 
-install_path = sys.argv[1]
-
 if not (check_installed("cmake")):
     print("Could not find cmake")
-    exit()
-if not (check_installed("g++")):
-    print("Could not find g++")
-    exit()
-if not (check_installed("make")):
+    exit(1)
+
+install_path = sys.argv[1]
+c_compiler = "gcc"
+cxx_compiler = "g++"
+generator = "MinGW Makefiles"
+
+if len(sys.argv) > 2:
+    re.match(r"clang", sys.argv[2], re.IGNORECASE)
+    c_compiler = "clang"
+    cxx_compiler = "clang"
+if len(sys.argv) > 3:
+    generator = sys.argv[3]
+
+if not(check_installed(c_compiler)):
+    print("Could not find " + c_compiler)
+    exit(1)
+
+if not(check_installed(cxx_compiler)):
+    print("Could not find " + cxx_compiler)
+    exit(1)
+
+if not(check_installed("make")):
     print("Could not find make")
-    exit()
+    exit(1)
 
 os.chdir("../")
 if os.path.exists("build") and os.path.isdir("build"):
-    print("build directory already exists")
-    exit()
-
+    shutil.rmtree("build")
 os.mkdir("build")
 os.chdir("build")
-os.system("cmake -G \"MinGW Makefiles\" -DINSTALL_GMOCK:BOOL=OFF "
-          "-DCMAKE_INSTALL_PREFIX:PATH=" + install_path + " ../")
-os.system("cmake --build .")
+
+result = os.system("cmake -G \""                   + generator    + "\""     # generator, you may change it
+                   " -DINSTALL_GMOCK:BOOL=OFF"                               # do not install tests
+                   " -DCMAKE_C_COMPILER="          + c_compiler   +          # compilers, explicitly
+                   " -DCMAKE_CXX_COMPILER="        + cxx_compiler +
+                   " -DCMAKE_INSTALL_PREFIX:PATH=" + install_path + " ../")  # writes install path to cmakecache
+
+if result:
+    print("Error while generating cmake project's files")
+    exit(2)
+result = os.system("cmake --build . -j 6")  # builds all targets, '6' - number of threads, may change it
+if result:
+    print("Error while building the project")
+    exit(3)
 os.system("make install/local")
 print("Project installed to " + install_path)
