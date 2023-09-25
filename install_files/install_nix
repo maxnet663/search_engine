@@ -6,16 +6,28 @@ if [ "$#" -lt "1" ]; then
     exit 1
 fi
 
-build="build"
 install_path="$1"
 
 cd ..
-mkdir -p $build
-cd $build
+if [ -d "build" ]; then
+    rm -r "build"
+fi
+mkdir -p "build"
+cd "build"
 
 # configure
-cmake -DINSTALL_GMOCK:BOOL=OFF -DCMAKE_INSTALL_PREFIX:PATH=$install_path ../
-cmake --build . -j 6
+cmake -DINSTALL_GMOCK:BOOL=OFF \
+    -DCMAKE_INSTALL_PREFIX:PATH=$install_path ../
+
+if [ $? -gt 1 ]; then
+    echo "Error occured while generating cmake project's files"
+fi
+
+result=$(cmake --build . -j 6)
+
+if [ $? -gt 1 ]; then
+    echo "Error occured while building the project"
+fi
 
 # Install the project
 make install/local
