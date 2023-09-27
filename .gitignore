@@ -4,3 +4,4 @@ JSONs/answers.json
 test/JSONs_test/answers.json
 .gitignore
 build/
+docs/doxygen_config
