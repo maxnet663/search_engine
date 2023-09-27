@@ -1,0 +1,73 @@
+.TH "format::utf" 3 "Wed Sep 27 2023" "Search Engine" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+format::utf
+.SH SYNOPSIS
+.br
+.PP
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "void \fBformatString\fP (std::string &s)"
+.br
+.ti -1c
+.RI "void \fBtoLowerCase\fP (std::string &s)"
+.br
+.ti -1c
+.RI "void \fBdeletePunctuationMarks\fP (std::string &s)"
+.br
+.ti -1c
+.RI "void \fBdeleteExtraSpaces\fP (std::string &s)"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+Defines functions for working with utf-8 strings 
+.SH "Function Documentation"
+.PP 
+.SS "void format::utf::deleteExtraSpaces (std::string & s)"
+Delete all extra spaces 
+.PP
+\fBParameters\fP
+.RS 4
+\fIs\fP reference to string 
+.RE
+.PP
+
+.SS "void format::utf::deletePunctuationMarks (std::string & s)"
+Delete all punctuation marks in s 
+.PP
+\fBParameters\fP
+.RS 4
+\fIs\fP reference to string 
+.RE
+.PP
+
+.SS "void format::utf::formatString (std::string & s)"
+Delete punctuation marks, extra spaces and lowercase all letters 
+.PP
+\fBParameters\fP
+.RS 4
+\fIs\fP string to format 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+reference to format string 
+.RE
+.PP
+
+.SS "void format::utf::toLowerCase (std::string & s)"
+Lowercase all letters in s 
+.PP
+\fBParameters\fP
+.RS 4
+\fIs\fP reference to string 
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Search Engine from the source code\&.

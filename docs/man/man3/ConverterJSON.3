@@ -1,0 +1,191 @@
+.TH "ConverterJSON" 3 "Wed Sep 27 2023" "Search Engine" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+ConverterJSON
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <converter_json\&.h>\fP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBConverterJSON\fP (const PathType &jsons_dir)"
+.br
+.ti -1c
+.RI "\fBConverterJSON\fP (PathType conf_p, PathType req_p)"
+.br
+.ti -1c
+.RI "const json & \fBgetConfig\fP () const"
+.br
+.ti -1c
+.RI "RequestsList \fBgetRequests\fP () const"
+.br
+.ti -1c
+.RI "PathsList \fBgetTextDocuments\fP () const"
+.br
+.ti -1c
+.RI "int \fBgetResponsesLimit\fP () const"
+.br
+.ti -1c
+.RI "void \fBputAnswers\fP (const AnswersLists &answers) const"
+.br
+.ti -1c
+.RI "void \fBupdateConfig\fP (const PathType &path='')"
+.br
+.ti -1c
+.RI "void \fBupdateRequests\fP (const PathType &path='')"
+.br
+.ti -1c
+.RI "PathType \fBgetConfigPath\fP () const"
+.br
+.ti -1c
+.RI "PathType \fBgetRequestsPath\fP () const"
+.br
+.in -1c
+.SS "Static Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "static json \fBopenJson\fP (const PathType &path)"
+.br
+.ti -1c
+.RI "static int \fBwriteJsonToFile\fP (json &json_obj, const std::string &path)"
+.br
+.ti -1c
+.RI "static PathType \fBfindFile\fP (const std::string &file_name, const PathType &dir='\&.')"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+Class for working with json files 
+.SH "Member Function Documentation"
+.PP 
+.SS "PathType ConverterJSON::findFile (const std::string & file_name, const PathType & dir = \fC'\&.'\fP)\fC [static]\fP"
+Searches for file_name in directory tree with root in dir 
+.PP
+\fBParameters\fP
+.RS 4
+\fIfile_name\fP name of the file 
+.br
+\fIdir\fP start dir 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+absolute path to a file or empty string 
+.RE
+.PP
+
+.SS "const json& ConverterJSON::getConfig () const\fC [inline]\fP"
+Config getter 
+.PP
+\fBReturns\fP
+.RS 4
+json object config\&.json 
+.RE
+.PP
+
+.SS "PathType ConverterJSON::getConfigPath () const\fC [inline]\fP"
+config_path getter 
+.PP
+\fBReturns\fP
+.RS 4
+config_path member 
+.RE
+.PP
+
+.SS "RequestsList ConverterJSON::getRequests () const"
+Method for receiving requests from the requests\&.json file 
+.PP
+\fBReturns\fP
+.RS 4
+a list of requests from the requests\&.json file 
+.RE
+.PP
+
+.SS "PathType ConverterJSON::getRequestsPath () const\fC [inline]\fP"
+requests_path getter 
+.PP
+\fBReturns\fP
+.RS 4
+requests_path member 
+.RE
+.PP
+
+.SS "int ConverterJSON::getResponsesLimit () const"
+The method reads the max_responses field to determine the limit number of responses per request 
+.PP
+\fBReturns\fP
+.RS 4
+max_responses 
+.RE
+.PP
+
+.SS "PathsList ConverterJSON::getTextDocuments () const"
+
+.PP
+\fBReturns\fP
+.RS 4
+a list with the paths to documents to search in config\&.json 
+.RE
+.PP
+
+.SS "json ConverterJSON::openJson (const PathType & path)\fC [static]\fP"
+Creates json object from a file under path\&. Before creating check if file exists, perms to read and file's extension(must be *\&.json) 
+.PP
+\fBParameters\fP
+.RS 4
+\fIpath\fP path to the file 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+json object 
+.RE
+.PP
+
+.SS "void ConverterJSON::putAnswers (const AnswersLists & answers) const"
+Method writes answers to the file answers\&.json in json format 
+.PP
+\fBParameters\fP
+.RS 4
+\fIanswer\fP a data array containing answers to queries to the database of indexed documents 
+.RE
+.PP
+
+.SS "void ConverterJSON::updateConfig (const PathType & path = \fC''\fP)"
+Overwrites the current config file according to the path 
+.PP
+\fBParameters\fP
+.RS 4
+\fIpath\fP path to json file 
+.RE
+.PP
+
+.SS "void ConverterJSON::updateRequests (const PathType & path = \fC''\fP)"
+Overwrites the current requests file according to the path 
+.PP
+\fBParameters\fP
+.RS 4
+\fIpath\fP path to json file 
+.RE
+.PP
+
+.SS "int ConverterJSON::writeJsonToFile (json & json_obj, const std::string & path)\fC [static]\fP"
+If file path exists overwriting it by file, create new file in path otherwise 
+.PP
+\fBParameters\fP
+.RS 4
+\fIfile\fP file to write 
+.br
+\fIpath\fP path to new file 
+.RE
+.PP
+
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Search Engine from the source code\&.

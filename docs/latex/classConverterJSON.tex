@@ -1,0 +1,184 @@
+\hypertarget{classConverterJSON}{}\doxysection{Converter\+JSON Class Reference}
+\label{classConverterJSON}\index{ConverterJSON@{ConverterJSON}}
+
+
+{\ttfamily \#include $<$converter\+\_\+json.\+h$>$}
+
+\doxysubsection*{Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{classConverterJSON_a60f1cc087961e1b026bba2ffca0225dd}\label{classConverterJSON_a60f1cc087961e1b026bba2ffca0225dd}} 
+{\bfseries Converter\+JSON} (const Path\+Type \&jsons\+\_\+dir)
+\item 
+\mbox{\Hypertarget{classConverterJSON_a5b8d2b51f72fdc7240aa1579ec45252c}\label{classConverterJSON_a5b8d2b51f72fdc7240aa1579ec45252c}} 
+{\bfseries Converter\+JSON} (Path\+Type conf\+\_\+p, Path\+Type req\+\_\+p)
+\item 
+const json \& \mbox{\hyperlink{classConverterJSON_afe5be59f05d20f859c89952c02eda646}{get\+Config}} () const
+\item 
+Requests\+List \mbox{\hyperlink{classConverterJSON_a62e6997ae5fcac006597d919819701f9}{get\+Requests}} () const
+\item 
+Paths\+List \mbox{\hyperlink{classConverterJSON_acc4c3b65d11dd829ad5b388e3d062f6e}{get\+Text\+Documents}} () const
+\item 
+int \mbox{\hyperlink{classConverterJSON_a289fbccad43e5b2ad7f9e6614e16884c}{get\+Responses\+Limit}} () const
+\item 
+void \mbox{\hyperlink{classConverterJSON_a6b87c8e1a25114483035a442703f5acf}{put\+Answers}} (const Answers\+Lists \&answers) const
+\item 
+void \mbox{\hyperlink{classConverterJSON_aef79c2ce9d1d80ca1eb97fca5e7c863c}{update\+Config}} (const Path\+Type \&path=\char`\"{}\char`\"{})
+\item 
+void \mbox{\hyperlink{classConverterJSON_a329bd7cb523f03f703613f5594733131}{update\+Requests}} (const Path\+Type \&path=\char`\"{}\char`\"{})
+\item 
+Path\+Type \mbox{\hyperlink{classConverterJSON_ade914d3cbae807b8f40b7d32597c4967}{get\+Config\+Path}} () const
+\item 
+Path\+Type \mbox{\hyperlink{classConverterJSON_acd2c4796d11f559c942c9b3dfca1113c}{get\+Requests\+Path}} () const
+\end{DoxyCompactItemize}
+\doxysubsection*{Static Public Member Functions}
+\begin{DoxyCompactItemize}
+\item 
+static json \mbox{\hyperlink{classConverterJSON_a5e19caeb4641c7dcef91182e0954f769}{open\+Json}} (const Path\+Type \&path)
+\item 
+static int \mbox{\hyperlink{classConverterJSON_af5a600562f96ef5ed46adebfc3f16ee6}{write\+Json\+To\+File}} (json \&json\+\_\+obj, const std\+::string \&path)
+\item 
+static Path\+Type \mbox{\hyperlink{classConverterJSON_a689dd946000334ab7016b9beea267065}{find\+File}} (const std\+::string \&file\+\_\+name, const Path\+Type \&dir=\char`\"{}.\char`\"{})
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Class for working with json files 
+
+\doxysubsection{Member Function Documentation}
+\mbox{\Hypertarget{classConverterJSON_a689dd946000334ab7016b9beea267065}\label{classConverterJSON_a689dd946000334ab7016b9beea267065}} 
+\index{ConverterJSON@{ConverterJSON}!findFile@{findFile}}
+\index{findFile@{findFile}!ConverterJSON@{ConverterJSON}}
+\doxysubsubsection{\texorpdfstring{findFile()}{findFile()}}
+{\footnotesize\ttfamily Path\+Type Converter\+JSON\+::find\+File (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{file\+\_\+name,  }\item[{const Path\+Type \&}]{dir = {\ttfamily \char`\"{}.\char`\"{}} }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+Searches for file\+\_\+name in directory tree with root in dir 
+\begin{DoxyParams}{Parameters}
+{\em file\+\_\+name} & name of the file \\
+\hline
+{\em dir} & start dir \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+absolute path to a file or empty string 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classConverterJSON_afe5be59f05d20f859c89952c02eda646}\label{classConverterJSON_afe5be59f05d20f859c89952c02eda646}} 
+\index{ConverterJSON@{ConverterJSON}!getConfig@{getConfig}}
+\index{getConfig@{getConfig}!ConverterJSON@{ConverterJSON}}
+\doxysubsubsection{\texorpdfstring{getConfig()}{getConfig()}}
+{\footnotesize\ttfamily const json\& Converter\+JSON\+::get\+Config (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+Config getter \begin{DoxyReturn}{Returns}
+json object config.\+json 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classConverterJSON_ade914d3cbae807b8f40b7d32597c4967}\label{classConverterJSON_ade914d3cbae807b8f40b7d32597c4967}} 
+\index{ConverterJSON@{ConverterJSON}!getConfigPath@{getConfigPath}}
+\index{getConfigPath@{getConfigPath}!ConverterJSON@{ConverterJSON}}
+\doxysubsubsection{\texorpdfstring{getConfigPath()}{getConfigPath()}}
+{\footnotesize\ttfamily Path\+Type Converter\+JSON\+::get\+Config\+Path (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+config\+\_\+path getter \begin{DoxyReturn}{Returns}
+config\+\_\+path member 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classConverterJSON_a62e6997ae5fcac006597d919819701f9}\label{classConverterJSON_a62e6997ae5fcac006597d919819701f9}} 
+\index{ConverterJSON@{ConverterJSON}!getRequests@{getRequests}}
+\index{getRequests@{getRequests}!ConverterJSON@{ConverterJSON}}
+\doxysubsubsection{\texorpdfstring{getRequests()}{getRequests()}}
+{\footnotesize\ttfamily Requests\+List Converter\+JSON\+::get\+Requests (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+Method for receiving requests from the requests.\+json file \begin{DoxyReturn}{Returns}
+a list of requests from the requests.\+json file 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classConverterJSON_acd2c4796d11f559c942c9b3dfca1113c}\label{classConverterJSON_acd2c4796d11f559c942c9b3dfca1113c}} 
+\index{ConverterJSON@{ConverterJSON}!getRequestsPath@{getRequestsPath}}
+\index{getRequestsPath@{getRequestsPath}!ConverterJSON@{ConverterJSON}}
+\doxysubsubsection{\texorpdfstring{getRequestsPath()}{getRequestsPath()}}
+{\footnotesize\ttfamily Path\+Type Converter\+JSON\+::get\+Requests\+Path (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const\hspace{0.3cm}{\ttfamily [inline]}}
+
+requests\+\_\+path getter \begin{DoxyReturn}{Returns}
+requests\+\_\+path member 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classConverterJSON_a289fbccad43e5b2ad7f9e6614e16884c}\label{classConverterJSON_a289fbccad43e5b2ad7f9e6614e16884c}} 
+\index{ConverterJSON@{ConverterJSON}!getResponsesLimit@{getResponsesLimit}}
+\index{getResponsesLimit@{getResponsesLimit}!ConverterJSON@{ConverterJSON}}
+\doxysubsubsection{\texorpdfstring{getResponsesLimit()}{getResponsesLimit()}}
+{\footnotesize\ttfamily int Converter\+JSON\+::get\+Responses\+Limit (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+The method reads the max\+\_\+responses field to determine the limit number of responses per request \begin{DoxyReturn}{Returns}
+max\+\_\+responses 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classConverterJSON_acc4c3b65d11dd829ad5b388e3d062f6e}\label{classConverterJSON_acc4c3b65d11dd829ad5b388e3d062f6e}} 
+\index{ConverterJSON@{ConverterJSON}!getTextDocuments@{getTextDocuments}}
+\index{getTextDocuments@{getTextDocuments}!ConverterJSON@{ConverterJSON}}
+\doxysubsubsection{\texorpdfstring{getTextDocuments()}{getTextDocuments()}}
+{\footnotesize\ttfamily Paths\+List Converter\+JSON\+::get\+Text\+Documents (\begin{DoxyParamCaption}{ }\end{DoxyParamCaption}) const}
+
+\begin{DoxyReturn}{Returns}
+a list with the paths to documents to search in config.\+json 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classConverterJSON_a5e19caeb4641c7dcef91182e0954f769}\label{classConverterJSON_a5e19caeb4641c7dcef91182e0954f769}} 
+\index{ConverterJSON@{ConverterJSON}!openJson@{openJson}}
+\index{openJson@{openJson}!ConverterJSON@{ConverterJSON}}
+\doxysubsubsection{\texorpdfstring{openJson()}{openJson()}}
+{\footnotesize\ttfamily json Converter\+JSON\+::open\+Json (\begin{DoxyParamCaption}\item[{const Path\+Type \&}]{path }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+Creates json object from a file under path. Before creating check if file exists, perms to read and file\textquotesingle{}s extension(must be $\ast$.json) 
+\begin{DoxyParams}{Parameters}
+{\em path} & path to the file \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+json object 
+\end{DoxyReturn}
+\mbox{\Hypertarget{classConverterJSON_a6b87c8e1a25114483035a442703f5acf}\label{classConverterJSON_a6b87c8e1a25114483035a442703f5acf}} 
+\index{ConverterJSON@{ConverterJSON}!putAnswers@{putAnswers}}
+\index{putAnswers@{putAnswers}!ConverterJSON@{ConverterJSON}}
+\doxysubsubsection{\texorpdfstring{putAnswers()}{putAnswers()}}
+{\footnotesize\ttfamily void Converter\+JSON\+::put\+Answers (\begin{DoxyParamCaption}\item[{const Answers\+Lists \&}]{answers }\end{DoxyParamCaption}) const}
+
+Method writes answers to the file answers.\+json in json format 
+\begin{DoxyParams}{Parameters}
+{\em answer} & a data array containing answers to queries to the database of indexed documents \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classConverterJSON_aef79c2ce9d1d80ca1eb97fca5e7c863c}\label{classConverterJSON_aef79c2ce9d1d80ca1eb97fca5e7c863c}} 
+\index{ConverterJSON@{ConverterJSON}!updateConfig@{updateConfig}}
+\index{updateConfig@{updateConfig}!ConverterJSON@{ConverterJSON}}
+\doxysubsubsection{\texorpdfstring{updateConfig()}{updateConfig()}}
+{\footnotesize\ttfamily void Converter\+JSON\+::update\+Config (\begin{DoxyParamCaption}\item[{const Path\+Type \&}]{path = {\ttfamily \char`\"{}\char`\"{}} }\end{DoxyParamCaption})}
+
+Overwrites the current config file according to the path 
+\begin{DoxyParams}{Parameters}
+{\em path} & path to json file \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classConverterJSON_a329bd7cb523f03f703613f5594733131}\label{classConverterJSON_a329bd7cb523f03f703613f5594733131}} 
+\index{ConverterJSON@{ConverterJSON}!updateRequests@{updateRequests}}
+\index{updateRequests@{updateRequests}!ConverterJSON@{ConverterJSON}}
+\doxysubsubsection{\texorpdfstring{updateRequests()}{updateRequests()}}
+{\footnotesize\ttfamily void Converter\+JSON\+::update\+Requests (\begin{DoxyParamCaption}\item[{const Path\+Type \&}]{path = {\ttfamily \char`\"{}\char`\"{}} }\end{DoxyParamCaption})}
+
+Overwrites the current requests file according to the path 
+\begin{DoxyParams}{Parameters}
+{\em path} & path to json file \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{classConverterJSON_af5a600562f96ef5ed46adebfc3f16ee6}\label{classConverterJSON_af5a600562f96ef5ed46adebfc3f16ee6}} 
+\index{ConverterJSON@{ConverterJSON}!writeJsonToFile@{writeJsonToFile}}
+\index{writeJsonToFile@{writeJsonToFile}!ConverterJSON@{ConverterJSON}}
+\doxysubsubsection{\texorpdfstring{writeJsonToFile()}{writeJsonToFile()}}
+{\footnotesize\ttfamily int Converter\+JSON\+::write\+Json\+To\+File (\begin{DoxyParamCaption}\item[{json \&}]{json\+\_\+obj,  }\item[{const std\+::string \&}]{path }\end{DoxyParamCaption})\hspace{0.3cm}{\ttfamily [static]}}
+
+If file path exists overwriting it by file, create new file in path otherwise 
+\begin{DoxyParams}{Parameters}
+{\em file} & file to write \\
+\hline
+{\em path} & path to new file \\
+\hline
+\end{DoxyParams}
+
+
+The documentation for this class was generated from the following files\+:\begin{DoxyCompactItemize}
+\item 
+/home/maxnet/search\+\_\+engine/include/converter\+\_\+json.\+h\item 
+/home/maxnet/search\+\_\+engine/src/converter\+\_\+json.\+cpp\end{DoxyCompactItemize}

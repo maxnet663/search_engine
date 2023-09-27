@@ -1,0 +1,112 @@
+.TH "format::unicode" 3 "Wed Sep 27 2023" "Search Engine" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+format::unicode
+.SH SYNOPSIS
+.br
+.PP
+.SS "Functions"
+
+.in +1c
+.ti -1c
+.RI "icu::UnicodeString \fBmakeUnicodeString\fP (const std::string &s)"
+.br
+.ti -1c
+.RI "void \fBtoLowerAll\fP (icu::UnicodeString &s)"
+.br
+.ti -1c
+.RI "icu::UnicodeString \fBdeleteExtraSpaces\fP (const icu::UnicodeString &s)"
+.br
+.ti -1c
+.RI "icu::UnicodeString \fBdeletePunctuationMarks\fP (const icu::UnicodeString &s)"
+.br
+.ti -1c
+.RI "std::string \fBmakeUtfString\fP (const icu::UnicodeString &s)"
+.br
+.ti -1c
+.RI "void \fBconvertToPlainText\fP (icu::UnicodeString &s)"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+defines functions for working with Unicode strings 
+.SH "Function Documentation"
+.PP 
+.SS "void format::unicode::convertToPlainText (icu::UnicodeString & s)"
+Formatted UnicodeString: deletes whitespaces, punctuation marks, converts all letters to lowercase 
+.PP
+\fBParameters\fP
+.RS 4
+\fIs\fP UnicodeString 
+.RE
+.PP
+
+.SS "icu::UnicodeString format::unicode::deleteExtraSpaces (const icu::UnicodeString & s)"
+Deletes whitespaces 
+.PP
+\fBParameters\fP
+.RS 4
+\fIs\fP UnicodeString 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+UnicodeString 
+.RE
+.PP
+
+.SS "icu::UnicodeString format::unicode::deletePunctuationMarks (const icu::UnicodeString & s)"
+Deletes punctuation marks 
+.PP
+\fBParameters\fP
+.RS 4
+\fIs\fP UnicodeStrings 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+formatted Unicode string 
+.RE
+.PP
+
+.SS "icu::UnicodeString format::unicode::makeUnicodeString (const std::string & s)"
+Convert std::string from utf-8 to unicode 
+.PP
+\fBParameters\fP
+.RS 4
+\fIs\fP string 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+UnicodeString 
+.RE
+.PP
+
+.SS "std::string format::unicode::makeUtfString (const icu::UnicodeString & s)"
+Converts Unicode string to utf-8 std::string 
+.PP
+\fBParameters\fP
+.RS 4
+\fIs\fP UnicodeString 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+std::string 
+.RE
+.PP
+
+.SS "void format::unicode::toLowerAll (icu::UnicodeString & s)"
+Converts all characters to lowercase 
+.PP
+\fBParameters\fP
+.RS 4
+\fIs\fP UnicodeString 
+.RE
+.PP
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Search Engine from the source code\&.

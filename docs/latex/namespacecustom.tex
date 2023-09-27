@@ -1,0 +1,147 @@
+\hypertarget{namespacecustom}{}\doxysection{custom Namespace Reference}
+\label{namespacecustom}\index{custom@{custom}}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+size\+\_\+t \mbox{\hyperlink{namespacecustom_a915d7c77ebd0c29333cd2a94f99979b3}{words\+Counter}} (const std\+::string \&s)
+\item 
+std\+::string \mbox{\hyperlink{namespacecustom_abb02e51376d9c723c02cc1c2cf685724}{get\+File\+Name}} (std\+::string s)
+\item 
+size\+\_\+t \mbox{\hyperlink{namespacecustom_a01f0748a3df89620e1a9f8dc907ebfc5}{count\+Occurrences}} (const std\+::string \&text, const std\+::string \&word)
+\item 
+std\+::vector$<$ std\+::string $>$ \mbox{\hyperlink{namespacecustom_ad7eac8389fd5124630bcac2991fe5392}{get\+Unique\+Words}} (const std\+::string \&text)
+\item 
+double \mbox{\hyperlink{namespacecustom_a0b832cf2ed4ffdef25ade1aafc4b8245}{round}} (double num, int precision)
+\item 
+void \mbox{\hyperlink{namespacecustom_a50edb4baa83d882c8077a0c330b12712}{print\+\_\+red}} (const std\+::string \&msg)
+\item 
+void \mbox{\hyperlink{namespacecustom_aaade977125b462a4ae0bde45b4fee500}{print\+\_\+green}} (const std\+::string \&msg)
+\item 
+void \mbox{\hyperlink{namespacecustom_a5beb2855b5974a79efd93615bbab7ef0}{print\+\_\+yellow}} (const std\+::string \&msg)
+\item 
+void \mbox{\hyperlink{namespacecustom_a6ca417def0c1eb1383a9b45e3087d47c}{print\+\_\+blue}} (const std\+::string \&msg)
+\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+The namespace defines helper functions for string processing and text output 
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{namespacecustom_a01f0748a3df89620e1a9f8dc907ebfc5}\label{namespacecustom_a01f0748a3df89620e1a9f8dc907ebfc5}} 
+\index{custom@{custom}!countOccurrences@{countOccurrences}}
+\index{countOccurrences@{countOccurrences}!custom@{custom}}
+\doxysubsubsection{\texorpdfstring{countOccurrences()}{countOccurrences()}}
+{\footnotesize\ttfamily size\+\_\+t custom\+::count\+Occurrences (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{text,  }\item[{const std\+::string \&}]{word }\end{DoxyParamCaption})}
+
+Count occurrences of the word in text 
+\begin{DoxyParams}{Parameters}
+{\em text} & text \\
+\hline
+{\em word} & a word to count \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+number of occurrences word in text 
+\end{DoxyReturn}
+\mbox{\Hypertarget{namespacecustom_abb02e51376d9c723c02cc1c2cf685724}\label{namespacecustom_abb02e51376d9c723c02cc1c2cf685724}} 
+\index{custom@{custom}!getFileName@{getFileName}}
+\index{getFileName@{getFileName}!custom@{custom}}
+\doxysubsubsection{\texorpdfstring{getFileName()}{getFileName()}}
+{\footnotesize\ttfamily std\+::string custom\+::get\+File\+Name (\begin{DoxyParamCaption}\item[{std\+::string}]{s }\end{DoxyParamCaption})}
+
+Receives a path to a file or directory as input, returns its name example\+:s =\char`\"{}/project/logs/config.\+txt\char`\"{}, get\+File\+Name(s) returns config.\+txt 
+\begin{DoxyParams}{Parameters}
+{\em s} & path to file or directory \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the name of directory or file 
+\end{DoxyReturn}
+\mbox{\Hypertarget{namespacecustom_ad7eac8389fd5124630bcac2991fe5392}\label{namespacecustom_ad7eac8389fd5124630bcac2991fe5392}} 
+\index{custom@{custom}!getUniqueWords@{getUniqueWords}}
+\index{getUniqueWords@{getUniqueWords}!custom@{custom}}
+\doxysubsubsection{\texorpdfstring{getUniqueWords()}{getUniqueWords()}}
+{\footnotesize\ttfamily std\+::vector$<$ std\+::string $>$ custom\+::get\+Unique\+Words (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{text }\end{DoxyParamCaption})}
+
+The function generates a list of unique words from the text 
+\begin{DoxyParams}{Parameters}
+{\em text} & string of one or more words \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+list of unique words 
+\end{DoxyReturn}
+\mbox{\Hypertarget{namespacecustom_a6ca417def0c1eb1383a9b45e3087d47c}\label{namespacecustom_a6ca417def0c1eb1383a9b45e3087d47c}} 
+\index{custom@{custom}!print\_blue@{print\_blue}}
+\index{print\_blue@{print\_blue}!custom@{custom}}
+\doxysubsubsection{\texorpdfstring{print\_blue()}{print\_blue()}}
+{\footnotesize\ttfamily void custom\+::print\+\_\+blue (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{msg }\end{DoxyParamCaption})}
+
+Colors printing to standard output in blue 
+\begin{DoxyParams}{Parameters}
+{\em msg} & message to print \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{namespacecustom_aaade977125b462a4ae0bde45b4fee500}\label{namespacecustom_aaade977125b462a4ae0bde45b4fee500}} 
+\index{custom@{custom}!print\_green@{print\_green}}
+\index{print\_green@{print\_green}!custom@{custom}}
+\doxysubsubsection{\texorpdfstring{print\_green()}{print\_green()}}
+{\footnotesize\ttfamily void custom\+::print\+\_\+green (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{msg }\end{DoxyParamCaption})}
+
+Colors printing to standard output in green 
+\begin{DoxyParams}{Parameters}
+{\em msg} & message to print \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{namespacecustom_a50edb4baa83d882c8077a0c330b12712}\label{namespacecustom_a50edb4baa83d882c8077a0c330b12712}} 
+\index{custom@{custom}!print\_red@{print\_red}}
+\index{print\_red@{print\_red}!custom@{custom}}
+\doxysubsubsection{\texorpdfstring{print\_red()}{print\_red()}}
+{\footnotesize\ttfamily void custom\+::print\+\_\+red (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{msg }\end{DoxyParamCaption})}
+
+Сolors printing to standard output in red 
+\begin{DoxyParams}{Parameters}
+{\em msg} & message to print \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{namespacecustom_a5beb2855b5974a79efd93615bbab7ef0}\label{namespacecustom_a5beb2855b5974a79efd93615bbab7ef0}} 
+\index{custom@{custom}!print\_yellow@{print\_yellow}}
+\index{print\_yellow@{print\_yellow}!custom@{custom}}
+\doxysubsubsection{\texorpdfstring{print\_yellow()}{print\_yellow()}}
+{\footnotesize\ttfamily void custom\+::print\+\_\+yellow (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{msg }\end{DoxyParamCaption})}
+
+Colors printing to standard output in yellow 
+\begin{DoxyParams}{Parameters}
+{\em msg} & message to print \\
+\hline
+\end{DoxyParams}
+\mbox{\Hypertarget{namespacecustom_a0b832cf2ed4ffdef25ade1aafc4b8245}\label{namespacecustom_a0b832cf2ed4ffdef25ade1aafc4b8245}} 
+\index{custom@{custom}!round@{round}}
+\index{round@{round}!custom@{custom}}
+\doxysubsubsection{\texorpdfstring{round()}{round()}}
+{\footnotesize\ttfamily double custom\+::round (\begin{DoxyParamCaption}\item[{double}]{num,  }\item[{int}]{precision }\end{DoxyParamCaption})}
+
+Rounds the number up to n decimal place 
+\begin{DoxyParams}{Parameters}
+{\em num} & number to round \\
+\hline
+{\em precision} & quantity with decimal place \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+rounded number 
+\end{DoxyReturn}
+\mbox{\Hypertarget{namespacecustom_a915d7c77ebd0c29333cd2a94f99979b3}\label{namespacecustom_a915d7c77ebd0c29333cd2a94f99979b3}} 
+\index{custom@{custom}!wordsCounter@{wordsCounter}}
+\index{wordsCounter@{wordsCounter}!custom@{custom}}
+\doxysubsubsection{\texorpdfstring{wordsCounter()}{wordsCounter()}}
+{\footnotesize\ttfamily size\+\_\+t custom\+::words\+Counter (\begin{DoxyParamCaption}\item[{const std\+::string \&}]{s }\end{DoxyParamCaption})}
+
+Counts number of words in string 
+\begin{DoxyParams}{Parameters}
+{\em s} & string \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+number of words in string 
+\end{DoxyReturn}
