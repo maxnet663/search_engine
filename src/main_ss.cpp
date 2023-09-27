@@ -8,8 +8,8 @@ int main() {
     custom::print_green("Prepare to run...");
     auto help_msg =
             "Input path (relative or absolute) to json files. Type:\n"
-            "-d <path/where/search/jsons> or <default> [-def] to find json files in current"
-            "\n directory.\n"
+            "-d </path/where/search/jsons> or <default> [-def] to find json files in current"
+            " directory.\n"
             "-p </path/to/config.json> </path/to/requests.json> to set paths explicitly";
     std::cout << help_msg << std::endl;
     PRINT_INVITATION

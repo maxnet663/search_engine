@@ -100,26 +100,6 @@ double custom::round(double num, int precision) {
     return std::stod(os.str());
 }
 
-bool custom::isReadable(const std::string &file_name) {
-    std::filesystem::path path(file_name);
-    if (!exists(path))
-        return false;
-
-    auto file_perms = std::filesystem::status(path).permissions();
-    auto read_perms = std::filesystem::perms::owner_read;
-    return std::filesystem::perms::none != (file_perms & read_perms);
-}
-
-bool custom::isWriteable(const std::string &file_name) {
-    std::filesystem::path path(file_name);
-    if (!exists(path))
-        return false;
-
-    auto file_perms = std::filesystem::status(path).permissions();
-    auto write_perms = std::filesystem::perms::owner_write;
-    return std::filesystem::perms::none != (file_perms & write_perms);
-}
-
 void custom::print_red(const std::string &msg) {
     std::cout << termcolor::red << msg << termcolor::reset << std::endl;
 }

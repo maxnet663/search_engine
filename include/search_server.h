@@ -2,14 +2,10 @@
 #define SEARCH_SERVER_H
 
 #include "include/inverted_index.h"
+#include "project_types.h"
 
 struct RelativeIndex;
 struct DocRelevance;
-
-typedef std::vector<std::string> RequestsList;
-typedef std::vector<DocRelevance> RelevantDocs;
-typedef std::vector<RelativeIndex> Answer;
-typedef std::vector<std::vector<RelativeIndex>> AnswersLists;
 
 
 /**
@@ -30,6 +26,10 @@ struct DocRelevance {
     }
 };
 
+/**
+ * Structure represents an relevant document and its relevance
+ * for the query
+ */
 struct RelativeIndex {
     size_t doc_id;
     double rank;
@@ -39,6 +39,9 @@ struct RelativeIndex {
     }
 };
 
+/**
+ * Class performs search for relevant documents
+ */
 class SearchServer {
 
     const InvertedIndex &_index;
@@ -50,14 +53,13 @@ public:
     SearchServer(const SearchServer &other) = default;
 
     /**
-     * @param idx pointer to the docs database
+     * @param idx: pointer to the docs database
      */
     explicit SearchServer(const InvertedIndex &idx) : _index(idx) {};
 
     /**
-     * Search query processing method
-     * !async!
-     * @param queries_input search queries taken from the file requests.json
+     * Search query processing method (async)
+     * @param queries_input: search queries taken from the file requests.json
      * @return returns a sorted list of relevant
      * responses for given requests
      */
@@ -66,17 +68,17 @@ public:
 private:
 
     /**
-     * generates a list of relevant documents and counts
+     * Generates a list of relevant documents and counts
      * relevance index for each document
-     * @param unique_queries list of unique requests
+     * @param unique_queries: list of unique requests
      * @return list of relevant documents
      */
     RelevantDocs getRelevantDocs(const RequestsList &unique_queries);
 
     /**
-     * uses for async computing
+     * Uses for async computing
      * method makes request to the db, returns answer to the query
-     * @param query string which represents a request
+     * @param query: string which represents a request
      * @return list with relevant docs with their relevance
      */
     Answer makeRequest(const std::string &query);

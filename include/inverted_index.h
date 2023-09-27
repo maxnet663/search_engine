@@ -6,16 +6,13 @@
 #include <string>
 #include <mutex>
 
-struct Entry;
+#include "include/project_types.h"
 
 
-typedef
-std::unordered_map<std::string, std::unordered_map<size_t, size_t>> DictionaryType;
-typedef std::string Text;
-typedef std::vector<std::string> TextsList;
-typedef std::vector<std::string> PathsList;
-typedef std::unordered_map<size_t, size_t> Frequency;
-
+/**
+ * The class is a dictionary containing
+ * unique words from indexed documents
+ */
 class InvertedIndex {
 
     TextsList docs_texts;
@@ -25,15 +22,17 @@ class InvertedIndex {
 public:
 
     /**
-     * default return value for queries that are not in the dictionary
+     * Default return value for queries that are not in the dictionary
      */
     static const Frequency nfound;
 
+    /**
+     * Constructs empty dictionary
+     */
     InvertedIndex() = default;
 
     /**
-     * needed because the mutex class has had its copy
-     * constructor removed, so we can't use the default copy constructor
+     * Copy constructor without copying of mutex member
      * @param other another instance of InvertedIndex class
      */
     InvertedIndex(const InvertedIndex &other)
@@ -48,16 +47,16 @@ public:
     InvertedIndex& operator=(InvertedIndex&& right) noexcept;
 
     /**
-     * update or fill in the database of documents
+     * Update or fill in the database of documents
      * on which we will then search
-     * @param input_docs paths to documents
+     * @param input_docs: paths to documents
      */
     void updateDocumentBase(const PathsList &input_docs);
 
     /**
-     * method determines the number of occurrences
+     * Method determines the number of occurrences
      * of a word in the loaded document base
-     * @param word the word whose occurrence frequency is to be determined
+     * @param word: the word whose occurrence frequency is to be determined
      * @return const ref to a list with word frequency or nfound
      */
     const Frequency& getWordCount(const std::string &word) const;
@@ -65,30 +64,30 @@ public:
 private:
 
     /**
-     * fill freq_dictionary by the unique words from the text
-     * !uses for threads!
-     * @param text file's text to get unique words
+     * Fill freq_dictionary by the unique words from the text.
+     * Uses for multithread filling db
+     * @param text: file's text to get unique words
      */
     void parseInWords(const Text &text);
 
     /**
-     * searches for occurrences of a word in array docs of document texts
+     * Searches for occurrences of a word in array docs of document texts
      * and prepares a frequency for the word
-     * @param word
+     * @param word: word to get frequency
      * @return frequency of the word
      */
     Frequency getWordFrequency(const std::string &word) const;
 
     /**
-     * extract texts from each docs in input_docs list
-     * @param input_docs list of paths to documents
+     * Extract texts from each docs in input_docs list
+     * @param input_docs: list of paths to documents
      * @return list of texts in the same order
      */
     Text loadText(const std::string &doc_path);
 
     /**
-     * loads texts from file's list to dest
-     * !dest will be cleared!
+     * Loads texts from file's list to dest.
+     * Dest will be cleared
      * @param docs_paths list of paths to files
      * @param dest destination to load
      */

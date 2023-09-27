@@ -5,6 +5,7 @@
 #include <iostream> // cerr
 
 #include "include/custom_functions.h"
+#include "include/file_reader.h"
 #include "include/formatting.h"
 #include "include/project_constants.h"
 
@@ -63,10 +64,12 @@ RequestsList ConverterJSON::getRequests() const {
     RequestsList requests_list; // result data
     requests_list.reserve(requests["requests"].size());
 
-    for (const auto &i : requests["requests"]) {
-        std::string buf = to_string(i); // get request
-        format::utf::formatString(buf); // format it
-        requests_list.push_back(std::move(buf)); // write to requests_list
+    for (const auto &req : requests["requests"]) {
+        auto utf_text = to_string(req); // get request
+        auto uc_text = format::unicode::makeUnicodeString(utf_text);
+        format::unicode::convertToPlainText(uc_text);
+        auto formatted_text = format::unicode::makeUtfString(uc_text);
+        requests_list.push_back(std::move(formatted_text)); // write to requests_list
     }
 
     return requests_list;
@@ -166,7 +169,7 @@ void ConverterJSON::updateRequests(const PathType &path) {
 }
 
 json ConverterJSON::openJson(const PathType &path) {
-    if (!std::filesystem::exists(path) || !custom::isReadable(path)) {
+    if (!std::filesystem::exists(path) || !FileReader::isReadable(path)) {
         custom::print_yellow(
                 "Could not open file " + path + ". Check the file");
         return nullptr;
@@ -194,7 +197,7 @@ int ConverterJSON::writeJsonToFile(json &json_obj, const std::string &path) {
             custom::print_yellow(path + " is a directory");
             return 0;
         }
-        if (!custom::isWriteable(path)) {
+        if (!FileReader::isWriteable(path)) {
             custom::print_yellow("Can not write to the file "
                                 + path
                                 + " permission denied");

@@ -6,14 +6,11 @@
 #include "nlohmann/json.hpp" // json
 
 #include "include/search_server.h" // RelativeIndex
+#include "include/project_types.h" // types
 
-typedef std::string PathType;
-typedef std::vector<std::string> RequestsList;
-typedef std::vector<std::string> PathsList;
-typedef nlohmann::json json;
-typedef std::vector<std::vector<RelativeIndex>> AnswersLists;
-
-// Class for working with json files
+/**
+ * Class for working with json files
+ */
 class ConverterJSON {
     PathType config_path;
     PathType requests_path;
@@ -29,7 +26,7 @@ public:
     ConverterJSON(PathType conf_p, PathType req_p);
 
     /**
-     * config getter
+     * Config getter
      * @return json object config.json
      */
     const json& getConfig() const { return config; }
@@ -55,20 +52,20 @@ public:
 
     /**
      * Method writes answers to the file answers.json in json format
-     * @param answer a data array containing answers to queries to
+     * @param answer: a data array containing answers to queries to
      * the database of indexed documents
      */
     void putAnswers(const AnswersLists &answers) const;
 
    /**
-    * overwrites the current config file according to the path
-    * @param path path to json file
+    * Overwrites the current config file according to the path
+    * @param path: path to json file
     */
     void updateConfig(const PathType &path = "");
 
     /**
-     * overwrites the current requests file according to the path
-     * @param path path to json file
+     * Overwrites the current requests file according to the path
+     * @param path: path to json file
      */
     void updateRequests(const PathType &path = "");
 
@@ -85,26 +82,26 @@ public:
     PathType getRequestsPath() const {return requests_path; }
 
     /**
-     * creates json object from a file under path
-     * !before creating check if file exists, perms to read
-     * and file's extension(must be *.json)!
-     * @param path path to the file
+     * Creates json object from a file under path.
+     * Before creating check if file exists, perms to read
+     * and file's extension(must be *.json)
+     * @param path: path to the file
      * @return json object
      */
     static json openJson(const PathType &path);
 
     /**
-     * if file path exists overwriting it by file,
+     * If file path exists overwriting it by file,
      * create new file in path otherwise
-     * @param file file to write
-     * @param path path to new file
+     * @param file: file to write
+     * @param path: path to new file
      */
     static int writeJsonToFile(json &json_obj, const std::string &path);
 
     /**
-     * searches for file_name in directory tree with root in dir
-     * @param file_name name of the file
-     * @param dir start dir
+     * Searches for file_name in directory tree with root in dir
+     * @param file_name: name of the file
+     * @param dir: start dir
      * @return absolute path to a file or empty string
      */
     static PathType findFile(const std::string &file_name
@@ -113,30 +110,30 @@ public:
 private:
 
     /**
-     * check if config properties is valid
+     * Check if config properties is valid
      * @return true if contains the required values
      * throws invalid_argument otherwise
      */
     bool checkConfigProperties(const json &json_file);
 
     /**
-      * make a json object from config.json
-      * @param path path to a config.json
+      * Make a json object from config.json
+      * @param path: path to a config.json
       * @return json object made of config.json
       * throws filesystem_error or invalid_argument otherwise
       */
     json loadConfigJson(const PathType &path);
 
     /**
-     * check if requests properties is valid
+     * Check if requests properties is valid
      * @return true if contains the required values
      * throws invalid_argument otherwise
      */
     bool checkRequestsProperties(const json &json_file);
 
     /**
-     * make a json object from requests.json
-     * @param path to requests.json
+     * Make a json object from requests.json
+     * @param path: to requests.json
      * @return json object made of request.json throws
      * filesystem_error or invalid_argument otherwise
      */

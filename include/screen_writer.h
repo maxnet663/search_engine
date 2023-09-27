@@ -12,17 +12,13 @@
 #include "include/inverted_index.h"
 #include "include/search_server.h"
 #include "include/project_constants.h"
+#include "include/project_types.h"
 #include "include/formatting.h"
 
 /**
  * invite the user to enter
  */
 #define PRINT_INVITATION std::cout << "> ";
-
-typedef std::string PathType;
-typedef std::filesystem::file_time_type UpdatedTime;
-typedef std::queue<std::string> ArgsList;
-typedef std::unique_ptr<ConverterJSON> ConverterPtr;
 
 class ScreenWriter {
     ConverterPtr pconverter;
@@ -49,8 +45,8 @@ public:
 
     /**
      * Method constructs ConverterJSON
-     * @tparam Args variadic parameters
-     * @param args arguments will be passed to the constructor ConverterJSON
+     * @tparam Args: variadic parameters
+     * @param args: arguments will be passed to the constructor ConverterJSON
      * can be (), (string), (string, string)
      * @return unique_ptr to a ConverterJson
      */
@@ -58,15 +54,15 @@ public:
     static ConverterPtr makeConverter(Args&&... args);
 
     /**
-     * An alternative way to construct an object
+     * An alternative way to construct ConverterJSON
      * through dialogue with the user
-     * @return
+     * @return unique_ptr to created ConverterJSON
      */
     static ConverterPtr handMakeConverter();
 
     /**
-     * turns a string into a sequence of commands
-     * @param cmd string containing commands
+     * Turns a string into a sequence of commands
+     * @param cmd: string containing commands
      * @return queue containing commands
      */
     static ArgsList commandParser(const std::string &cmd);
@@ -74,8 +70,8 @@ public:
 private:
 
     /**
-     * command handler
-     * @param cmd format string representing a command
+     * Command handler
+     * @param cmd: format string representing a command
      */
     void handler(std::string &cmd);
 
@@ -101,29 +97,29 @@ private:
     bool checkUpdate();
 
     /**
-     * prints the command's list
+     * Prints the command's list
      */
     void showHelp();
 
     /**
-     * prints information about the current session:
+     * Prints information about the current session:
      * the name and version of the engine and the
      * current configuration files
      */
     void showStat();
 
     /**
-     * prints the request's list
+     * Prints the request's list
      */
     void showRequests();
 
     /**
-     * prints the list of current indexed documents
+     * Prints the list of current indexed documents
      */
     void showIndexedDocs();
 
     /**
-     * make search with current requests in current indexed documents
+     * Make search with current requests in current indexed documents
      */
     void search();
 
@@ -134,17 +130,17 @@ private:
     void showAnswers();
 
     /**
-     * helper method for showAnswers. Print contents
+     * Helper method for showAnswers. Print contents
      * of answers
      * @param answers json object in answers form
      */
     void printAnswers(const json &answers);
 
     /**
-     * the method replaces relative paths with absolute ones;
+     * The method replaces relative paths with absolute ones;
      * if a file at that path does not exist, the path is
      * deleted and a warning is printed
-     * @param paths path's list
+     * @param paths: path's list
      * @return list of absolute paths to existing files
      */
     PathsList makeAbsolute(PathsList paths);
