@@ -1,5 +1,10 @@
 #!/bin/sh
 
+# install script for unix-like systems
+# its takes the installation path as an argument,
+# builds the project and installs it in the passed directory
+# example: ./install_nix /path/to/install
+
 # check args
 if [ "$#" -lt "1" ]; then
     echo "Install path required"

@@ -9,7 +9,10 @@
     "resources/file002.txt",
     "resources/file003.txt",
     "resources/file004.txt",
-    "strange/file",
-    "another/strange/file"
+    "non/existing/file",
+    "resources/arab_text.txt",
+    "resources/russian_text.txt",
+    "resources/spanish_text.txt",
+    "resources/chinese_text.txt"
   ]
 }

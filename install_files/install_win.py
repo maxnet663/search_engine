@@ -4,6 +4,17 @@ import sys
 import re
 
 
+# install script for windows. Its takes the installation
+# path as first argument, also, the compiler can be passed
+# as the second argument (by default GCC), and the config
+# file generator can be passed as the third  argument
+# (by default MinGW Makefiles) builds the project and
+# installs the project in the passed directory
+# example: python.exe install_win.py C:\path\to\install
+# or: python.exe install_win.py C:\path\to\install clang
+# or: python.exe install_win.py C:\path\to\install clang "Unix Makefiles"
+
+
 def check_installed(cmd):
     return not (shutil.which(cmd) is None)
 
