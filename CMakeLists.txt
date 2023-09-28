@@ -32,6 +32,10 @@ install(FILES
         resources/file002.txt
         resources/file003.txt
         resources/file004.txt
+        resources/arab_text.txt
+        resources/chinese_text.txt
+        resources/russian_text.txt
+        resources/spanish_text.txt
         DESTINATION
         resources)
 
