@@ -5,14 +5,21 @@
     "max_responses":5
   },
   "files": [
-    "../resources/file001.txt",
-    "../resources/file002.txt",
-    "../resources/file003.txt",
-    "../resources/file004.txt",
-    "../non/existing/file",
-    "../resources/arab_text.txt",
-    "../resources/russian_text.txt",
-    "../resources/spanish_text.txt",
-    "../resources/chinese_text.txt"
+    "../resources/Conspect1.txt",
+    "../resources/Conspect2.txt",
+    "../resources/Conspect3.txt",
+    "../resources/Conspect4.txt",
+    "../resources/Conspect5.txt",
+    "../resources/Conspect6.txt",
+    "../resources/Conspect7.txt",
+    "../resources/Conspect8.txt",
+    "../resources/Conspect9.txt",
+    "../resources/Conspect10.txt",
+    "../resources/text1.txt",
+    "../resources/text2.txt",
+    "../resources/text3.txt",
+    "../resources/text4.txt",
+    "../resources/text5.txt",
+    "../resources/text6.txt"
   ]
 }

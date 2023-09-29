@@ -68,7 +68,7 @@ private:
      * Uses for multithread filling db
      * @param text: file's text to get unique words
      */
-    void parseInWords(const Text &text);
+    void parseInWords(std::string_view text);
 
     /**
      * Searches for occurrences of a word in array docs of document texts
@@ -76,7 +76,7 @@ private:
      * @param word: word to get frequency
      * @return frequency of the word
      */
-    Frequency getWordFrequency(const std::string &word) const;
+    Frequency getWordFrequency(std::string_view &word) const;
 
     /**
      * Extract texts from each docs in input_docs list
