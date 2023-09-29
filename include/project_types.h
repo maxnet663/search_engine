@@ -18,7 +18,8 @@ struct RelativeIndex;
  * data structure for frequency dictionary
  */
 typedef
-std::unordered_map<std::string, std::unordered_map<size_t, size_t>> DictionaryType;
+std::unordered_map<std::string, std::unordered_map<size_t, size_t>>
+DictionaryType;
 
 /**
  * type of text representation extracted from text files

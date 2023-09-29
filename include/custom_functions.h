@@ -32,7 +32,7 @@ namespace custom {
      * @param word: a word to count
      * @return number of occurrences word in text
      */
-    size_t countOccurrences(const std::string &text, const std::string &word);
+    size_t countOccurrences(std::string_view text, const std::string &word);
 
     /**
      * The function generates a list of unique words from the text

@@ -27,7 +27,8 @@ Text FileReader::getText() {
 
 Text FileReader::getFormattedText() {
     auto uc_text = format::unicode::makeUnicodeString(getText());
-    format::unicode::convertToPlainText(uc_text);
+    uc_text = format::unicode::deletePunctuationMarks(uc_text);
+    uc_text.toLower();
     return format::unicode::makeUtfString(uc_text);
 }
 
@@ -49,4 +50,18 @@ bool FileReader::isWriteable(const std::string &file_name) {
     auto file_perms = std::filesystem::status(path).permissions();
     auto write_perms = std::filesystem::perms::owner_write;
     return std::filesystem::perms::none != (file_perms & write_perms);
+}
+
+bool FileReader::operator>>(std::string &dest) {
+    if (read_stream.eof())
+        return false;
+    std::string word;
+    word.reserve(BUFFER_SIZE);
+    read_stream >> word;
+    auto uc_word = format::unicode::makeUnicodeString(word);
+    uc_word = format::unicode::deletePunctuationMarks(uc_word);
+    uc_word.toLower();
+    dest.clear();
+    dest.append(format::unicode::makeUtfString(uc_word));
+    return !this->read_stream.eof();
 }

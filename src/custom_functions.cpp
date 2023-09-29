@@ -53,35 +53,16 @@ std::string custom::getFileName(std::string s) {
     return s;
 }
 
-size_t custom::countOccurrences(const std::string &text
+size_t custom::countOccurrences(std::string_view text
                                 , const std::string &word) {
-    size_t walk = 0;
-    size_t occur_counter = 0;
-
-    // while we can detect occurrence
-    while (walk <= text.length() - word.length()) {
-
-        // get the index of occurrence's start
-        auto occur_begin = text.find(word, walk);
-
-        // if there is not any occurrence
-        if (occur_begin == std::string::npos)
-            return occur_counter;
-
-        auto occur_end = occur_begin + word.length();
-
-        // if the occurrence is a single word, not part of a word
-        if ( (occur_begin == 0 || text[occur_begin - 1] == ' ')
-             && (text[occur_end] == ' ' || occur_end == text.length()) ) {
-
-            occur_counter++;
-        }
-
-        // move the current index
-        walk = occur_end;
+    size_t counter = 0;
+    while (!text.empty()) {
+        text.remove_prefix(std::min(text.find_first_not_of(' '), text.length()));
+        auto word_end = std::min(text.find_first_of(' '), text.length());
+        counter += word == text.substr(0, word_end);
+        text.remove_prefix(word_end);
     }
-
-    return occur_counter;
+    return counter;
 }
 
 std::vector<std::string> custom::getUniqueWords(const std::string &text) {

@@ -11,7 +11,7 @@
 /**
  * size of buffer for reading from file
  */
-#define BUFFER_SIZE
+#define BUFFER_SIZE 50
 
 /**
  * Wrapper over standard file reading stream
@@ -89,6 +89,8 @@ public:
      * false otherwise
      */
     static bool isWriteable(const std::string &file_path);
+
+    bool operator>>(std::string &dest);
 };
 
 #endif //FILE_READER_H

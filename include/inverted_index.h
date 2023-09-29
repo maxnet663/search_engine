@@ -8,14 +8,12 @@
 
 #include "include/project_types.h"
 
-
 /**
  * The class is a dictionary containing
  * unique words from indexed documents
  */
 class InvertedIndex {
 
-    TextsList docs_texts;
     DictionaryType freq_dictionary;
     std::mutex dict_access; // mutex to manage access to freq_dictionary
 
@@ -36,13 +34,12 @@ public:
      * @param other another instance of InvertedIndex class
      */
     InvertedIndex(const InvertedIndex &other)
-    : docs_texts(other.docs_texts), freq_dictionary(other.freq_dictionary) {};
+    : freq_dictionary(other.freq_dictionary) {};
 
     InvertedIndex& operator=(const InvertedIndex &right);
 
     InvertedIndex(InvertedIndex&& other) noexcept
-    : docs_texts(std::move(other.docs_texts))
-    , freq_dictionary(std::move(other.freq_dictionary)) {};
+    : freq_dictionary(std::move(other.freq_dictionary)) {};
 
     InvertedIndex& operator=(InvertedIndex&& right) noexcept;
 
@@ -68,22 +65,15 @@ private:
      * Uses for multithread filling db
      * @param text: file's text to get unique words
      */
-    void parseInWords(const Text &text);
-
-    /**
-     * Searches for occurrences of a word in array docs of document texts
-     * and prepares a frequency for the word
-     * @param word: word to get frequency
-     * @return frequency of the word
-     */
-    Frequency getWordFrequency(const std::string &word) const;
+    void fillDictionary(const std::unordered_map<std::string, size_t> &table
+                        , size_t doc_id);
 
     /**
      * Extract texts from each docs in input_docs list
      * @param input_docs: list of paths to documents
      * @return list of texts in the same order
      */
-    Text loadText(const std::string &doc_path);
+    std::unordered_map<std::string, size_t> loadText(const std::string &doc_path);
 
     /**
      * Loads texts from file's list to dest.
@@ -91,7 +81,15 @@ private:
      * @param docs_paths list of paths to files
      * @param dest destination to load
      */
-    void loadFilesText(const PathsList &docs_paths, TextsList &dest);
+    void indexTexts(const PathsList &docs_paths
+                       , std::vector<std::unordered_map<std::string, size_t>> dest);
+
+    void
+    fillWordsTable(std::vector<std::queue<std::string>> &texts
+                   , std::vector<std::unordered_map<std::string, size_t>> &table);
+
+    std::unordered_map<std::string, size_t>
+    makeRecord(std::queue<std::string> &text);
 
 };
 
