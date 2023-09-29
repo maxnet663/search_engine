@@ -34,10 +34,10 @@ std::string format::unicode::makeUtfString(const icu::UnicodeString &s) {
 }
 
 void format::unicode::convertToPlainText(icu::UnicodeString &s) {
-    s.trim();
     s.toLower();
     s = deletePunctuationMarks(s);
     s = deleteExtraSpaces(s);
+    s.trim();
 }
 
 void format::utf::formatString(std::string &s)  {

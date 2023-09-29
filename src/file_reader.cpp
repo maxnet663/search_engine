@@ -57,10 +57,8 @@ bool FileReader::operator>>(std::string &dest) {
     std::string word;
     read_stream >> word;
     auto uc_word = format::unicode::makeUnicodeString(word);
-    uc_word = format::unicode::deletePunctuationMarks(uc_word);
-    uc_word = format::unicode::deleteExtraSpaces(uc_word);
-    uc_word.toLower();
+    format::unicode::convertToPlainText(uc_word);
     dest.clear();
     dest.append(format::unicode::makeUtfString(uc_word));
-    return !read_stream.eof();
+    return true;
 }

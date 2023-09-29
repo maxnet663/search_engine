@@ -24,7 +24,8 @@ void InvertedIndex::updateDocumentBase(const PathsList &input_docs) {
                 , this
                 , std::cref(input_docs[i])
                 , i);
-        if (threads_pool.size() >= threads_limit) {
+        if (threads_pool.size() >= threads_limit
+            || i == input_docs.size() - 1) {
             for (auto &thread : threads_pool) {
                 thread.join();
             }
