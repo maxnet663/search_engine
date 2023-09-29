@@ -56,12 +56,12 @@ bool FileReader::operator>>(std::string &dest) {
     if (read_stream.eof())
         return false;
     std::string word;
-    word.reserve(BUFFER_SIZE);
     read_stream >> word;
     auto uc_word = format::unicode::makeUnicodeString(word);
     uc_word = format::unicode::deletePunctuationMarks(uc_word);
+    uc_word = format::unicode::deleteExtraSpaces(uc_word);
     uc_word.toLower();
     dest.clear();
     dest.append(format::unicode::makeUtfString(uc_word));
-    return !this->read_stream.eof();
+    return !read_stream.eof();
 }

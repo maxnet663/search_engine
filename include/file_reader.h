@@ -9,11 +9,6 @@
 #include "include/project_types.h"
 
 /**
- * size of buffer for reading from file
- */
-#define BUFFER_SIZE 50
-
-/**
  * Wrapper over standard file reading stream
  */
 class FileReader {
