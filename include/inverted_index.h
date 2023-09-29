@@ -8,16 +8,15 @@
 
 #include "include/project_types.h"
 
-
 /**
  * The class is a dictionary containing
  * unique words from indexed documents
  */
 class InvertedIndex {
 
-    TextsList docs_texts;
     DictionaryType freq_dictionary;
     std::mutex dict_access; // mutex to manage access to freq_dictionary
+    std::mutex print_access;
 
 public:
 
@@ -36,13 +35,12 @@ public:
      * @param other another instance of InvertedIndex class
      */
     InvertedIndex(const InvertedIndex &other)
-    : docs_texts(other.docs_texts), freq_dictionary(other.freq_dictionary) {};
+    : freq_dictionary(other.freq_dictionary) {};
 
     InvertedIndex& operator=(const InvertedIndex &right);
 
     InvertedIndex(InvertedIndex&& other) noexcept
-    : docs_texts(std::move(other.docs_texts))
-    , freq_dictionary(std::move(other.freq_dictionary)) {};
+    : freq_dictionary(std::move(other.freq_dictionary)) {};
 
     InvertedIndex& operator=(InvertedIndex&& right) noexcept;
 
@@ -64,13 +62,6 @@ public:
 private:
 
     /**
-     * Fill freq_dictionary by the unique words from the text.
-     * Uses for multithread filling db
-     * @param text: file's text to get unique words
-     */
-    void parseInWords(std::string_view text);
-
-    /**
      * Searches for occurrences of a word in array docs of document texts
      * and prepares a frequency for the word
      * @param word: word to get frequency
@@ -83,15 +74,7 @@ private:
      * @param input_docs: list of paths to documents
      * @return list of texts in the same order
      */
-    Text loadText(const std::string &doc_path);
-
-    /**
-     * Loads texts from file's list to dest.
-     * Dest will be cleared
-     * @param docs_paths list of paths to files
-     * @param dest destination to load
-     */
-    void loadFilesText(const PathsList &docs_paths, TextsList &dest);
+    void indexText(const std::string &doc_path, size_t doc_id);
 
 };
 

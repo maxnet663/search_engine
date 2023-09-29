@@ -54,11 +54,13 @@ std::string custom::getFileName(std::string s) {
 }
 
 size_t custom::countOccurrences(std::string_view text
-                                , std::string_view &word) {
+                                , const std::string &word) {
     size_t counter = 0;
     while (!text.empty()) {
-        text.remove_prefix(std::min(text.find_first_not_of(' '), text.length()));
-        auto word_end = std::min(text.find_first_of(' '), text.length());
+        text.remove_prefix(std::min(text.find_first_not_of(' ')
+                                    , text.length()));
+        auto word_end =
+                std::min(text.find_first_of(' '), text.length());
         counter += word == text.substr(0, word_end);
         text.remove_prefix(word_end);
     }

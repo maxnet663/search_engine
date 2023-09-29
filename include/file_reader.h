@@ -9,11 +9,6 @@
 #include "include/project_types.h"
 
 /**
- * size of buffer for reading from file
- */
-#define BUFFER_SIZE
-
-/**
  * Wrapper over standard file reading stream
  */
 class FileReader {
@@ -89,6 +84,8 @@ public:
      * false otherwise
      */
     static bool isWriteable(const std::string &file_path);
+
+    bool operator>>(std::string &dest);
 };
 
 #endif //FILE_READER_H
