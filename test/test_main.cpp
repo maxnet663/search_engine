@@ -14,10 +14,10 @@ TEST(ConverterJSONTest, EmptyDocumentsListTest) {
 TEST(ConverterJSONTest, GetTextDocumentsTest) {
     ConverterJSON cj(TESTS_DIR);
     std::vector<std::string> expected_result = {
-            "../resources/file001.txt",
-            "../resources/file002.txt",
-            "../resources/file003.txt",
-            "../resources/file004.txt"
+            "../resources_test/file001.txt",
+            "../resources_test/file002.txt",
+            "../resources_test/file003.txt",
+            "../resources_test/file004.txt"
             };
     auto real_result = cj.getTextDocuments();
     ASSERT_EQ(expected_result, real_result);
@@ -69,9 +69,11 @@ void TestInvertedIndexFunctionality(
 }
 
 TEST(TestCaseInvertedIndex, TestBasic) {
+
+    std::string path = TESTS_DIR;
     const std::vector<std::string> docs = {
-            "london is the capital of great britain",
-            "big ben is the nickname for the great bell of the striking clock"
+            path + "/" + "resources_test/test_basic1.txt",
+            path + "/" + "resources_test/test_basic2.txt"
     };
     const std::vector<std::string> requests = {"london", "the"};
     const std::vector<Frequency> expected = {
@@ -82,9 +84,10 @@ TEST(TestCaseInvertedIndex, TestBasic) {
 };
 
 TEST(TestCaseInvertedIndex, TestInvertedIndexMissingWord) {
+    std::string path = TESTS_DIR;
    const std::vector<std::string> docs = {
-           "a b c d e f g h i j k l",
-           "statement"
+           path + "/" + "resources_test/test_missing_word1.txt",
+           path + "/" + "resources_test/test_missing_word2.txt"
    };
    const std::vector<std::string> requests = {"m", "statement"};
    const std::vector<Frequency> expected = {
@@ -95,11 +98,12 @@ TEST(TestCaseInvertedIndex, TestInvertedIndexMissingWord) {
 };
 
 TEST(TestCaseSearchServer, TestSimple) {
+    std::string path = TESTS_DIR;
     const std::vector<std::string> docs = {
-            "milk milk milk milk water water water",
-            "milk water water",
-            "milk milk milk milk milk water water water water water",
-            "americano cappuccino"
+            path + "/" + "resources_test/test_simple1.txt",
+            path + "/" + "resources_test/test_simple2.txt",
+            path + "/" + "resources_test/test_simple3.txt",
+            path + "/" + "resources_test/test_simple4.txt"
     };
 
     const std::vector<std::string> request = {"milk water", "sugar"};
@@ -125,29 +129,30 @@ TEST(TestCaseSearchServer, TestSimple) {
 }
 
 TEST(TestCaseSearchServer, TestTop5) {
+    std::string path = TESTS_DIR;
     const std::vector<std::string> docs = {
-            "london is the capital of great britain",
-            "paris is the capital of france",
-            "berlin is the capital of germany",
-            "rome is the capital of italy",
-            "madrid is the capital of spain",
-            "lisboa is the capital of portugal",
-            "bern is the capital of switzerland",
-            "moscow is the capital of russia",
-            "kiev is the capital of ukraine",
-            "minsk is the capital of belarus",
-            "astana is the capital of kazakhstan",
-            "beijing is the capital of china",
-            "tokyo is the capital of japan",
-            "bangkok is the capital of thailand",
-            "welcome to moscow the capital of russia the third rome",
-            "amsterdam is the capital of netherlands",
-            "helsinki is the capital of finland",
-            "oslo is the capital of norway",
-            "stockholm is the capital of sweden",
-            "riga is the capital of latvia",
-            "tallinn is the capital of estonia",
-            "warsaw is the capital of poland",
+            path + "/" + "resources_test/test1.txt",
+            path + "/" + "resources_test/test2.txt",
+            path + "/" + "resources_test/test3.txt",
+            path + "/" + "resources_test/test4.txt",
+            path + "/" + "resources_test/test5.txt",
+            path + "/" + "resources_test/test6.txt",
+            path + "/" + "resources_test/test7.txt",
+            path + "/" + "resources_test/test8.txt",
+            path + "/" + "resources_test/test9.txt",
+            path + "/" + "resources_test/test10.txt",
+            path + "/" + "resources_test/test11.txt",
+            path + "/" + "resources_test/test12.txt",
+            path + "/" + "resources_test/test13.txt",
+            path + "/" + "resources_test/test14.txt",
+            path + "/" + "resources_test/test15.txt",
+            path + "/" + "resources_test/test16.txt",
+            path + "/" + "resources_test/test17.txt",
+            path + "/" + "resources_test/test18.txt",
+            path + "/" + "resources_test/test19.txt",
+            path + "/" + "resources_test/test20.txt",
+            path + "/" + "resources_test/test21.txt",
+            path + "/" + "resources_test/test22.txt",
     };
     const std::vector<std::string> request = {"moscow is the capital of russia"};
     const std::vector<std::vector<RelativeIndex>> expected = {
