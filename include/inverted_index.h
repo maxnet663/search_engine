@@ -65,7 +65,7 @@ private:
      * Uses for multithread filling db
      * @param text: file's text to get unique words
      */
-    void fillDictionary(const std::unordered_map<std::string, size_t> &table
+    void fillDictionary(std::unordered_map<std::string, size_t> &table
                         , size_t doc_id);
 
     /**
@@ -73,7 +73,7 @@ private:
      * @param input_docs: list of paths to documents
      * @return list of texts in the same order
      */
-    std::unordered_map<std::string, size_t> loadText(const std::string &doc_path);
+    std::unordered_map<std::string, size_t> loadText(const std::string &doc_path, size_t doc_id);
 
     /**
      * Loads texts from file's list to dest.

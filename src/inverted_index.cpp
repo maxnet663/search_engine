@@ -1,7 +1,6 @@
 #include "include/inverted_index.h"
 
 #include <future>
-#include <list>
 #include <thread>
 #include <iostream>
 
@@ -22,7 +21,6 @@ void InvertedIndex::updateDocumentBase(const PathsList &input_docs) {
     // array of records: file id {word : occurrences }
     std::vector<std::unordered_map<std::string, size_t>> words_table;
     indexTexts(input_docs, words_table);
-    std::cout << "docs loaded" << std::endl;
 
     std::vector<std::thread> threads_pool;
     auto threads_limit = std::thread::hardware_concurrency();
@@ -47,9 +45,9 @@ const Frequency& InvertedIndex::getWordCount(const std::string &word) const {
     return it == freq_dictionary.end() ? nfound : it->second;
 }
 
-void InvertedIndex::fillDictionary(
-        const std::unordered_map<std::string, size_t> &table
-        , size_t doc_id) {
+void
+InvertedIndex::fillDictionary(const std::unordered_map<std::string, size_t> &table
+                              , size_t doc_id) {
     for (auto &record : table) {
         std::lock_guard lock{dict_access};
             freq_dictionary[record.first].insert({doc_id, record.second});
@@ -57,7 +55,7 @@ void InvertedIndex::fillDictionary(
 }
 
 std::unordered_map<std::string, size_t>
-InvertedIndex::loadText(const std::string &doc_path) {
+InvertedIndex::loadText(const std::string &doc_path, size_t doc_id) {
     if (std::filesystem::exists(doc_path)) {
         FileReader reader(doc_path);
         if (!reader.is_open()) {
@@ -98,39 +96,6 @@ void InvertedIndex::indexTexts(const PathsList &docs_paths
     for (auto &text : loader_pool) {
         dest.emplace_back(text.get());
     }
-}
-
-void
-InvertedIndex::fillWordsTable(std::vector<std::queue<std::string>> &texts
-                              , std::vector<std::unordered_map<std::string, size_t>> &table) {
-    std::vector<std::future<std::unordered_map<std::string, size_t>>> threads_pool;
-    threads_pool.reserve(texts.size());
-    for (auto & text : texts) {
-        threads_pool.emplace_back(std::async(std::launch::async
-                                             , &InvertedIndex::makeRecord
-                                             , this
-                                             , std::ref(text)));
-    }
-
-    if (!table.empty())
-        table.clear();
-    table.reserve(threads_pool.size());
-    for (auto &record : threads_pool)
-       table.emplace_back(record.get());
-}
-
-std::unordered_map<std::string, size_t>
-InvertedIndex::makeRecord(std::queue<std::string> &text) {
-    std::unordered_map<std::string, size_t> result;
-    while(!text.empty()) {
-        auto found = result.find(text.front());
-        if (found == result.end())
-            result[text.front()] = 1;
-        else
-            found->second += 1;
-        text.pop();
-    }
-    return result;
 }
 
 InvertedIndex& InvertedIndex::operator=(InvertedIndex &&right) noexcept {
