@@ -21,9 +21,10 @@ add_library(
         custom_functions.cpp
         inverted_index.cpp
         search_server.cpp
-        screen_writer.cpp
+        shell.cpp
         file_reader.cpp
-        formating.cpp
+        formatting.cpp
+        cmd.cpp
 )
 
 target_include_directories(engine_lib PUBLIC ${PROJECT_SOURCE_DIR} ${icu_SOURCE_DIR}/include)

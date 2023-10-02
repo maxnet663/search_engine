@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD 17)
 add_subdirectory(src)
 
 # add targets search_engine_session_simulator
-add_executable(search_engine_session_simulator ${PROJECT_SOURCE_DIR}/src/main_ss.cpp)
+add_executable(search_engine_session_simulator ${PROJECT_SOURCE_DIR}/src/main_shell.cpp)
 target_include_directories(search_engine_session_simulator PUBLIC ${PROJECT_SOURCE_DIR})
 target_link_libraries(search_engine_session_simulator PRIVATE engine_lib)
 
