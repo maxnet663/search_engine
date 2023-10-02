@@ -7,9 +7,9 @@ set(CMAKE_CXX_STANDARD 17)
 add_subdirectory(src)
 
 # add targets search_engine_session_simulator
-add_executable(search_engine_session_simulator ${PROJECT_SOURCE_DIR}/src/main_shell.cpp)
-target_include_directories(search_engine_session_simulator PUBLIC ${PROJECT_SOURCE_DIR})
-target_link_libraries(search_engine_session_simulator PRIVATE engine_lib)
+add_executable(search_engine_shell ${PROJECT_SOURCE_DIR}/src/main_shell.cpp)
+target_include_directories(search_engine_shell PUBLIC ${PROJECT_SOURCE_DIR})
+target_link_libraries(search_engine_shell PRIVATE engine_lib)
 
 # add targets search_engine
 add_executable(search_engine ${PROJECT_SOURCE_DIR}/src/main.cpp)
@@ -20,7 +20,7 @@ target_link_libraries(search_engine PRIVATE engine_lib)
 #set(CMAKE_INSTALL_PREFIX /path/to/install)
 
 #setup instruction
-install(TARGETS search_engine_session_simulator DESTINATION .)
+install(TARGETS search_engine_shell DESTINATION .)
 install(TARGETS search_engine DESTINATION .)
 install(FILES
         install_files/config.json
