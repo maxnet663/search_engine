@@ -6,24 +6,26 @@
 #include "include/formatting.h"
 #include "include/file_reader.h"
 
-const Frequency InvertedIndex::nfound;
+#define DEFAULT_THREADS_LIMIT 4
 
-void InvertedIndex::updateDocumentBase(const PathsList &input_docs) {
+const freq_t InvertedIndex::nfound;
+
+void
+InvertedIndex::updateDocumentBase(const std::vector<std::string> &input_docs) {
     if (input_docs.empty()) {
         custom::print_yellow("DB: no documents to update");
         return;
     }
-    freq_dictionary.clear();
     std::vector<std::thread> threads_pool;
     auto threads_limit = std::thread::hardware_concurrency();
     if (!threads_limit)
-        threads_limit = 4; // def limit
+        threads_limit = DEFAULT_THREADS_LIMIT;
     threads_pool.reserve(threads_limit);
     for (size_t i = 0; i < input_docs.size(); ++i) {
         threads_pool.emplace_back(&InvertedIndex::indexText
                 , this
                 , std::cref(input_docs[i])
-                , i);
+                , static_cast<uint16_t>(i));
         if (threads_pool.size() >= threads_limit
             || i == input_docs.size() - 1) {
             for (auto &thread : threads_pool) {
@@ -34,29 +36,32 @@ void InvertedIndex::updateDocumentBase(const PathsList &input_docs) {
     }
 }
 
-const Frequency& InvertedIndex::getWordCount(const std::string &word) const {
+const freq_t& InvertedIndex::getWordCount(const std::string &word) const {
     auto it = freq_dictionary.find(word);
     return it == freq_dictionary.end() ? nfound : it->second;
 }
 
-void InvertedIndex::indexText(const std::string &doc_path, size_t doc_id) {
+void InvertedIndex::indexText(const std::string &doc_path, uint16_t doc_id) {
     if (std::filesystem::exists(doc_path)) {
         FileReader reader(doc_path);
         if (!reader.is_open()) {
+            // todo redirect output in file
             std::lock_guard<std::mutex> horn(print_access);
             custom::print_yellow("Could not open the file " + doc_path);
         } else {
             std::string buf;
             while(reader >> buf) {
                 std::lock_guard lock{dict_access};
-                if (freq_dictionary.find(buf) == freq_dictionary.end()) {
+                auto found = freq_dictionary.find(buf);
+                if (found == freq_dictionary.end()) {
                     freq_dictionary[buf].insert({doc_id, 1});
                 } else {
-                    freq_dictionary[buf][doc_id] += 1;
+                    found->second[doc_id] += 1;
                 }
             }
         }
     } else {
+        // todo redirect output in file
         std::lock_guard<std::mutex> horn(print_access);
         custom::print_yellow(doc_path + " does not exist");
     }

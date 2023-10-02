@@ -6,24 +6,33 @@
 #include <string>
 #include <mutex>
 
-#include "include/project_types.h"
+/**
+ *  The representation of words frequency
+ *  std::unordered_map<doc_id, occurrences>
+ */
+typedef std::unordered_map<uint16_t, uint32_t> freq_t;
 
 /**
- * The class is a dictionary containing
+ * data structure for frequency dictionary
+ */
+typedef std::unordered_map<std::string, freq_t> dict_t;
+
+/**
+ * The class is a dictionary which containing
  * unique words from indexed documents
  */
 class InvertedIndex {
 
-    DictionaryType freq_dictionary;
+    dict_t freq_dictionary;
     std::mutex dict_access; // mutex to manage access to freq_dictionary
-    std::mutex print_access;
+    std::mutex print_access; // mutex to access to standard output
 
 public:
 
     /**
      * Default return value for queries that are not in the dictionary
      */
-    static const Frequency nfound;
+    static const freq_t nfound;
 
     /**
      * Constructs empty dictionary
@@ -49,7 +58,7 @@ public:
      * on which we will then search
      * @param input_docs: paths to documents
      */
-    void updateDocumentBase(const PathsList &input_docs);
+    void updateDocumentBase(const std::vector<std::string> &input_docs);
 
     /**
      * Method determines the number of occurrences
@@ -57,24 +66,16 @@ public:
      * @param word: the word whose occurrence frequency is to be determined
      * @return const ref to a list with word frequency or nfound
      */
-    const Frequency& getWordCount(const std::string &word) const;
+    const freq_t& getWordCount(const std::string &word) const;
 
 private:
-
-    /**
-     * Searches for occurrences of a word in array docs of document texts
-     * and prepares a frequency for the word
-     * @param word: word to get frequency
-     * @return frequency of the word
-     */
-    Frequency getWordFrequency(std::string_view &word) const;
 
     /**
      * Extract texts from each docs in input_docs list
      * @param input_docs: list of paths to documents
      * @return list of texts in the same order
      */
-    void indexText(const std::string &doc_path, size_t doc_id);
+    void indexText(const std::string &doc_path, uint16_t doc_id);
 
 };
 
