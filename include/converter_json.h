@@ -6,24 +6,36 @@
 #include "nlohmann/json.hpp" // json
 
 #include "include/search_server.h" // RelativeIndex
-#include "include/project_types.h" // types
+
+/**
+ * Represents json object
+ */
+typedef nlohmann::json json;
 
 /**
  * Class for working with json files
  */
 class ConverterJSON {
-    PathType config_path;
-    PathType requests_path;
+    std::string config_path;
+    std::string requests_path;
     json config;
     json requests;
 
 public:
 
-    ConverterJSON() : config(nullptr), requests(nullptr) {};
+    ConverterJSON() noexcept : config(nullptr), requests(nullptr) {};
 
-    ConverterJSON(const PathType &jsons_dir);
+    ConverterJSON(const ConverterJSON &other) = default;
 
-    ConverterJSON(PathType conf_p, PathType req_p);
+    ConverterJSON(ConverterJSON&& other) noexcept = default;
+
+    ConverterJSON& operator=(const ConverterJSON &right) = default;
+
+    ConverterJSON& operator=(ConverterJSON&& right) noexcept = default;
+
+    explicit ConverterJSON(const std::string &jsons_dir);
+
+    ConverterJSON(std::string path_first, std::string path_second);
 
     /**
      * Config getter
@@ -35,13 +47,13 @@ public:
     * Method for receiving requests from the requests.json file
     * @return a list of requests from the requests.json file
     */
-    RequestsList getRequests() const;
+    std::vector<std::string> getRequests() const;
 
     /**
     * @return a list with the paths to documents to search
     * in config.json
     */
-    PathsList getTextDocuments() const;
+    std::vector<std::string> getTextDocuments() const;
 
     /**
     * The method reads the max_responses field to determine the limit
@@ -55,31 +67,31 @@ public:
      * @param answer: a data array containing answers to queries to
      * the database of indexed documents
      */
-    void putAnswers(const AnswersLists &answers) const;
+    void putAnswers(const std::vector<answer_t> &answers) const;
 
    /**
     * Overwrites the current config file according to the path
     * @param path: path to json file
     */
-    void updateConfig(const PathType &path = "");
+    void updateConfig(const std::string &path = "");
 
     /**
      * Overwrites the current requests file according to the path
      * @param path: path to json file
      */
-    void updateRequests(const PathType &path = "");
+    void updateRequests(const std::string &path = "");
 
     /**
      * config_path getter
      * @return config_path member
      */
-    PathType getConfigPath() const { return config_path; }
+    std::string getConfigPath() const { return config_path; }
 
     /**
      * requests_path getter
      * @return requests_path member
      */
-    PathType getRequestsPath() const {return requests_path; }
+    std::string getRequestsPath() const {return requests_path; }
 
     /**
      * Creates json object from a file under path.
@@ -88,7 +100,7 @@ public:
      * @param path: path to the file
      * @return json object
      */
-    static json openJson(const PathType &path);
+    static json openJson(const std::string &path);
 
     /**
      * If file path exists overwriting it by file,
@@ -101,11 +113,20 @@ public:
     /**
      * Searches for file_name in directory tree with root in dir
      * @param file_name: name of the file
-     * @param dir: start dir
+     * @param dir: start dir, default: current dir
      * @return absolute path to a file or empty string
      */
-    static PathType findFile(const std::string &file_name
-                                , const PathType &dir = ".");
+    static std::string findFileRecursive(const std::string &file_name
+                                         , const std::string &dir = ".");
+
+    /**
+     * Searches for file_name in current directory
+     * and in directories such as json, jsons, JSON, JSONS
+     * @param file_name name of the file to find
+     * @return absolute path to a file or empty string
+     */
+    static std::string
+    findFile(const std::string &file_name, const std::string &dir = ".");
 
 private:
 
@@ -122,7 +143,7 @@ private:
       * @return json object made of config.json
       * throws filesystem_error or invalid_argument otherwise
       */
-    json loadConfigJson(const PathType &path);
+    json loadConfigJson(const std::string &path);
 
     /**
      * Check if requests properties is valid
@@ -137,7 +158,7 @@ private:
      * @return json object made of request.json throws
      * filesystem_error or invalid_argument otherwise
      */
-    json loadRequestsJson(const PathType &path);
+    json loadRequestsJson(const std::string &path);
 };
 
 #endif //CONVERTER_JSON_H
