@@ -51,25 +51,25 @@ namespace custom {
 
     /**
      * Сolors printing to standard output in red
-     * @param msg: message to print
+     * @param msg: message to printWithFormatting
      */
     void print_red(const std::string &msg);
 
     /**
      * Colors printing to standard output in green
-     * @param msg: message to print
+     * @param msg: message to printWithFormatting
      */
     void print_green(const std::string &msg);
 
     /**
      * Colors printing to standard output in yellow
-     * @param msg: message to print
+     * @param msg: message to printWithFormatting
      */
     void print_yellow(const std::string &msg);
 
     /**
      * Colors printing to standard output in blue
-     * @param msg: message to print
+     * @param msg: message to printWithFormatting
      */
     void print_blue(const std::string &msg);
 
