@@ -4,27 +4,32 @@
 #include "include/inverted_index.h"
 #include "include/search_server.h"
 #include "include/custom_functions.h"
-#include "include/screen_writer.h"
 
-int main() {
+int main(int argc, char **argv) {
+    int exit_code = 0;
     try {
-        auto converter = ScreenWriter::makeConverter(
-                std::filesystem::current_path().string());
-        if (!converter) {
-            custom::print_red("Search canceled.");
-            return 1;
+        ConverterJSON converter;
+        switch (argc) {
+            case 2:
+                converter = ConverterJSON(argv[1]);
+                break;
+            case 3:
+                converter = ConverterJSON(argv[1], argv[2]);
+                break;
+            default:
+                converter = ConverterJSON(std::filesystem::current_path());
         }
         InvertedIndex db;
-        db.updateDocumentBase(converter->getTextDocuments());
         SearchServer srv(db);
-        converter->putAnswers(srv.search(converter->getRequests()));
-        custom::print_green("Search done");
+        db.updateDocumentBase(converter.getTextDocuments());
+        converter.putAnswers(srv.search(converter.getRequests()));
     }
     catch (const std::exception &ex) {
-        custom::print_red(ex.what());
+        std::cout << ex.what() << std::endl;
+        exit_code = 1;
     }
-#if defined(_WIN32) || defined(WIN32)
+#if defined(_WIN32) || defined(WIN32) || defined(_WIN64) || defined(WIN64)
     std::cin.get();
 #endif
-    return 0;
+    return exit_code;
 }
