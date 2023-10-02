@@ -9,6 +9,7 @@
 #include "include/file_reader.h"
 #include "include/formatting.h"
 #include "include/project_constants.h"
+#include "include/cmd.h"
 
 namespace fs = std::filesystem;
 
@@ -209,12 +210,10 @@ int ConverterJSON::writeJsonToFile(json &json_obj, const std::string &path) {
             return 0;
         } else {
             std::string input;
-            std::cout << "File " + path + " already exists" << std::endl
-                      << "Do you want to overwrite it?[y/n]: ";
-            std::getline(std::cin, input);
-            format::utf::deleteExtraSpaces(input);
-            format::utf::toLowerCase(input);
-            if (input == "n" || input == "no")
+            std::string question = "File " + path + " already exists."
+                                   "Do you want to overwrite it?[y/n]: ";
+            auto ans = Cmd::ask(question);
+            if (ans == AnswerCode::No || ans == AnswerCode::Unclear)
                 return -1;
         }
     }
