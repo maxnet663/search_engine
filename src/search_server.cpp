@@ -7,7 +7,7 @@
 
 #include "include/custom_functions.h"
 
-AnswersLists
+std::vector<answer_t>
 SearchServer::search(const std::vector<std::string> &queries_input) {
 
     std::list<std::vector<RelativeIndex>> search_results;
@@ -26,8 +26,8 @@ SearchServer::search(const std::vector<std::string> &queries_input) {
     return { search_results.begin(), search_results.end() };
 }
 
-RelevantDocs
-SearchServer::getRelevantDocs(const RequestsList &unique_queries) {
+std::vector<DocRelevance>
+SearchServer::getRelevantDocs(const std::vector<std::string> &unique_queries) {
 
     // unordered_map<doc_id, Relevance>
     std::unordered_map<size_t, size_t> result;
@@ -49,7 +49,7 @@ SearchServer::getRelevantDocs(const RequestsList &unique_queries) {
     return { result.begin(), result.end() };
 }
 
-Answer SearchServer::makeRequest(const std::string &query) {
+answer_t SearchServer::makeRequest(const std::string &query) {
     auto unique_queries = custom::getUniqueWords(query);
     auto answers = getRelevantDocs(unique_queries);
 

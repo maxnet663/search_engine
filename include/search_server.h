@@ -2,11 +2,15 @@
 #define SEARCH_SERVER_H
 
 #include "include/inverted_index.h"
-#include "project_types.h"
 
 struct RelativeIndex;
 struct DocRelevance;
 
+/**
+ * List of the structures which represents answers to requests.
+ * RelativeIndex { doc_id, relevance }
+ */
+typedef std::vector<RelativeIndex> answer_t;
 
 /**
  * Structure for forming the relevance of documents
@@ -63,7 +67,7 @@ public:
      * @return returns a sorted list of relevant
      * responses for given requests
      */
-    AnswersLists search(const std::vector<std::string> &queries_input);
+    std::vector<answer_t> search(const std::vector<std::string> &queries_input);
 
 private:
 
@@ -73,7 +77,8 @@ private:
      * @param unique_queries: list of unique requests
      * @return list of relevant documents
      */
-    RelevantDocs getRelevantDocs(const RequestsList &unique_queries);
+    std::vector<DocRelevance>
+    getRelevantDocs(const std::vector<std::string> &unique_queries);
 
     /**
      * Uses for async computing
@@ -81,7 +86,7 @@ private:
      * @param query: string which represents a request
      * @return list with relevant docs with their relevance
      */
-    Answer makeRequest(const std::string &query);
+    answer_t makeRequest(const std::string &query);
 
 };
 
