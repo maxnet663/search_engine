@@ -53,9 +53,9 @@ TEST(ConverterJSONTest, putAnswersTest) {
 void TestInvertedIndexFunctionality(
         const std::vector<std::string> &docs,
         const std::vector<std::string> &requests,
-        const std::vector<Frequency> &expected
+        const std::vector<freq_t> &expected
         ) {
-    std::vector<Frequency> result;
+    std::vector<freq_t> result;
     InvertedIndex idx;
 
     idx.updateDocumentBase(docs);
@@ -76,7 +76,7 @@ TEST(TestCaseInvertedIndex, TestBasic) {
             path + "/" + "resources_test/test_basic2.txt"
     };
     const std::vector<std::string> requests = {"london", "the"};
-    const std::vector<Frequency> expected = {
+    const std::vector<freq_t> expected = {
             { {0, 1} },
             { {0, 1}, {1, 3} }
     };
@@ -90,7 +90,7 @@ TEST(TestCaseInvertedIndex, TestInvertedIndexMissingWord) {
            path + "/" + "resources_test/test_missing_word2.txt"
    };
    const std::vector<std::string> requests = {"m", "statement"};
-   const std::vector<Frequency> expected = {
+   const std::vector<freq_t> expected = {
            { },
            { {1, 1} }
    };
