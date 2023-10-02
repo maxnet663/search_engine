@@ -1,0 +1,145 @@
+.TH "FileReader" 3 "Mon Oct 2 2023" "Search Engine" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+FileReader
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <file_reader\&.h>\fP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBFileReader\fP (const \fBFileReader\fP &other)=delete"
+.br
+.ti -1c
+.RI "\fBFileReader\fP & \fBoperator=\fP (const \fBFileReader\fP &right)=delete"
+.br
+.ti -1c
+.RI "\fBFileReader\fP (const std::string &file_path) noexcept"
+.br
+.ti -1c
+.RI "void \fBopen\fP (const std::string &file_path)"
+.br
+.ti -1c
+.RI "bool \fBis_open\fP () const"
+.br
+.ti -1c
+.RI "std::string \fBgetPath\fP () const"
+.br
+.ti -1c
+.RI "std::string \fBgetExtension\fP () const"
+.br
+.ti -1c
+.RI "std::string \fBgetText\fP ()"
+.br
+.ti -1c
+.RI "std::string \fBgetFormattedText\fP ()"
+.br
+.ti -1c
+.RI "bool \fBoperator>>\fP (std::string &dest)"
+.br
+.in -1c
+.SS "Static Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "static bool \fBisReadable\fP (const std::string &file_path)"
+.br
+.ti -1c
+.RI "static bool \fBisWriteable\fP (const std::string &file_path)"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+Wrapper over standard file reading stream 
+.SH "Member Function Documentation"
+.PP 
+.SS "std::string FileReader::getExtension () const\fC [inline]\fP"
+Extension getter 
+.PP
+\fBReturns\fP
+.RS 4
+extension of opened file 
+.RE
+.PP
+
+.SS "std::string FileReader::getFormattedText ()"
+Returns file's text formatted as unicode: deletes whitespaces, punctuation marks, converts all letters to lowercase 
+.PP
+\fBReturns\fP
+.RS 4
+utf-8 text 
+.RE
+.PP
+
+.SS "std::string FileReader::getPath () const\fC [inline]\fP"
+Path getter 
+.PP
+\fBReturns\fP
+.RS 4
+path to opened file 
+.RE
+.PP
+
+.SS "std::string FileReader::getText ()"
+Returns the contents of the file without formatting 
+.PP
+\fBReturns\fP
+.RS 4
+text of the file 
+.RE
+.PP
+
+.SS "bool FileReader::is_open () const\fC [inline]\fP"
+Checks if fstream opened 
+.PP
+\fBReturns\fP
+.RS 4
+true if fstream opened, false otherwise 
+.RE
+.PP
+
+.SS "bool FileReader::isReadable (const std::string & file_path)\fC [static]\fP"
+Checks permission to read from a file\&. Only owner rights are checked 
+.PP
+\fBParameters\fP
+.RS 4
+\fIfile_path\fP path to file 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+true if the file is readable by the owner false otherwise 
+.RE
+.PP
+
+.SS "bool FileReader::isWriteable (const std::string & file_path)\fC [static]\fP"
+Checks permission to write to a file\&. Only owner rights are checked 
+.PP
+\fBParameters\fP
+.RS 4
+\fIfile_path\fP path to file 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+true if the file is writeable by the owner false otherwise 
+.RE
+.PP
+
+.SS "void FileReader::open (const std::string & file_path)"
+Opens new filestream, if there is already an open fstream, it will be closed 
+.PP
+\fBParameters\fP
+.RS 4
+\fIfile_path\fP path to file 
+.RE
+.PP
+
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Search Engine from the source code\&.

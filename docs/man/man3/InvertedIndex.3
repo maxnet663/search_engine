@@ -1,0 +1,91 @@
+.TH "InvertedIndex" 3 "Mon Oct 2 2023" "Search Engine" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+InvertedIndex
+.SH SYNOPSIS
+.br
+.PP
+.PP
+\fC#include <inverted_index\&.h>\fP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBInvertedIndex\fP ()=default"
+.br
+.ti -1c
+.RI "\fBInvertedIndex\fP (const \fBInvertedIndex\fP &other)"
+.br
+.ti -1c
+.RI "\fBInvertedIndex\fP & \fBoperator=\fP (const \fBInvertedIndex\fP &right)"
+.br
+.ti -1c
+.RI "\fBInvertedIndex\fP (\fBInvertedIndex\fP &&other) noexcept"
+.br
+.ti -1c
+.RI "\fBInvertedIndex\fP & \fBoperator=\fP (\fBInvertedIndex\fP &&right) noexcept"
+.br
+.ti -1c
+.RI "void \fBupdateDocumentBase\fP (const std::vector< std::string > &input_docs)"
+.br
+.ti -1c
+.RI "const freq_t & \fBgetWordCount\fP (const std::string &word) const"
+.br
+.in -1c
+.SS "Static Public Attributes"
+
+.in +1c
+.ti -1c
+.RI "static const freq_t \fBnfound\fP"
+.br
+.in -1c
+.SH "Detailed Description"
+.PP 
+The class is a dictionary which containing unique words from indexed documents 
+.SH "Constructor & Destructor Documentation"
+.PP 
+.SS "InvertedIndex::InvertedIndex ()\fC [default]\fP"
+Constructs empty dictionary 
+.SS "InvertedIndex::InvertedIndex (const \fBInvertedIndex\fP & other)\fC [inline]\fP"
+Copy constructor without copying of mutex member 
+.PP
+\fBParameters\fP
+.RS 4
+\fIother\fP another instance of \fBInvertedIndex\fP class 
+.RE
+.PP
+
+.SH "Member Function Documentation"
+.PP 
+.SS "const freq_t & InvertedIndex::getWordCount (const std::string & word) const"
+Method determines the number of occurrences of a word in the loaded document base 
+.PP
+\fBParameters\fP
+.RS 4
+\fIword\fP the word whose occurrence frequency is to be determined 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+const ref to a list with word frequency or nfound 
+.RE
+.PP
+
+.SS "void InvertedIndex::updateDocumentBase (const std::vector< std::string > & input_docs)"
+Update or fill in the database of documents on which we will then search 
+.PP
+\fBParameters\fP
+.RS 4
+\fIinput_docs\fP paths to documents 
+.RE
+.PP
+
+.SH "Member Data Documentation"
+.PP 
+.SS "const freq_t InvertedIndex::nfound\fC [static]\fP"
+Default return value for queries that are not in the dictionary 
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Search Engine from the source code\&.

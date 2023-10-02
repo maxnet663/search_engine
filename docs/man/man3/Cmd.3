@@ -1,0 +1,62 @@
+.TH "Cmd" 3 "Mon Oct 2 2023" "Search Engine" \" -*- nroff -*-
+.ad l
+.nh
+.SH NAME
+Cmd
+.SH SYNOPSIS
+.br
+.PP
+.SS "Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "\fBCmd\fP (std::string in_cmd)"
+.br
+.ti -1c
+.RI "\fBCmd\fP (const \fBCmd\fP &other)=default"
+.br
+.ti -1c
+.RI "\fBoperator std::string\fP () const"
+.br
+.ti -1c
+.RI "void \fBset\fP (std::string value)"
+.br
+.ti -1c
+.RI "std::string \fBstr\fP () const"
+.br
+.ti -1c
+.RI "bool \fBempty\fP () const"
+.br
+.ti -1c
+.RI "bool \fBeof\fP () const"
+.br
+.ti -1c
+.RI "size_t \fBcountWords\fP () const"
+.br
+.ti -1c
+.RI "std::queue< std::string > \fBparseArgs\fP () const"
+.br
+.ti -1c
+.RI "int \fBgetCommand\fP ()"
+.br
+.ti -1c
+.RI "int \fBtrap\fP (const std::string &msg, const std::vector< std::regex > &answers)"
+.br
+.in -1c
+.SS "Static Public Member Functions"
+
+.in +1c
+.ti -1c
+.RI "static std::queue< std::string > \fBparseArgs\fP (const std::string &arg_line)"
+.br
+.ti -1c
+.RI "static void \fBprintInvitation\fP ()"
+.br
+.ti -1c
+.RI "static AnswerCode \fBask\fP (const std::string &what)"
+.br
+.in -1c
+
+.SH "Author"
+.PP 
+Generated automatically by Doxygen for Search Engine from the source code\&.
