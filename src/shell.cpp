@@ -1,158 +1,168 @@
-#include "include/screen_writer.h"
+#include "include/shell.h"
+#include <regex>
 
-ScreenWriter::ScreenWriter(std::queue<std::string> args) : srv(document_base) {
-    auto flag = args.front();
-    args.pop();
-    if (flag == "-p") {
-        auto first = args.front();
-        args.pop();
-        auto second = args.front();
-        args.pop();
-        pconverter = makeConverter(first, second);
-    } else if (flag == "-d") {
-        pconverter = makeConverter(args.front());
-    } else {
-        pconverter = makeConverter(std::filesystem::current_path().string());
-    }
-    if (!pconverter) {
-        throw std::runtime_error("Program stopped");
-    }
-    engine_name = pconverter->getConfig()["config"]["name"];
-    engine_version = pconverter->getConfig()["config"]["version"];
-    indexed_documents = makeAbsolute(pconverter->getConfig()["files"]);
-    document_base.updateDocumentBase(indexed_documents);
-    last_changes_config =
-            std::filesystem::last_write_time(pconverter->getConfigPath());
-    last_changes_requests =
-            std::filesystem::last_write_time(pconverter->getRequestsPath());
-    document_base.updateDocumentBase(indexed_documents);
+Shell::Shell() : status(Status::Uninitialized), srv(document_base) {
     commands = {
-            {"update-db", &ScreenWriter::updateDB       },
-            {"update-rq", &ScreenWriter::updateRequests },
-            {"help",      &ScreenWriter::showHelp       },
-            {"status",    &ScreenWriter::showStat       },
-            {"find",      &ScreenWriter::search         },
-            {"print-rq",  &ScreenWriter::showRequests   },
-            {"print-db",  &ScreenWriter::showIndexedDocs},
-            {"print-ans", &ScreenWriter::showAnswers    },
-            {"quit",      &ScreenWriter::exit           }
+            {"update-db", &Shell::updateDB       },
+            {"update-rq", &Shell::updateRequests },
+            {"help",      &Shell::showHelp       },
+            {"status",    &Shell::showStat       },
+            {"find",      &Shell::find           },
+            {"print-rq",  &Shell::showRequests   },
+            {"print-db",  &Shell::showIndexedDocs},
+            {"print-ans", &Shell::printAnswers   },
+            {"quit",      &Shell::exit           }
+    };
+    commands_patterns = {
+            { std::regex("^up(date|)-db$")  },
+            { std::regex("^up(date|)-rq$")  },
+            { std::regex("^h(elp|)$")      },
+            { std::regex("^stat(us|)$")    },
+            { std::regex("^f(ind|)$")      },
+            { std::regex("^p(rint|)-rq$")  },
+            { std::regex("^p(rint|)-db$")  },
+            { std::regex("^p(rint|)-ans$") },
+            { std::regex("^q(uit|)$")      }
     };
 }
 
-void ScreenWriter::operator()() {
-    showStat();
-    std::string cmd;
-    PRINT_INVITATION
-    while(!std::getline(std::cin, cmd).eof()) { // start dialog
-        handler(cmd);
+int Shell::operator()() {
+    int command_result = 0;
+    if (status == Status::Uninitialized) {
+        command_result = initialize();
     }
+    if (status == Status::Exit || status == Status::Uninitialized)
+        return command_result;
+    engine_name = pconverter->getConfig()["config"]["name"];
+    engine_version = pconverter->getConfig()["config"]["version"];
+    indexed_documents = pconverter->getTextDocuments();
+    config_path = pconverter->getConfigPath();
+    requests_path = pconverter->getRequestsPath();
+    last_changes_config = fs::last_write_time(config_path);
+    last_changes_requests = fs::last_write_time(requests_path);
+    document_base.updateDocumentBase(indexed_documents);
+    showStat();
+    while (status != Status::Exit) {
+        command_result = handler(cmd);
+    }
+    return command_result;
 }
 
-conv_ptr ScreenWriter::handMakeConverter() {
-    std::cout << "Indicate how to search for configuration json files\n"
-                 "Enter: -d <directory/to/search>\n"
-                 "or enter: -p <path/to/search/config> "
-                 "</path/to/search/requests>\n"
-                 "Enter quit or q to exit\n> ";
-    std::string input;
-    // start dialog and wait for command
-    while (!std::getline(std::cin, input).eof()) {
-        // format input
-        format::utf::deleteExtraSpaces(input);
-        format::utf::toLowerCase(input);
-        if (input.empty()) {
-            custom::print_yellow("Arguments required");
-            PRINT_INVITATION
-            continue;
-        }
-        // parse command and try to execute
-        auto args = commandParser(input);
-        auto flag = args.front();
+void Shell::generateJsons() {
+    json config;
+    config["config"]["name"] = "SearchEngine";
+    config["config"]["version"] = "0.1";
+    config["config"]["max_responses"] = 5;
+    config["files"].push_back("/example/path");
+    json requests;
+    requests["requests"].push_back("example request");
+    ConverterJSON::writeJsonToFile(config
+                                   , (fs::current_path()
+                                   / CONFIG_FILE_NAME).string());
+    ConverterJSON::writeJsonToFile(requests
+                                   , (fs::current_path()
+                                   / REQUESTS_FILE_NAME).string());
+}
+
+conv_ptr Shell::handMakeConverter() {
+    auto question = "Indicate how to search for "
+                    "configuration json files\n"
+                    "Enter: -d <directory/to/search>\n"
+                    "or : -p '/path/to/search/config' "
+                    "'/path/to/search/requests'\n"
+                    "quit or q to exit ";
+    std::regex quit_pattern("q(uit)?$", std::regex::icase);
+    std::regex dir_pattern("-d [^ ]+$");
+    std::regex path_pattern("-p [^ ]+ [^ ]+$");
+    cmd.trap(question, {quit_pattern, dir_pattern, path_pattern});
+    if (status == Status::Exit)
+        return nullptr;
+    if (std::regex_match(cmd.str(), quit_pattern)) {
+        exit();
+        return nullptr;
+    }
+    if (std::regex_match(cmd.str(), dir_pattern)
+    || std::regex_match(cmd.str(), path_pattern)) {
+        auto args = cmd.parseArgs();
+        auto first_arg = args.front();
         args.pop();
-        if (flag == "-d" && !args.empty()) {
-            try {
-                auto p_converter = std::make_unique<ConverterJSON>(args.front());
-                return p_converter;
-            }
-            catch (std::exception &ex) {
-                // if it was not possible to construct the object,
-                // then we handle the exception and try again
-                custom::print_red(ex.what());
-                std::cout << "Try again" << std::endl;
-                PRINT_INVITATION
-                continue;
-            }
-        }
-        if (flag == "-p" && args.size() >= 2) {
-            auto cnf_path = args.front();
+        if (first_arg == "-d") {
+            auto dir = args.front();
             args.pop();
-            auto req_path = args.front();
+            return makeConverter(dir);
+        }
+        if (first_arg == "-p") {
+            auto first_path = args.front();
             args.pop();
-            try {
-                auto p_converter = std::make_unique<ConverterJSON>(cnf_path
-                        , req_path);
-                return p_converter;
-            }
-            catch(std::exception &ex) {
-                // if it was not possible to construct the object,
-                // then we handle the exception and try again
-                custom::print_red(ex.what());
-                PRINT_INVITATION
-                continue;
-            }
+            auto second_path = args.front();
+            args.pop();
+            return makeConverter(first_path, second_path);
         }
-        if (flag == "quit" || flag == "q") { // exit
-            return nullptr;
-        }
-        custom::print_yellow("Wrong input. Try again"); // handle wrong input
-        PRINT_INVITATION
     }
     return nullptr;
 }
 
-std::queue<std::string> ScreenWriter::commandParser(const std::string &cmd) {
-    std::stringstream line(cmd);
-    std::string buf;
-    std::queue<std::string> args;
-    while(line >> buf) {
-        args.push(buf);
+int Shell::initialize() {
+    pconverter = makeConverter(fs::current_path());
+    if (pconverter) {
+        status = Status::Initialized;
+    } else {
+        std::cout << "Failed to automatically detect json files.\n"
+                  << std::endl;
+        auto question = "Enter 'man' to specify the path to the "
+                        "configuration files manually\n"
+                        "or enter 'gen' to generate it automatically";
+        std::regex man_pattern("man");
+        std::regex gen_pattern("gen");
+        std::regex quit_pattern("q(uit)?$", std::regex::icase);
+        auto res = cmd.trap(question,
+                            {man_pattern, gen_pattern, quit_pattern});
+        switch (res) {
+            case 0: {
+                pconverter = handMakeConverter();
+                break;
+            }
+            case 1: {
+                generateJsons();
+                auto conf_path = fs::current_path() / CONFIG_FILE_NAME;
+                auto req_path =
+                        fs::current_path() / REQUESTS_FILE_NAME;
+                pconverter = makeConverter(conf_path, req_path);
+                break;
+            }
+            case 2:
+                exit();
+                return 0;
+            default:
+                return 1;
+        }
+        if (pconverter)
+            status = Status::Initialized;
     }
-    return args;
+    return 0;
 }
 
-void ScreenWriter::handler(std::string &cmd) {
-    // format command
-    format::utf::deleteExtraSpaces(cmd);
-    format::utf::toLowerCase(cmd);
-    if (!cmd.empty()) {
-
-        if (cmd == "q")
-            cmd = "quit";
-
-        // search for a command
-        auto execute = commands.find(cmd);
-
-        if (execute == commands.end()) // if there is no such a command
-            std::cout << "No such a command \"" << cmd << "\"" << std::endl;
-        else // if cmd is found - execute
-            (this->*execute->second)();
+int Shell::handler(Cmd &command) {
+    auto res = cmd.trap("", commands_patterns);
+    if (cmd.eof() || res < 0) {
+        status = Status::Exit;
+        return 1;
     }
-    if (!std::cin.eof()) // handle ^D (eof situation)
-        PRINT_INVITATION
+    (this->*commands[res].second)();
+    return 0;
 }
 
-void ScreenWriter::updateDB() {
+void Shell::updateDB() {
     // check if the file has been edited
-    if (std::filesystem::last_write_time(pconverter->getConfigPath())
+    if (fs::last_write_time(pconverter->getConfigPath())
         == last_changes_config) {
         custom::print_green("Indexed documents are up to date");
     } else { // if there are any new updates
-        last_changes_config = std::filesystem::last_write_time(
-                pconverter->getConfigPath());
+        last_changes_config = fs::last_write_time(pconverter->getConfigPath());
         pconverter->updateConfig();
 
-        std::vector<std::string> new_indexed_documents = makeAbsolute(
-                pconverter->getConfig()["files"]);
+        std::vector<std::string> new_indexed_documents
+        = makeAbsolute(pconverter->getConfig()["files"]);
 
         if (indexed_documents != new_indexed_documents) {
             indexed_documents = std::move(new_indexed_documents);
@@ -162,42 +172,40 @@ void ScreenWriter::updateDB() {
     }
 }
 
-void ScreenWriter::updateRequests() {
+void Shell::updateRequests() {
     // check if the file has been edited
-    if (std::filesystem::last_write_time(pconverter->getRequestsPath())
+    if (fs::last_write_time(pconverter->getRequestsPath())
         == last_changes_requests) {
         custom::print_green("Requests are up to date");
     } else { // if there are any new updates
         pconverter->updateRequests();
-        last_changes_requests = std::filesystem::last_write_time(
+        last_changes_requests = fs::last_write_time(
                 pconverter->getRequestsPath());
         custom::print_green("Requests updated");
     }
 }
 
-bool ScreenWriter::checkUpdate() {
-    auto conf_path = pconverter->getConfigPath();
-    auto req_path = pconverter->getRequestsPath();
-    return std::filesystem::last_write_time(pconverter->getConfigPath())
+bool Shell::checkUpdate() {
+    return fs::last_write_time(pconverter->getConfigPath())
     != last_changes_config
-    || std::filesystem::last_write_time(pconverter->getRequestsPath())
+    || fs::last_write_time(pconverter->getRequestsPath())
     != last_changes_requests;
 }
 
-void ScreenWriter::showHelp() {
+void Shell::showHelp() {
     std::cout <<    "Commands:\n"
        "update-db   : updates data base if you changed indexed docs\n"
        "update-rq   : updates requests if you changed requests.json\n"
-       "help        : prints the list of commands\n"
+       "help        : prints this message\n"
        "status      : prints info about session\n"
        "find        : searches for current queries in the current database\n"
        "print-rq    : prints current requests from requests.json\n"
        "print-db    : prints current indexed docs from config.json\n"
-       "print-ans   : prints cuurent search results from answers.json\n"
+       "print-ans   : prints current search results from answers.json\n"
        "quit        : ends the session" << std::endl;
 }
 
-void ScreenWriter::showStat() {
+void Shell::showStat() {
     std::cout << engine_name << std::endl
     << "Version: ";
     custom::print_green(engine_version);
@@ -214,7 +222,7 @@ void ScreenWriter::showStat() {
         std::cout << "Everything is up to date\n";
 }
 
-void ScreenWriter::showRequests() {
+void Shell::showRequests() {
     std::cout << "Current Requests:\n";
     auto queries = pconverter->getRequests();
     std::for_each(queries.begin()
@@ -223,7 +231,7 @@ void ScreenWriter::showRequests() {
                   { std::cout << q << std::endl; });
 }
 
-void ScreenWriter::showIndexedDocs() {
+void Shell::showIndexedDocs() {
     std::cout << "Current Indexed Documents:\n";
     std::for_each(indexed_documents.begin()
                   , indexed_documents.end()
@@ -231,13 +239,13 @@ void ScreenWriter::showIndexedDocs() {
                   { custom::print_green(doc); });
 }
 
-void ScreenWriter::search() {
+void Shell::find() {
     custom::print_green("Search started, please wait...");
     pconverter->putAnswers(srv.search(pconverter->getRequests()));
     custom::print_green("Search done");
 }
 
-void ScreenWriter::showAnswers() {
+void Shell::printAnswers() {
     auto answers= ConverterJSON::openJson(ANSWERS_FILE_NAME);
 
     if (answers == nullptr) { // answers.json does not exist
@@ -247,10 +255,10 @@ void ScreenWriter::showAnswers() {
         custom::print_yellow(msg);
         return;
     }
-    printAnswers(answers["answers"]);
+    printWithFormatting(answers["answers"]);
 }
 
-void ScreenWriter::printAnswers(const json &answers) {
+void Shell::printWithFormatting(const json &answers) {
 
     for (auto it = answers.begin(); it != answers.end(); it++) {
         custom::print_blue(it.key());
@@ -281,15 +289,15 @@ void ScreenWriter::printAnswers(const json &answers) {
     }
 }
 
-std::vector<std::string> ScreenWriter::makeAbsolute(
+std::vector<std::string> Shell::makeAbsolute(
         std::vector<std::string> paths) {
     if (!paths.empty()) {
         // moves invalid paths to the end of the vector
         auto new_end = std::remove_if(paths.begin()
                                       , paths.end()
                                       , [](const std::string &p)
-                                      { return !std::filesystem::exists(p); });
-        // print warnings
+                                      { return !fs::exists(p); });
+        // printWithFormatting warnings
         std::for_each(new_end
                       , paths.end()
                       , [](const std::string &p)
@@ -301,11 +309,11 @@ std::vector<std::string> ScreenWriter::makeAbsolute(
                       , paths.end()
                       , [](std::string &p)
                       { p = absolute(
-                              std::filesystem::path(p)).string(); });
+                              fs::path(p)).string(); });
     }
     return paths;
 }
 
-void ScreenWriter::exit() {
-    std::cin.setstate(std::ios_base::eofbit); // imitate eof situation
+void Shell::exit() {
+    status = Status::Exit;
 }

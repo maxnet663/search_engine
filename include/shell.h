@@ -1,5 +1,5 @@
-#ifndef SCREEN_WRITER_H
-#define SCREEN_WRITER_H
+#ifndef SHELL_H
+#define SHELL_H
 
 #include <string>
 #include <map>
@@ -13,23 +13,26 @@
 #include "include/search_server.h"
 #include "include/project_constants.h"
 #include "include/formatting.h"
+#include "include/cmd.h"
+
+namespace fs = std::filesystem;
+
+typedef std::unique_ptr<ConverterJSON> conv_ptr;
 
 /**
  *  Recording the last modified time of a file
  */
 typedef std::filesystem::file_time_type update_t;
 
-/**
- * Smart pointer to ConverterJSON
- */
-typedef std::unique_ptr<ConverterJSON> conv_ptr;
+enum class Status {
+    Initialized,
+    Uninitialized,
+    Exit
+};
 
-/**
- * invite the user to enter
- */
-#define PRINT_INVITATION std::cout << "> ";
-
-class ScreenWriter {
+class Shell {
+    Status status;
+    Cmd cmd;
     conv_ptr pconverter;
     InvertedIndex document_base;
     SearchServer srv;
@@ -42,15 +45,20 @@ class ScreenWriter {
     update_t last_changes_config;
     update_t last_changes_requests;
 
-    std::map<std::string, void(ScreenWriter::*)()> commands;
+    std::vector<std::pair<std::string, void(Shell::*)()>> commands;
+    std::vector<std::regex> commands_patterns;
+
+    friend class Cmd;
 
 public:
 
-    ScreenWriter() : ScreenWriter(std::queue<std::string>()) {}
+    Shell();
 
-    explicit ScreenWriter(std::queue<std::string> args);
+    int operator()();
 
-    void operator()();
+private:
+
+    void generateJsons();
 
     /**
      * Method constructs ConverterJSON
@@ -67,22 +75,19 @@ public:
      * through dialogue with the user
      * @return unique_ptr to created ConverterJSON
      */
-    static conv_ptr handMakeConverter();
+    conv_ptr handMakeConverter();
 
     /**
-     * Turns a string into a sequence of commands
-     * @param cmd: string containing commands
-     * @return queue containing commands
+     * constructs ConverterJSON
+     * @return 0 if everything is fine, val <> 0 otherwise
      */
-    static std::queue<std::string> commandParser(const std::string &cmd);
-
-private:
+    int initialize();
 
     /**
      * Command handler
-     * @param cmd: format string representing a command
+     * @param command: format string representing a command
      */
-    void handler(std::string &cmd);
+    int handler(Cmd &command);
 
     /**
      * The method checks whether the config.json has changed
@@ -130,20 +135,20 @@ private:
     /**
      * Make search with current requests in current indexed documents
      */
-    void search();
+    void find();
 
     /**
-     * If the method finds a answers.json, it will print its
+     * If the method finds a answers.json, it will printWithFormatting its
      * contents, otherwise it will issue a warning
      */
-    void showAnswers();
+    void printAnswers();
 
     /**
-     * Helper method for showAnswers. Print contents
+     * Helper method for printWithFormatting. Print contents
      * of answers
      * @param answers json object in answers form
      */
-    void printAnswers(const json &answers);
+    void printWithFormatting(const json &answers);
 
     /**
      * The method replaces relative paths with absolute ones;
@@ -166,7 +171,7 @@ private:
  * because it requires instantiation
  */
 template<class... Args>
-conv_ptr ScreenWriter::makeConverter(Args&&... args) {
+conv_ptr Shell::makeConverter(Args&&... args) {
         try {
             auto converter = std::make_unique<ConverterJSON>(
                     std::forward<Args>(args)...);
@@ -174,19 +179,8 @@ conv_ptr ScreenWriter::makeConverter(Args&&... args) {
         }
         catch (std::exception &ex) {
             custom::print_yellow(ex.what());
-            std::cout << "Failed to automatically detect json files.\n"
-                         "Pay attention to warnings and correct errors.\n"
-                         "Try to find the files manually?[y/n]:";
-            std::string input;
-            std::getline(std::cin, input);
-            format::utf::deleteExtraSpaces(input);
-            format::utf::toLowerCase(input);
-            if (input == "y" || input == "yes") {
-                std::cout << std::endl;
-                return handMakeConverter();
-            }
         }
     return nullptr;
 }
 
-#endif //SCREEN_WRITER_H
+#endif //SHELL_H
