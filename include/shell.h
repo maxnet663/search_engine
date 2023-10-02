@@ -12,8 +12,17 @@
 #include "include/inverted_index.h"
 #include "include/search_server.h"
 #include "include/project_constants.h"
-#include "include/project_types.h"
 #include "include/formatting.h"
+
+/**
+ *  Recording the last modified time of a file
+ */
+typedef std::filesystem::file_time_type update_t;
+
+/**
+ * Smart pointer to ConverterJSON
+ */
+typedef std::unique_ptr<ConverterJSON> conv_ptr;
 
 /**
  * invite the user to enter
@@ -21,17 +30,17 @@
 #define PRINT_INVITATION std::cout << "> ";
 
 class ScreenWriter {
-    ConverterPtr pconverter;
+    conv_ptr pconverter;
     InvertedIndex document_base;
     SearchServer srv;
 
     std::string engine_name;
     std::string engine_version;
-    PathsList indexed_documents;
-    PathType config_path;
-    PathType requests_path;
-    UpdatedTime last_changes_config;
-    UpdatedTime last_changes_requests;
+    std::vector<std::string> indexed_documents;
+    std::string config_path;
+    std::string requests_path;
+    update_t last_changes_config;
+    update_t last_changes_requests;
 
     std::map<std::string, void(ScreenWriter::*)()> commands;
 
@@ -39,7 +48,7 @@ public:
 
     ScreenWriter() : ScreenWriter(std::queue<std::string>()) {}
 
-    explicit ScreenWriter(ArgsList args);
+    explicit ScreenWriter(std::queue<std::string> args);
 
     void operator()();
 
@@ -51,21 +60,21 @@ public:
      * @return unique_ptr to a ConverterJson
      */
     template<class... Args>
-    static ConverterPtr makeConverter(Args&&... args);
+    static conv_ptr makeConverter(Args&&... args);
 
     /**
      * An alternative way to construct ConverterJSON
      * through dialogue with the user
      * @return unique_ptr to created ConverterJSON
      */
-    static ConverterPtr handMakeConverter();
+    static conv_ptr handMakeConverter();
 
     /**
      * Turns a string into a sequence of commands
      * @param cmd: string containing commands
      * @return queue containing commands
      */
-    static ArgsList commandParser(const std::string &cmd);
+    static std::queue<std::string> commandParser(const std::string &cmd);
 
 private:
 
@@ -143,7 +152,7 @@ private:
      * @param paths: path's list
      * @return list of absolute paths to existing files
      */
-    PathsList makeAbsolute(PathsList paths);
+    std::vector<std::string> makeAbsolute(std::vector<std::string> paths);
 
     /**
      * The method sets the eof bit, preventing the resumption
@@ -157,7 +166,7 @@ private:
  * because it requires instantiation
  */
 template<class... Args>
-ConverterPtr ScreenWriter::makeConverter(Args&&... args) {
+conv_ptr ScreenWriter::makeConverter(Args&&... args) {
         try {
             auto converter = std::make_unique<ConverterJSON>(
                     std::forward<Args>(args)...);

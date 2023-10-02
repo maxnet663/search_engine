@@ -1,6 +1,6 @@
 #include "include/screen_writer.h"
 
-ScreenWriter::ScreenWriter(ArgsList args) : srv(document_base) {
+ScreenWriter::ScreenWriter(std::queue<std::string> args) : srv(document_base) {
     auto flag = args.front();
     args.pop();
     if (flag == "-p") {
@@ -48,7 +48,7 @@ void ScreenWriter::operator()() {
     }
 }
 
-ConverterPtr ScreenWriter::handMakeConverter() {
+conv_ptr ScreenWriter::handMakeConverter() {
     std::cout << "Indicate how to search for configuration json files\n"
                  "Enter: -d <directory/to/search>\n"
                  "or enter: -p <path/to/search/config> "
@@ -110,7 +110,7 @@ ConverterPtr ScreenWriter::handMakeConverter() {
     return nullptr;
 }
 
-ArgsList ScreenWriter::commandParser(const std::string &cmd) {
+std::queue<std::string> ScreenWriter::commandParser(const std::string &cmd) {
     std::stringstream line(cmd);
     std::string buf;
     std::queue<std::string> args;
@@ -151,7 +151,7 @@ void ScreenWriter::updateDB() {
                 pconverter->getConfigPath());
         pconverter->updateConfig();
 
-        PathsList new_indexed_documents = makeAbsolute(
+        std::vector<std::string> new_indexed_documents = makeAbsolute(
                 pconverter->getConfig()["files"]);
 
         if (indexed_documents != new_indexed_documents) {
@@ -281,8 +281,8 @@ void ScreenWriter::printAnswers(const json &answers) {
     }
 }
 
-PathsList ScreenWriter::makeAbsolute(
-        PathsList paths) {
+std::vector<std::string> ScreenWriter::makeAbsolute(
+        std::vector<std::string> paths) {
     if (!paths.empty()) {
         // moves invalid paths to the end of the vector
         auto new_end = std::remove_if(paths.begin()
