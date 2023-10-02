@@ -72,18 +72,20 @@ void format::utf::deleteExtraSpaces(std::string &s) {
     auto front = s.begin();
 
     // search first non space ch
-    while (*front == ' ') {
+    while (std::isspace(*front)) {
         ++front;
     }
 
     while (*front) {
 
+        if (*front == '\t')
+            *front = ' ';
+
         // if met one space and prev ch not space
         // write the ch
         if (*front != ' ' || *(front - 1) != ' ') {
-            *back++ = *front;
+            *back++ = std::move(*front);
         }
-
         // move on the string
         front++;
     }
