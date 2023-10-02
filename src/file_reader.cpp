@@ -7,7 +7,7 @@ void FileReader::open(const std::string &file_path) {
     read_stream.open(file_path);
 }
 
-Text FileReader::getText() {
+std::string FileReader::getText() {
     if (read_stream.eof()) {
         read_stream.clear();
         read_stream.seekg(0, std::ios_base::beg);
@@ -24,7 +24,7 @@ Text FileReader::getText() {
     return text;
 }
 
-Text FileReader::getFormattedText() {
+std::string FileReader::getFormattedText() {
     auto uc_text = format::unicode::makeUnicodeString(getText());
     uc_text = format::unicode::deletePunctuationMarks(uc_text);
     uc_text.toLower();

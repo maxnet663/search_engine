@@ -6,7 +6,6 @@
 #include <string>
 
 #include "include/formatting.h"
-#include "include/project_types.h"
 
 /**
  * Wrapper over standard file reading stream
@@ -44,7 +43,7 @@ public:
      * Path getter
      * @return path to opened file
      */
-    PathType getPath() const { return path; }
+    std::string getPath() const { return path; }
 
     /**
      * Extension getter
@@ -57,7 +56,7 @@ public:
      * Returns the contents of the file without formatting
      * @return text of the file
      */
-    Text getText();
+    std::string getText();
 
     /**
      * Returns file's text formatted as unicode:
@@ -65,7 +64,7 @@ public:
      * converts all letters to lowercase
      * @return utf-8 text
      */
-    Text getFormattedText();
+    std::string getFormattedText();
 
     /**
      * Checks permission to read from a file.
