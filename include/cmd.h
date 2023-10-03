@@ -2,7 +2,6 @@
 #define CMD_H
 
 #include <string>
-#include <string_view>
 #include <queue>
 #include <regex>
 
@@ -42,8 +41,7 @@ public:
 
     int getCommand();
 
-    int trap(const std::string &msg
-                       , const std::vector<std::regex> &answers);
+    int trap(const std::string &msg, const std::vector<std::regex> &answers);
 
     static void printInvitation();
 

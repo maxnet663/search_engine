@@ -205,8 +205,8 @@ int ConverterJSON::writeJsonToFile(json &json_obj, const std::string &path) {
         }
         if (!FileReader::isWriteable(path)) {
             custom::print_yellow("Can not write to the file "
-                                + path
-                                + " permission denied");
+                                 + path
+                                 + " permission denied");
             return 0;
         } else {
             std::string input;
