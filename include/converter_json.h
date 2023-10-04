@@ -16,8 +16,6 @@ typedef nlohmann::json json;
  * Class for working with json files
  */
 class ConverterJSON {
-    std::string config_path;
-    std::string requests_path;
     json config;
     json requests;
 
@@ -33,15 +31,21 @@ public:
 
     ConverterJSON& operator=(ConverterJSON&& right) noexcept = default;
 
+    /**
+     * Constructs converter with searching configuration
+     * files in jsons_dir
+     * @param jsons_dir path to search in
+     */
     explicit ConverterJSON(const std::string &jsons_dir);
 
-    ConverterJSON(std::string path_first, std::string path_second);
-
     /**
-     * Config getter
-     * @return json object config.json
+     * Constructs converter from specified files,
+     * file order doesn't matter
+     * @param path_first path to config | requests
+     * @param path_second path to config | requests
      */
-    const json& getConfig() const { return config; }
+    ConverterJSON(const std::string &path_first
+                  , const std::string &path_second);
 
     /**
     * Method for receiving requests from the requests.json file
@@ -53,7 +57,7 @@ public:
     * @return a list with the paths to documents to search
     * in config.json
     */
-    std::vector<std::string> getTextDocuments() const;
+    std::vector<std::string> getDocumentsPaths() const;
 
     /**
     * The method reads the max_responses field to determine the limit
@@ -68,30 +72,6 @@ public:
      * the database of indexed documents
      */
     void putAnswers(const std::vector<answer_t> &answers) const;
-
-   /**
-    * Overwrites the current config file according to the path
-    * @param path: path to json file
-    */
-    void updateConfig(const std::string &path = "");
-
-    /**
-     * Overwrites the current requests file according to the path
-     * @param path: path to json file
-     */
-    void updateRequests(const std::string &path = "");
-
-    /**
-     * config_path getter
-     * @return config_path member
-     */
-    std::string getConfigPath() const { return config_path; }
-
-    /**
-     * requests_path getter
-     * @return requests_path member
-     */
-    std::string getRequestsPath() const {return requests_path; }
 
     /**
      * Creates json object from a file under path.
@@ -125,8 +105,8 @@ public:
      * @param file_name name of the file to find
      * @return absolute path to a file or empty string
      */
-    static std::string
-    findFile(const std::string &file_name, const std::string &dir = ".");
+    static std::string findFile(const std::string &file_name
+                                , const std::string &dir = ".");
 
 private:
 

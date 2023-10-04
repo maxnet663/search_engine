@@ -22,7 +22,7 @@ ConverterJSON::ConverterJSON(const std::string &jsons_dir) {
     }
 
     // try to find paths to json files
-    config_path = findFile(CONFIG_FILE_NAME, jsons_dir);
+    auto config_path = findFile(CONFIG_FILE_NAME, jsons_dir);
     if (config_path.empty()) {
         throw std::invalid_argument("Could not find " CONFIG_FILE_NAME);
     }
@@ -30,7 +30,7 @@ ConverterJSON::ConverterJSON(const std::string &jsons_dir) {
     custom::print_green("config.json found successfully");
 #endif
 
-    requests_path = findFile(REQUESTS_FILE_NAME, jsons_dir);
+    auto requests_path = findFile(REQUESTS_FILE_NAME, jsons_dir);
     if (requests_path.empty()) {
         throw std::invalid_argument("Could not find " REQUESTS_FILE_NAME);
     }
@@ -42,28 +42,32 @@ ConverterJSON::ConverterJSON(const std::string &jsons_dir) {
     requests = loadRequestsJson(requests_path);
 }
 
-ConverterJSON::ConverterJSON(std::string path_first, std::string path_second) {
+ConverterJSON::ConverterJSON(const std::string &path_first
+                             , const std::string &path_second) {
     std::regex config_pattern("config\\.json", std::regex::icase);
 
+    std::string *config_path;
+    std::string *requests_path;
+
     if (std::regex_search(path_first, config_pattern)) {
-        config_path = std::move(path_first);
-        requests_path = std::move(path_second);
+        *config_path = path_first;
+        *requests_path = path_second;
     } else {
-        config_path = std::move(path_second);
-        requests_path = std::move(path_first);
+        *config_path = path_second;
+        *requests_path = path_first;
     }
 
-    config = loadConfigJson(config_path);
+    config = loadConfigJson(*config_path);
 #ifndef TEST
     custom::print_green("config.json found successfully");
 #endif
-    requests = loadRequestsJson(requests_path);
+    requests = loadRequestsJson(*requests_path);
 #ifndef TEST
     custom::print_green("requests.json found successfully");
 #endif
 }
 
-std::vector<std::string> ConverterJSON::getTextDocuments() const {
+std::vector<std::string> ConverterJSON::getDocumentsPaths() const {
     if (config.is_null())
         return { };
     else
@@ -129,49 +133,8 @@ void ConverterJSON::putAnswers(const std::vector<answer_t> &answers) const {
             }
         }
     }
-#ifdef TEST
     writeJsonToFile(ans_json, ANSWERS_FILE_NAME);
-#else
-    auto written = writeJsonToFile(ans_json, ANSWERS_FILE_NAME);
-    if (written == 1)
-        std::cout << "Search results have written to " << ANSWERS_FILE_NAME
-                  << std::endl;
-    if (written == 0)
-        custom::print_yellow("Could not write search results to "
-                             ANSWERS_FILE_NAME);
-#endif
-}
-
-void ConverterJSON::updateConfig(const std::string &path) {
-    json new_config;
-    try {
-        if (path.empty()) {
-            new_config = loadConfigJson(config_path);
-        } else {
-            new_config = loadConfigJson(path);
-            config_path = path;
-        }
-        config = std::move(new_config);
-   }
-    catch (std::exception &ex) {
-        custom::print_yellow(ex.what());
-    }
-}
-
-void ConverterJSON::updateRequests(const std::string &path) {
-    json new_requests;
-    try {
-        if (path.empty()) {
-            new_requests = loadRequestsJson(requests_path);
-        } else {
-            new_requests = loadRequestsJson(path);
-            requests_path = path;
-        }
-        requests = std::move(new_requests);
-    }
-    catch (std::exception &ex) {
-        custom::print_yellow(ex.what());
-    }
+    custom::print_green("Search results have written to " ANSWERS_FILE_NAME);
 }
 
 json ConverterJSON::openJson(const std::string &path) {
@@ -201,27 +164,21 @@ int ConverterJSON::writeJsonToFile(json &json_obj, const std::string &path) {
     if (fs::exists(path)) {
         if (fs::is_directory(path)) {
             custom::print_yellow(path + " is a directory");
-            return 0;
+            return 1;
         }
-        if (!FileReader::isWriteable(path)) {
+        if (!FileReader::isWriteable(path)
+        || !FileReader::isWriteable(fs::path(path).stem())) {
             custom::print_yellow("Can not write to the file "
                                  + path
                                  + " permission denied");
-            return 0;
-        } else {
-            std::string input;
-            std::string question = "File " + path + " already exists."
-                                   "Do you want to overwrite it?[y/n]: ";
-            auto ans = Cmd::ask(question);
-            if (ans == AnswerCode::No || ans == AnswerCode::Unclear)
-                return -1;
+            return 1;
         }
     }
 #endif
     std::ofstream dest(path, std::ios::out | std::ios::trunc);
     dest << std::setw(2) << json_obj;
     dest.close();
-    return 1;
+    return 0;
 }
 
 std::string ConverterJSON::findFileRecursive(const std::string &file_name
@@ -237,12 +194,12 @@ std::string ConverterJSON::findFileRecursive(const std::string &file_name
 std::string
 ConverterJSON::findFile(const std::string &file_name, const std::string &dir) {
     std::regex json_pattern("(\\/|)json(|s)$", std::regex::icase);
-    for (const auto &entry : fs::recursive_directory_iterator(dir)) {
+    for (const auto &entry : fs::directory_iterator(dir)) {
         auto y = entry.path().filename().string();
         if (entry.path().filename().string() == file_name)
             return fs::absolute(entry.path().string());
     }
-    for(const auto &entry : fs::recursive_directory_iterator(dir)) {
+    for(const auto &entry : fs::directory_iterator(dir)) {
         auto x = entry.path().filename().string();
         if (is_directory(entry.path())
         && std::regex_search(entry.path().filename().string(), json_pattern)) {
