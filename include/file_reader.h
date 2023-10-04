@@ -40,19 +40,6 @@ public:
     bool is_open() const { return read_stream.is_open(); }
 
     /**
-     * Path getter
-     * @return path to opened file
-     */
-    std::string getPath() const { return path; }
-
-    /**
-     * Extension getter
-     * @return extension of opened file
-     */
-    std::string getExtension() const
-    { return std::filesystem::path(path).extension(); }
-
-    /**
      * Returns the contents of the file without formatting
      * @return text of the file
      */

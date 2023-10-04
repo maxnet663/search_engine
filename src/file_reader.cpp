@@ -26,8 +26,7 @@ std::string FileReader::getText() {
 
 std::string FileReader::getFormattedText() {
     auto uc_text = format::unicode::makeUnicodeString(getText());
-    uc_text = format::unicode::deletePunctuationMarks(uc_text);
-    uc_text.toLower();
+    format::unicode::convertToPlainText(uc_text);
     return format::unicode::makeUtfString(uc_text);
 }
 
@@ -43,9 +42,6 @@ bool FileReader::isReadable(const std::string &file_name) {
 
 bool FileReader::isWriteable(const std::string &file_name) {
     std::filesystem::path path(file_name);
-    if (!exists(path))
-        return false;
-
     auto file_perms = std::filesystem::status(path).permissions();
     auto write_perms = std::filesystem::perms::owner_write;
     return std::filesystem::perms::none != (file_perms & write_perms);
