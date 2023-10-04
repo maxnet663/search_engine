@@ -1,9 +1,12 @@
 #include "include/custom_functions.h"
 
+#include <cstdint> // uint8_t
 #include <list>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
+
+#include "termcolor/termcolor.hpp"
 
 size_t custom::wordsCounter(const std::string &s) {
     bool is_word = false;
@@ -44,4 +47,20 @@ double custom::round(double num, int precision) {
     std::ostringstream os;
     os << std::fixed << std::setprecision(precision) << num;
     return std::stod(os.str());
+}
+
+void custom::print_red(const std::string &msg) {
+    std::cout << termcolor::red << msg << termcolor::reset << std::endl;
+}
+
+void custom::print_green(const std::string &msg) {
+    std::cout << termcolor::green << msg << termcolor::reset << std::endl;
+}
+
+void custom::print_yellow(const std::string &msg) {
+    std::cout << termcolor::yellow << msg << termcolor::reset << std::endl;
+}
+
+void custom::print_blue(const std::string &msg) {
+    std::cout << termcolor::blue << msg << termcolor::reset << std::endl;
 }
