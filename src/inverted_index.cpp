@@ -66,14 +66,3 @@ void InvertedIndex::indexText(const std::string &doc_path, uint16_t doc_id) {
         custom::print_yellow(doc_path + " does not exist");
     }
 }
-
-InvertedIndex& InvertedIndex::operator=(InvertedIndex &&right) noexcept {
-    freq_dictionary = std::move(right.freq_dictionary);
-    return *this;
-}
-
-InvertedIndex& InvertedIndex::operator=(const InvertedIndex &right) {
-    if (this != &right)
-        freq_dictionary = right.freq_dictionary;
-    return *this;
-}

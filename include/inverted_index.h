@@ -35,25 +35,6 @@ public:
     static const freq_t nfound;
 
     /**
-     * Constructs empty dictionary
-     */
-    InvertedIndex() = default;
-
-    /**
-     * Copy constructor without copying of mutex member
-     * @param other another instance of InvertedIndex class
-     */
-    InvertedIndex(const InvertedIndex &other)
-    : freq_dictionary(other.freq_dictionary) {};
-
-    InvertedIndex& operator=(const InvertedIndex &right);
-
-    InvertedIndex(InvertedIndex&& other) noexcept
-    : freq_dictionary(std::move(other.freq_dictionary)) {};
-
-    InvertedIndex& operator=(InvertedIndex&& right) noexcept;
-
-    /**
      * Update or fill in the database of documents
      * on which we will then search
      * @param input_docs: paths to documents
@@ -76,7 +57,6 @@ private:
      * @return list of texts in the same order
      */
     void indexText(const std::string &doc_path, uint16_t doc_id);
-
 };
 
 #endif //INVERTED_INDEX_H
