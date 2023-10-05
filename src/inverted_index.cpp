@@ -1,7 +1,7 @@
 #include "include/inverted_index.h"
 
-#include <future>
 #include <thread>
+
 #include "include/custom_functions.h"
 #include "include/formatting.h"
 #include "include/file_reader.h"
@@ -23,11 +23,11 @@ InvertedIndex::updateDocumentBase(const std::vector<std::string> &input_docs) {
     threads_pool.reserve(threads_limit);
     for (size_t i = 0; i < input_docs.size(); ++i) {
         threads_pool.emplace_back(&InvertedIndex::indexText
-                , this
-                , std::cref(input_docs[i])
-                , static_cast<uint16_t>(i));
+                                  , this
+                                  , std::cref(input_docs[i])
+                                  , static_cast<uint16_t>(i));
         if (threads_pool.size() >= threads_limit
-            || i == input_docs.size() - 1) {
+        || i == input_docs.size() - 1) {
             for (auto &thread : threads_pool) {
                 thread.join();
             }
@@ -45,8 +45,7 @@ void InvertedIndex::indexText(const std::string &doc_path, uint16_t doc_id) {
     if (std::filesystem::exists(doc_path)) {
         FileReader reader(doc_path);
         if (!reader.is_open()) {
-            // todo redirect output in file
-            std::lock_guard<std::mutex> horn(print_access);
+            std::lock_guard<std::mutex> horn{print_access};
             custom::print_yellow("Could not open the file " + doc_path);
         } else {
             std::string buf;
@@ -61,8 +60,7 @@ void InvertedIndex::indexText(const std::string &doc_path, uint16_t doc_id) {
             }
         }
     } else {
-        // todo redirect output in file
-        std::lock_guard<std::mutex> horn(print_access);
+        std::lock_guard<std::mutex> horn{print_access};
         custom::print_yellow(doc_path + " does not exist");
     }
 }
