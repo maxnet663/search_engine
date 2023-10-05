@@ -2,14 +2,13 @@
 
 #include <filesystem> //path
 #include <fstream> // ifs, ofs
-#include <iostream> // cerr
+#include <iostream> // cout
 #include <regex> // reg_match, regex
 
 #include "include/custom_functions.h"
 #include "include/file_reader.h"
 #include "include/formatting.h"
 #include "include/project_constants.h"
-#include "include/cmd.h"
 
 namespace fs = std::filesystem;
 
@@ -42,26 +41,45 @@ ConverterJSON::ConverterJSON(const std::string &jsons_dir) {
     requests = loadRequestsJson(requests_path);
 }
 
-ConverterJSON::ConverterJSON(const std::string &path_first
-                             , const std::string &path_second) {
-    std::regex config_pattern("config\\.json", std::regex::icase);
+ConverterJSON::ConverterJSON(std::string path_first
+                             , std::string path_second) {
+    std::regex config_pattern("config\\.json$", std::regex::icase);
+    std::regex requests_pattern("requests\\.json$", std::regex::icase);
 
-    std::string *config_path;
-    std::string *requests_path;
-
-    if (std::regex_search(path_first, config_pattern)) {
-        *config_path = path_first;
-        *requests_path = path_second;
-    } else {
-        *config_path = path_second;
-        *requests_path = path_first;
+    // if none of the paths match pattern for config.json
+    if (!std::regex_search(path_first, config_pattern)
+    && !std::regex_search(path_second, config_pattern)) {
+        throw std::invalid_argument("None of the transferred files "
+                                    "look like config.json: "
+                                    + path_first + " "
+                                    + path_second);
     }
 
-    config = loadConfigJson(*config_path);
+    // if none of the paths match pattern for requests.json
+    if (!std::regex_search(path_first, requests_pattern)
+    && !std::regex_search(path_second, requests_pattern)) {
+        throw std::invalid_argument("None of the transferred files "
+                                    "look like requests.json: "
+                                    + path_first + " "
+                                    + path_second);
+    }
+
+    std::string config_path;
+    std::string requests_path;
+
+    if (std::regex_search(path_first, config_pattern)) {
+        std::swap(config_path, path_first);
+        std::swap(requests_path, path_second);
+    } else {
+        std::swap(config_path, path_second);
+        std::swap(requests_path, path_first);
+    }
+
+    config = loadConfigJson(config_path);
 #ifndef TEST
     custom::print_green("config.json found successfully");
 #endif
-    requests = loadRequestsJson(*requests_path);
+    requests = loadRequestsJson(requests_path);
 #ifndef TEST
     custom::print_green("requests.json found successfully");
 #endif
@@ -139,8 +157,9 @@ void ConverterJSON::putAnswers(const std::vector<answer_t> &answers) const {
 
 json ConverterJSON::openJson(const std::string &path) {
     if (!fs::exists(path) || !FileReader::isReadable(path)) {
-        custom::print_yellow(
-                "Could not open file " + path + ". Check the file");
+        custom::print_yellow("Could not open file "
+                            + path
+                            + ". Check the file");
         return nullptr;
     }
     if (fs::path(path).extension() != ".json") {
@@ -194,11 +213,13 @@ std::string ConverterJSON::findFileRecursive(const std::string &file_name
 std::string
 ConverterJSON::findFile(const std::string &file_name, const std::string &dir) {
     std::regex json_pattern("(\\/|)json(|s)$", std::regex::icase);
+    //search in specified dir
     for (const auto &entry : fs::directory_iterator(dir)) {
         auto y = entry.path().filename().string();
         if (entry.path().filename().string() == file_name)
             return fs::absolute(entry.path().string());
     }
+    // if file has not found tries to find it in the expected directories
     for(const auto &entry : fs::directory_iterator(dir)) {
         auto x = entry.path().filename().string();
         if (is_directory(entry.path())
@@ -209,6 +230,40 @@ ConverterJSON::findFile(const std::string &file_name, const std::string &dir) {
         }
     }
     return { };
+}
+
+void ConverterJSON::printJson(const json &source) {
+    for (auto item = source.begin(); item != source.end(); ++item) {
+        if (item->is_structured() && !source.is_array()) {
+            if (item->is_array())
+                custom::print_green(item.key());
+            else
+                custom::print_blue(item.key() + ":");
+            printJson(item.value());
+        } else {
+            if (source.is_array()) {
+                for (const auto& it : item->items()) {
+                    if (!it.key().empty()) {
+                        custom::print_cyan("\t" + it.key(), false);
+                        std::cout << " :\t" << it.value() << std::endl;
+                    } else {
+                        std::cout << '\t' << it.value() << std::endl;
+                    }
+                }
+            } else {
+                custom::print_magenta(item.key(), false);
+                if (item.value().is_boolean()) {
+                    std::cout << " :\t";
+                    if (item.value())
+                        custom::print_green(to_string(item.value()));
+                    else
+                        custom::print_red(to_string(item.value()));
+                } else {
+                    std::cout << " :\t" << item.value() << std::endl;
+                }
+            }
+        }
+    }
 }
 
 bool ConverterJSON::checkConfigProperties(const json &json_file) {
@@ -228,8 +283,7 @@ bool ConverterJSON::checkConfigProperties(const json &json_file) {
         throw std::invalid_argument("No files to search");
     }
 
-    // return true otherwise
-    return true;
+    return true; // return true otherwise
 }
 
 json ConverterJSON::loadConfigJson(const std::string &path) {
@@ -265,8 +319,7 @@ bool ConverterJSON::checkRequestsProperties(const json &json_file) {
                     + std::to_string(MAX_REQUEST_WORDS_NUMBER));
     }
 
-    // return true otherwise
-    return true;
+    return true; // return true otherwise
 }
 
 json ConverterJSON::loadRequestsJson(const std::string &path) {

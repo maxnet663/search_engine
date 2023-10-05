@@ -13,23 +13,15 @@
 typedef nlohmann::json json;
 
 /**
- * Class for working with json files
+ * Class for working with json files.
+ * Works like RAII
  */
 class ConverterJSON {
-    json config;
+
     json requests;
+    json config;
 
 public:
-
-    ConverterJSON() noexcept : config(nullptr), requests(nullptr) {};
-
-    ConverterJSON(const ConverterJSON &other) = default;
-
-    ConverterJSON(ConverterJSON&& other) noexcept = default;
-
-    ConverterJSON& operator=(const ConverterJSON &right) = default;
-
-    ConverterJSON& operator=(ConverterJSON&& right) noexcept = default;
 
     /**
      * Constructs converter with searching configuration
@@ -44,8 +36,8 @@ public:
      * @param path_first path to config | requests
      * @param path_second path to config | requests
      */
-    ConverterJSON(const std::string &path_first
-                  , const std::string &path_second);
+    ConverterJSON(std::string path_first
+                  , std::string path_second);
 
     /**
     * Method for receiving requests from the requests.json file
@@ -54,21 +46,21 @@ public:
     std::vector<std::string> getRequests() const;
 
     /**
+    * Method for receiving path to docs from the config.json file
     * @return a list with the paths to documents to search
-    * in config.json
     */
     std::vector<std::string> getDocumentsPaths() const;
 
     /**
     * The method reads the max_responses field to determine the limit
     * number of responses per request
-    *@return max_responses
+    * @return max_responses
     */
     int getResponsesLimit() const;
 
     /**
-     * Method writes answers to the file answers.json in json format
-     * @param answer: a data array containing answers to queries to
+     * Method writes answers to the file answers.json
+     * @param answer: a data array containing answers to queries from
      * the database of indexed documents
      */
     void putAnswers(const std::vector<answer_t> &answers) const;
@@ -78,14 +70,15 @@ public:
      * Before creating check if file exists, perms to read
      * and file's extension(must be *.json)
      * @param path: path to the file
-     * @return json object
+     * @return json object if open is successfully,
+     * empty json otherwise
      */
     static json openJson(const std::string &path);
 
     /**
      * If file path exists overwriting it by file,
      * create new file in path otherwise
-     * @param file: file to write
+     * @param file: json to write
      * @param path: path to new file
      */
     static int writeJsonToFile(json &json_obj, const std::string &path);
@@ -107,6 +100,14 @@ public:
      */
     static std::string findFile(const std::string &file_name
                                 , const std::string &dir = ".");
+
+    /**
+     * Print content of specified json file to standard output.
+     * Structured fields prints in blue color, arrays in green,
+     * elems of array in cyan, regular fields in magenta
+     * @param source file to print out
+     */
+    static void printJson(const json &source);
 
 private:
 
