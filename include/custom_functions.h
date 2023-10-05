@@ -7,7 +7,7 @@
 
 /**
  * The namespace defines helper functions for
- * string processing and text output
+ * for different tasks
  */
 namespace custom {
 
@@ -37,25 +37,36 @@ namespace custom {
      * Сolors printing to standard output in red
      * @param msg: message to printWithFormatting
      */
-    void print_red(const std::string &msg);
+    void print_red(const std::string &msg, bool new_line = true);
 
     /**
      * Colors printing to standard output in green
      * @param msg: message to printWithFormatting
      */
-    void print_green(const std::string &msg);
+    void print_green(const std::string &msg, bool new_line = true);
 
     /**
      * Colors printing to standard output in yellow
      * @param msg: message to printWithFormatting
      */
-    void print_yellow(const std::string &msg);
+    void print_yellow(const std::string &msg, bool new_line = true);
 
     /**
      * Colors printing to standard output in blue
      * @param msg: message to printWithFormatting
      */
-    void print_blue(const std::string &msg);
+    void print_blue(const std::string &msg, bool new_line = true);
 
+    /**
+     * Colors printing to standard output in magenta
+     * @param msg: message to printWithFormatting
+     */
+    void print_magenta(const std::string &msg, bool new_line = true);
+
+    /**
+     * Colors printing to standard output in cyan
+     * @param msg: message to printWithFormatting
+     */
+     void print_cyan(const std::string &msg, bool new_line = true);
 }
 #endif //CUSTOM_FUNCTIONS

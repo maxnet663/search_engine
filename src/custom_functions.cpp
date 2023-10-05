@@ -2,8 +2,6 @@
 
 #include <cstdint> // uint8_t
 #include <list>
-#include <filesystem>
-#include <fstream>
 #include <iostream>
 
 #include "termcolor/termcolor.hpp"
@@ -34,6 +32,7 @@ size_t custom::wordsCounter(const std::string &s) {
 }
 
 std::vector<std::string> custom::getUniqueWords(const std::string &text) {
+    if (text.empty()) return { };
     std::list<std::string> unique_words;
     std::stringstream data(text);
     std::string buf;
@@ -49,18 +48,32 @@ double custom::round(double num, int precision) {
     return std::stod(os.str());
 }
 
-void custom::print_red(const std::string &msg) {
-    std::cout << termcolor::red << msg << termcolor::reset << std::endl;
+void custom::print_red(const std::string &msg, bool new_line) {
+    std::cout << termcolor::red << msg << termcolor::reset;
+    if (new_line) std::cout << std::endl;
 }
 
-void custom::print_green(const std::string &msg) {
-    std::cout << termcolor::green << msg << termcolor::reset << std::endl;
+void custom::print_green(const std::string &msg, bool new_line) {
+    std::cout << termcolor::green << msg << termcolor::reset;
+    if (new_line) std::cout << std::endl;
 }
 
-void custom::print_yellow(const std::string &msg) {
-    std::cout << termcolor::yellow << msg << termcolor::reset << std::endl;
+void custom::print_yellow(const std::string &msg, bool new_line) {
+    std::cout << termcolor::yellow << msg << termcolor::reset;
+    if (new_line) std::cout << std::endl;
 }
 
-void custom::print_blue(const std::string &msg) {
-    std::cout << termcolor::blue << msg << termcolor::reset << std::endl;
+void custom::print_blue(const std::string &msg, bool new_line) {
+    std::cout << termcolor::blue << msg << termcolor::reset;
+    if (new_line) std::cout << std::endl;
+}
+
+void custom::print_magenta(const std::string &msg, bool new_line) {
+    std::cout << termcolor::magenta << msg << termcolor::reset;
+    if (new_line) std::cout << std::endl;
+}
+
+void custom::print_cyan(const std::string &msg, bool new_line) {
+    std::cout << termcolor::cyan << msg << termcolor::reset;
+    if (new_line) std::cout << std::endl;
 }
