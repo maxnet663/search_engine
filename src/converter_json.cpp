@@ -215,16 +215,15 @@ ConverterJSON::findFile(const std::string &file_name, const std::string &dir) {
     std::regex json_pattern("(\\/|)json(|s)$", std::regex::icase);
     //search in specified dir
     for (const auto &entry : fs::directory_iterator(dir)) {
-        auto y = entry.path().filename().string();
         if (entry.path().filename().string() == file_name)
             return fs::absolute(entry.path().string());
     }
     // if file has not found tries to find it in the expected directories
     for(const auto &entry : fs::directory_iterator(dir)) {
-        auto x = entry.path().filename().string();
         if (is_directory(entry.path())
         && std::regex_search(entry.path().filename().string(), json_pattern)) {
-            auto res = findFile((entry.path() / file_name).string());
+            auto res = findFile(file_name
+                    , (entry.path()).string());
             if (!res.empty())
                 return res;
         }
