@@ -245,47 +245,6 @@ int Shell::makeSearch(std::string &config_path
     return 0;
 }
 
-//int Shell::printAnswers() {
-//    auto answers= ConverterJSON::openJson(ANSWERS_FILE_NAME);
-//
-//    if (answers == nullptr) { // answers.json does not exist
-//        custom::print_yellow("Oops, looks like file \"answers.json\" does not "
-//                             "exists;\nThe file may have been moved or the search"
-//                             " has not yet been performed.");
-//        return 1;
-//    }
-//    printWithFormatting(answers["answers"]);
-//    return 0;
-//}
-
-//void Shell::printWithFormatting(const json &answers) {
-//    // lambda for printing json entry
-//    auto print_entry = [](const json &ans) {
-//        std::cout << "document id:\t";
-//        custom::print_green(ans["docid"].dump());
-//        std::cout << "relevance:  \t";
-//        custom::print_green(ans["rank"].dump());
-//    };
-//
-//    for (auto it = answers.begin(); it != answers.end(); it++) {
-//        custom::print_blue(it.key());
-//        if (it.value()["result"] == true) { // if there is at least one result
-//            if (it.value().contains("relevance")) { // if there are several
-//                std::for_each(it.value()["relevance"].begin()
-//                                ,it.value()["relevance"].end()
-//                                , print_entry);
-//            } else { // if there is only one
-//                std::cout << "document id:\t"   ;
-//                custom::print_green(it.value()["docid"].dump());
-//                std::cout << "relevance: \t";
-//                custom::print_green(it.value()["rank"].dump());
-//            }
-//        } else { // if empty
-//            custom::print_red(it.value().dump());
-//        }
-//    }
-//}
-
 int Shell::index(std::queue<std::string> &args) {
     if (args.empty()) {
         custom::print_yellow("Arguments required. Use -h to get help");

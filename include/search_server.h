@@ -53,8 +53,6 @@ public:
 
     SearchServer() = delete;
 
-    SearchServer(const SearchServer &other) = default;
-
     /**
      * @param idx: reference to the docs dictionary
      */
