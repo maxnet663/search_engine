@@ -7,7 +7,7 @@
 
 TEST(ConverterJSONTest, EmptyDocumentsListTest) {
     ConverterJSON cj(TESTS_DIR);
-    auto documents_path = cj.getTextDocuments();
+    auto documents_path = cj.getDocumentsPaths();
     ASSERT_TRUE(!documents_path.empty());
 }
 
@@ -19,7 +19,7 @@ TEST(ConverterJSONTest, GetTextDocumentsTest) {
             "../resources_test/file003.txt",
             "../resources_test/file004.txt"
             };
-    auto real_result = cj.getTextDocuments();
+    auto real_result = cj.getDocumentsPaths();
     ASSERT_EQ(expected_result, real_result);
 }
 
