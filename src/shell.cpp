@@ -1,54 +1,103 @@
 #include "include/shell.h"
-#include <regex>
 
-Shell::Shell() : status(Status::Uninitialized), srv(document_base) {
+#include <regex> // regex regex_match
+
+#include "include/file_reader.h"
+
+Shell::Shell(int argc, char **argv) : cmd(argc, argv) {
     commands = {
-            {"update-db", &Shell::updateDB       },
-            {"update-rq", &Shell::updateRequests },
-            {"help",      &Shell::showHelp       },
-            {"status",    &Shell::showStat       },
-            {"find",      &Shell::find           },
-            {"print-rq",  &Shell::showRequests   },
-            {"print-db",  &Shell::showIndexedDocs},
-            {"print-ans", &Shell::printAnswers   },
-            {"quit",      &Shell::exit           }
+            { std::regex("^gen(erate|)$") , &Shell::generateJsons },
+            { std::regex("^h(elp|)$")     , &Shell::showHelp      },
+            { std::regex("^conf(ig|)$")   , &Shell::showConfig    },
+            { std::regex("^f(ind|)$")     , &Shell::find          },
+            { std::regex("^(index|idx)$") , &Shell::index         },
+            { std::regex("^p(rint|)$")    , &Shell::printJson     }
+
     };
-    commands_patterns = {
-            { std::regex("^up(date|)-db$")  },
-            { std::regex("^up(date|)-rq$")  },
-            { std::regex("^h(elp|)$")      },
-            { std::regex("^stat(us|)$")    },
-            { std::regex("^f(ind|)$")      },
-            { std::regex("^p(rint|)-rq$")  },
-            { std::regex("^p(rint|)-db$")  },
-            { std::regex("^p(rint|)-ans$") },
-            { std::regex("^q(uit|)$")      }
-    };
+    auto helper_path = ConverterJSON::findFile("help.json");
+    if (helper_path.empty()) {
+        custom::print_yellow("Could not find helper file. "
+                             "Did you do something to him?");
+    } else {
+        helper = ConverterJSON::openJson(helper_path);
+    }
 }
 
 int Shell::operator()() {
-    int command_result = 0;
-    if (status == Status::Uninitialized) {
-        command_result = initialize();
+    auto args = cmd.parseArgs();
+    auto first = getNext(args);
+    for (auto &command : commands) {
+        if (std::regex_match(first, command.first)) {
+            auto exec = command.second;
+            return (exec)(this, args);
+        }
     }
-    if (status == Status::Exit || status == Status::Uninitialized)
-        return command_result;
-    engine_name = pconverter->getConfig()["config"]["name"];
-    engine_version = pconverter->getConfig()["config"]["version"];
-    indexed_documents = pconverter->getTextDocuments();
-    config_path = pconverter->getConfigPath();
-    requests_path = pconverter->getRequestsPath();
-    last_changes_config = fs::last_write_time(config_path);
-    last_changes_requests = fs::last_write_time(requests_path);
-    document_base.updateDocumentBase(indexed_documents);
-    showStat();
-    while (status != Status::Exit) {
-        command_result = handler(cmd);
-    }
-    return command_result;
+    std::cout << "Unknown command " + first << std::endl;
+    return 0;
 }
 
-void Shell::generateJsons() {
+int Shell::showHelp(std::queue<std::string> &args) {
+    if (args.empty()) {
+        std::cout <<
+        "General commands:\n"
+        "[generate] or [gen]  : generate default json files\n"
+        "[help] or [h]        : prints this message. Use -all to see more\n"
+        "[config] or [conf]   : print info about this program\n"
+        "[find] or [f]        : searches for current queries in the "
+                                "current database\n"
+        "[index] or [idx]     : recursive searches for txt files in directory "
+                                "and adds them to indexed files\n"
+        "[print] or [p]       : print out the content of json file in standard"
+                                "output\n"
+        << std::endl;
+    } else if (args.front() == "-all") {
+        help();
+    } else {
+        custom::print_yellow("Unknown argument " + args.front());
+        return 1;
+    }
+    return 0;
+}
+
+int Shell::help(const std::string& command) {
+    if (command.empty()) {
+        ConverterJSON::printJson(helper);
+    } else {
+        if (!helper.contains(command)) {
+            custom::print_yellow("Unknown command");
+            return 1;
+        } else {
+            std::cout << command << std::endl;
+            ConverterJSON::printJson(helper[command]);
+        }
+    }
+    return 0;
+}
+
+int Shell::generateJsons(args_t &args) {
+    std::string dest_dir = fs::current_path().string();
+    bool explicit_path = false;
+    while (!args.empty()) {
+        auto arg = getNext(args);
+        if (arg == "-h") {
+            help("generate");
+            return 0;
+        }
+        if (!explicit_path) {
+            dest_dir = arg;
+            explicit_path = true;
+            continue;
+        } else {
+            custom::print_yellow("Unknown argument " + arg);
+            return 1;
+        }
+    }
+    return generate(CONFIG_FILE_NAME, REQUESTS_FILE_NAME, dest_dir);
+}
+
+int Shell::generate(const std::string &config_name,
+                    const std::string &requests_name,
+                    const std::string &dest_dir) {
     json config;
     config["config"]["name"] = "SearchEngine";
     config["config"]["version"] = "0.1";
@@ -56,264 +105,282 @@ void Shell::generateJsons() {
     config["files"].push_back("/example/path");
     json requests;
     requests["requests"].push_back("example request");
-    ConverterJSON::writeJsonToFile(config
-                                   , (fs::current_path()
-                                   / CONFIG_FILE_NAME).string());
-    ConverterJSON::writeJsonToFile(requests
-                                   , (fs::current_path()
-                                   / REQUESTS_FILE_NAME).string());
-}
-
-conv_ptr Shell::handMakeConverter() {
-    auto question = "Indicate how to search for "
-                    "configuration json files\n"
-                    "Enter: -d <directory/to/search>\n"
-                    "or : -p '/path/to/search/config' "
-                    "'/path/to/search/requests'\n"
-                    "quit or q to exit ";
-    std::regex quit_pattern("q(uit)?$", std::regex::icase);
-    std::regex dir_pattern("-d [^ ]+$");
-    std::regex path_pattern("-p [^ ]+ [^ ]+$");
-    cmd.trap(question, {quit_pattern, dir_pattern, path_pattern});
-    if (status == Status::Exit)
-        return nullptr;
-    if (std::regex_match(cmd.str(), quit_pattern)) {
-        exit();
-        return nullptr;
-    }
-    if (std::regex_match(cmd.str(), dir_pattern)
-    || std::regex_match(cmd.str(), path_pattern)) {
-        auto args = cmd.parseArgs();
-        auto first_arg = args.front();
-        args.pop();
-        if (first_arg == "-d") {
-            auto dir = args.front();
-            args.pop();
-            return makeConverter(dir);
-        }
-        if (first_arg == "-p") {
-            auto first_path = args.front();
-            args.pop();
-            auto second_path = args.front();
-            args.pop();
-            return makeConverter(first_path, second_path);
-        }
-    }
-    return nullptr;
-}
-
-int Shell::initialize() {
-    pconverter = makeConverter(fs::current_path());
-    if (pconverter) {
-        status = Status::Initialized;
-    } else {
-        std::cout << "Failed to automatically detect json files.\n"
-                  << std::endl;
-        auto question = "Enter 'man' to specify the path to the "
-                        "configuration files manually\n"
-                        "or enter 'gen' to generate it automatically";
-        std::regex man_pattern("man");
-        std::regex gen_pattern("gen");
-        std::regex quit_pattern("q(uit)?$", std::regex::icase);
-        auto res = cmd.trap(question,
-                            {man_pattern, gen_pattern, quit_pattern});
-        switch (res) {
-            case 0: {
-                pconverter = handMakeConverter();
-                break;
-            }
-            case 1: {
-                generateJsons();
-                auto conf_path = fs::current_path() / CONFIG_FILE_NAME;
-                auto req_path =
-                        fs::current_path() / REQUESTS_FILE_NAME;
-                pconverter = makeConverter(conf_path, req_path);
-                break;
-            }
-            case 2:
-                exit();
-                return 0;
-            default:
-                return 1;
-        }
-        if (pconverter)
-            status = Status::Initialized;
-    }
-    return 0;
-}
-
-int Shell::handler(Cmd &command) {
-    auto res = cmd.trap("", commands_patterns);
-    if (cmd.eof() || res < 0) {
-        status = Status::Exit;
+    fs::create_directories(dest_dir);
+    if (!FileReader::isWriteable(dest_dir)) {
+        custom::print_yellow("Permission denied " + dest_dir);
         return 1;
     }
-    (this->*commands[res].second)();
+    auto res = ConverterJSON::writeJsonToFile(config
+            , (fs::path(dest_dir)
+            / config_name).string());
+    if (!res)
+        custom::print_green(config_name + " generated in " + dest_dir);
+    res = ConverterJSON::writeJsonToFile(requests
+            , (fs::path(dest_dir) / requests_name).string());
+    if (!res)
+        custom::print_green(requests_name + " generated in " + dest_dir);
     return 0;
 }
 
-void Shell::updateDB() {
-    // check if the file has been edited
-    if (fs::last_write_time(pconverter->getConfigPath())
-        == last_changes_config) {
-        custom::print_green("Indexed documents are up to date");
-    } else { // if there are any new updates
-        last_changes_config = fs::last_write_time(pconverter->getConfigPath());
-        pconverter->updateConfig();
-
-        std::vector<std::string> new_indexed_documents
-        = makeAbsolute(pconverter->getConfig()["files"]);
-
-        if (indexed_documents != new_indexed_documents) {
-            indexed_documents = std::move(new_indexed_documents);
-            document_base.updateDocumentBase(indexed_documents);
+int Shell::showConfig(std::queue<std::string> &args) {
+    std::string config_path = CONFIG_FILE_NAME;
+    bool recursive_search = false;
+    bool explicit_path = false;
+    while (!args.empty()) {
+        auto arg = getNext(args);
+        if (arg == "-h") {
+            help("config");
+            return 0;
         }
-        custom::print_green("Indexed documents updated");
-    }
-}
-
-void Shell::updateRequests() {
-    // check if the file has been edited
-    if (fs::last_write_time(pconverter->getRequestsPath())
-        == last_changes_requests) {
-        custom::print_green("Requests are up to date");
-    } else { // if there are any new updates
-        pconverter->updateRequests();
-        last_changes_requests = fs::last_write_time(
-                pconverter->getRequestsPath());
-        custom::print_green("Requests updated");
-    }
-}
-
-bool Shell::checkUpdate() {
-    return fs::last_write_time(pconverter->getConfigPath())
-    != last_changes_config
-    || fs::last_write_time(pconverter->getRequestsPath())
-    != last_changes_requests;
-}
-
-void Shell::showHelp() {
-    std::cout <<    "Commands:\n"
-       "update-db   : updates data base if you changed indexed docs\n"
-       "update-rq   : updates requests if you changed requests.json\n"
-       "help        : prints this message\n"
-       "status      : prints info about session\n"
-       "find        : searches for current queries in the current database\n"
-       "print-rq    : prints current requests from requests.json\n"
-       "print-db    : prints current indexed docs from config.json\n"
-       "print-ans   : prints current search results from answers.json\n"
-       "quit        : ends the session" << std::endl;
-}
-
-void Shell::showStat() {
-    std::cout << engine_name << std::endl
-    << "Version: ";
-    custom::print_green(engine_version);
-
-    std::cout << "Current config.json: ";
-    custom::print_green(pconverter->getConfigPath());
-
-    std::cout << "Current requests.json: ";
-    custom::print_green(pconverter->getRequestsPath());
-
-    if (checkUpdate())
-        custom::print_green("Update available");
-    else
-        std::cout << "Everything is up to date\n";
-}
-
-void Shell::showRequests() {
-    std::cout << "Current Requests:\n";
-    auto queries = pconverter->getRequests();
-    std::for_each(queries.begin()
-                  , queries.end()
-                  ,[](const std::string &q)
-                  { std::cout << q << std::endl; });
-}
-
-void Shell::showIndexedDocs() {
-    std::cout << "Current Indexed Documents:\n";
-    std::for_each(indexed_documents.begin()
-                  , indexed_documents.end()
-                  , [](const std::string &doc)
-                  { custom::print_green(doc); });
-}
-
-void Shell::find() {
-    custom::print_green("Search started, please wait...");
-    pconverter->putAnswers(srv.search(pconverter->getRequests()));
-    custom::print_green("Search done");
-}
-
-void Shell::printAnswers() {
-    auto answers= ConverterJSON::openJson(ANSWERS_FILE_NAME);
-
-    if (answers == nullptr) { // answers.json does not exist
-        std::string msg = "Oops, looks like file \"answers.json\" does not "
-                          "exists;\n The file may have been moved or the search"
-                          " has not yet been performed.";
-        custom::print_yellow(msg);
-        return;
-    }
-    printWithFormatting(answers["answers"]);
-}
-
-void Shell::printWithFormatting(const json &answers) {
-
-    for (auto it = answers.begin(); it != answers.end(); it++) {
-        custom::print_blue(it.key());
-
-        if (it.value()["result"] == true) { // if there is at least one result
-
-            // lambda for printing json entry
-            auto print_entry = [](const nlohmann::json &ans) {
-                std::cout << "document id:\t";
-                custom::print_green(ans["docid"].dump());
-                std::cout << "relevance:  \t";
-                custom::print_green(ans["rank"].dump());
-            };
-
-            if (it.value().contains("relevance")) { // if there are several
-                std::for_each(it.value()["relevance"].begin()
-                                ,it.value()["relevance"].end()
-                                , print_entry);
-            } else { // if there is only one
-                std::cout << "document id:\t"   ;
-                custom::print_green(it.value()["docid"].dump());
-                std::cout << "relevance:\t";
-                custom::print_green(it.value()["rank"].dump());
-            }
+        if (arg == "-r") { // ignored if path indicated explicitly
+            recursive_search = true;
         } else {
-            custom::print_red(it.value().dump());
+            explicit_path = true;
+            config_path = arg;
         }
     }
-}
+    json config;
+    if (!explicit_path) {
+        if (recursive_search)
+            config_path = ConverterJSON::findFileRecursive(config_path);
+        else
+            config_path = ConverterJSON::findFile(config_path);
 
-std::vector<std::string> Shell::makeAbsolute(
-        std::vector<std::string> paths) {
-    if (!paths.empty()) {
-        // moves invalid paths to the end of the vector
-        auto new_end = std::remove_if(paths.begin()
-                                      , paths.end()
-                                      , [](const std::string &p)
-                                      { return !fs::exists(p); });
-        // printWithFormatting warnings
-        std::for_each(new_end
-                      , paths.end()
-                      , [](const std::string &p)
-                      { custom::print_yellow(p + " does not exist"); });
-        paths.erase(new_end, paths.end());
-
-        // change paths to absolute
-        std::for_each(paths.begin()
-                      , paths.end()
-                      , [](std::string &p)
-                      { p = absolute(
-                              fs::path(p)).string(); });
     }
-    return paths;
+    if (config_path.empty()) {
+        custom::print_yellow("Could not find " CONFIG_FILE_NAME);
+        return 1;
+    }
+    config = ConverterJSON::openJson(config_path);
+    if(config.empty())
+        return 1;
+    printInfo(config);
+    return 0;
 }
 
-void Shell::exit() {
-    status = Status::Exit;
+void Shell::printInfo(const json &config) {
+    std::cout << "Engine name: " << config["config"]["name"] << std::endl;
+    std::cout << "Engine version: " << config["config"]["version"] << std::endl;
+    printIndexingPath(config["files"]);
+}
+
+void Shell::printIndexingPath(const std::vector<std::string> &path) {
+    for (const auto &p : path) {
+        if (!fs::exists(p))
+            custom::print_yellow("File " + p + " does not exist");
+        else
+            custom::print_green(p + " ok");
+    }
+}
+
+int Shell::find(args_t &args) {
+    std::string config_path = CONFIG_FILE_NAME;
+    std::string requests_path = REQUESTS_FILE_NAME;
+    bool recursive_search = false;
+    bool explicit_path = false;
+    bool print_answers = false;
+    while (!args.empty()) {
+        auto arg = getNext(args);
+        if (arg == "-h") {
+            help("find");
+            return 0;
+        }
+        if (arg == "-print") {
+            if (!print_answers) {
+                print_answers = true;
+            } else {
+                custom::print_yellow("Extra -print arg?");
+                return 1;
+            }
+            continue;
+        }
+        if (arg == "-r") {
+            recursive_search = true;
+            continue;
+        }
+        if (!explicit_path) {
+            explicit_path = true;
+            config_path = arg;
+            requests_path = getNext(args);
+            if (config_path.empty() || requests_path.empty()) {
+                custom::print_yellow("Expected paths to config and requests");
+                return 1;
+            }
+            continue;
+        }
+        custom::print_yellow("Unknown argument " + arg);
+        return 1;
+    }
+    auto res = makeSearch(config_path
+               , requests_path
+               , explicit_path
+               , recursive_search);
+    if (!res && print_answers)
+        ConverterJSON::printJson(ConverterJSON::openJson(ANSWERS_FILE_NAME));
+    return res;
+}
+
+int Shell::makeSearch(std::string &config_path
+                      , std::string &requests_path
+                      , bool explicit_flag
+                      , bool recursive_flag) {
+    conv_ptr pconverter;
+    if (explicit_flag) {
+        pconverter = makeConverter(config_path, requests_path);
+    } else {
+        if (recursive_flag) {
+            config_path = ConverterJSON::findFileRecursive(config_path);
+            requests_path = ConverterJSON::findFileRecursive(requests_path);
+            pconverter = makeConverter(config_path, requests_path);
+        } else {
+            pconverter = makeConverter(fs::current_path());
+        }
+    }
+    if (!pconverter)
+        return 1;
+    InvertedIndex idx;
+    idx.updateDocumentBase(pconverter->getDocumentsPaths());
+    SearchServer srv(idx);
+    pconverter->putAnswers(srv.search(pconverter->getRequests()));
+    return 0;
+}
+
+//int Shell::printAnswers() {
+//    auto answers= ConverterJSON::openJson(ANSWERS_FILE_NAME);
+//
+//    if (answers == nullptr) { // answers.json does not exist
+//        custom::print_yellow("Oops, looks like file \"answers.json\" does not "
+//                             "exists;\nThe file may have been moved or the search"
+//                             " has not yet been performed.");
+//        return 1;
+//    }
+//    printWithFormatting(answers["answers"]);
+//    return 0;
+//}
+
+//void Shell::printWithFormatting(const json &answers) {
+//    // lambda for printing json entry
+//    auto print_entry = [](const json &ans) {
+//        std::cout << "document id:\t";
+//        custom::print_green(ans["docid"].dump());
+//        std::cout << "relevance:  \t";
+//        custom::print_green(ans["rank"].dump());
+//    };
+//
+//    for (auto it = answers.begin(); it != answers.end(); it++) {
+//        custom::print_blue(it.key());
+//        if (it.value()["result"] == true) { // if there is at least one result
+//            if (it.value().contains("relevance")) { // if there are several
+//                std::for_each(it.value()["relevance"].begin()
+//                                ,it.value()["relevance"].end()
+//                                , print_entry);
+//            } else { // if there is only one
+//                std::cout << "document id:\t"   ;
+//                custom::print_green(it.value()["docid"].dump());
+//                std::cout << "relevance: \t";
+//                custom::print_green(it.value()["rank"].dump());
+//            }
+//        } else { // if empty
+//            custom::print_red(it.value().dump());
+//        }
+//    }
+//}
+
+int Shell::index(std::queue<std::string> &args) {
+    if (args.empty()) {
+        custom::print_yellow("Arguments required. Use -h to get help");
+        return 1;
+    }
+    std::string dir_to_indexing;
+    std::string config_path = CONFIG_FILE_NAME;
+    bool recursive = false;
+    while (!args.empty()) {
+        auto arg = getNext(args);
+        if (arg == "-h") {
+            help("index");
+            return 0;
+        }
+        if (arg == "-r") {
+            recursive = true;
+            continue;
+        }
+        if (dir_to_indexing.empty()) {
+            dir_to_indexing = arg;
+            continue;
+        }
+        config_path = arg;
+        if (!arg.empty())
+            config_path = arg;
+    }
+    if (dir_to_indexing.empty()) {
+        custom::print_yellow("Expected path to indexing docs");
+        return 1;
+    }
+    if (recursive)
+        config_path = ConverterJSON::findFileRecursive(config_path);
+    else
+        config_path = ConverterJSON::findFile(config_path);
+    if (config_path.empty()) {
+        custom::print_yellow("Could not find config.json");
+        return 1;
+    }
+    json config = ConverterJSON::openJson(config_path);
+    if (config.empty())
+        return 1;
+    auto res = addFiles(dir_to_indexing, config);
+    ConverterJSON::writeJsonToFile(config, config_path);
+    if (!res)
+        custom::print_green("Indexed files has written to " + config_path);
+    else
+        custom::print_yellow("Something went wrong during indexing");
+    return res;
+}
+
+int Shell::addFiles(const std::string &dir, json &config_json) {
+    if (!fs::is_directory(dir)) {
+        custom::print_yellow(dir + " is not a directory");
+        return 1;
+    }
+    std::vector<std::string> files;
+    for (const auto &entry : fs::recursive_directory_iterator(dir)) {
+        if (fs::is_regular_file(entry) && entry.path().extension() == ".txt")
+            files.emplace_back(entry.path().string());
+    }
+    for (auto &file : files) {
+        config_json["files"].push_back(file);
+    }
+    return 0;
+}
+
+int Shell::printJson(std::queue<std::string> &args) {
+    if (args.empty()) {
+        custom::print_yellow("Path to file required");
+        return 1;
+    }
+    auto arg = getNext(args);
+    if (arg == "-h") {
+        return help("print");
+    }
+    std::regex json_pattern("[^ ]+\\.json$");
+    if (!std::regex_match(arg, json_pattern)) {
+        custom::print_yellow("Strange argument. Expected path to *.json");
+        return 1;
+    }
+    auto obj = ConverterJSON::openJson(arg);
+    if (obj.empty()) {
+        return 1;
+    } else {
+            ConverterJSON::printJson(obj);
+    }
+    return 0;
+}
+
+std::string Shell::getNext(args_t &args) {
+    if (args.empty()) {
+        return { };
+    } else {
+        auto front = args.front();
+        args.pop();
+        return front;
+    }
 }

@@ -15,50 +15,152 @@
 #include "include/formatting.h"
 #include "include/cmd.h"
 
+class Shell;
+
 namespace fs = std::filesystem;
 
+/**
+ * Pointer to a ConverterJSON
+ */
 typedef std::unique_ptr<ConverterJSON> conv_ptr;
 
 /**
- *  Recording the last modified time of a file
+ * Arguments for shell commands
  */
-typedef std::filesystem::file_time_type update_t;
+typedef std::queue<std::string> args_t;
 
-enum class Status {
-    Initialized,
-    Uninitialized,
-    Exit
-};
+/**
+ * Wrapper over shell commands
+ */
+typedef std::function<int(Shell*, std::queue<std::string>&) > cmd_t;
 
+/**
+ * The shell provides an interface
+ * for interacting with program capabilities
+ */
 class Shell {
-    Status status;
-    Cmd cmd;
-    conv_ptr pconverter;
-    InvertedIndex document_base;
-    SearchServer srv;
-
-    std::string engine_name;
-    std::string engine_version;
-    std::vector<std::string> indexed_documents;
-    std::string config_path;
-    std::string requests_path;
-    update_t last_changes_config;
-    update_t last_changes_requests;
-
-    std::vector<std::pair<std::string, void(Shell::*)()>> commands;
-    std::vector<std::regex> commands_patterns;
-
-    friend class Cmd;
-
+    Cmd cmd; // arguments handler
+    std::vector<std::pair<std::regex, cmd_t>> commands; // list of commands
+    json helper; // file with help information
 public:
 
-    Shell();
+    Shell(int argc, char **argv);
 
+    /**
+     * Launches a shell
+     * @return 0 if everything is okay, code <> 0 otherwise
+     */
     int operator()();
 
 private:
 
-    void generateJsons();
+    /**
+     * Prints the command's list
+     */
+    int showHelp(std::queue<std::string> &args);
+
+    /**
+     * Print out help about a specific command
+     * or similar information about all
+     * @param command command to get info, if not specified,
+     * prints info about all commands
+     * @return 0 if everything is okay, code <> 0 otherwise
+     */
+    int help(const std::string& command = "");
+
+    /**
+     * Generates default json files
+     * @param args arguments
+     * @return 0 if everything is okay, code <> 0 otherwise
+     */
+    int generateJsons(args_t &args);
+
+    /**
+     * Helper command for generateJson
+     * @param config_name
+     * @param requests_name
+     * @param dest_dir
+     * @return 0 if everything is okay, code <> 0 otherwise
+     */
+    int generate(const std::string& config_name
+                 , const std::string &requests_name
+                 , const std::string &dest_dir);
+
+     /**
+      * Print out information about this programm
+      * @param args arguments
+      * @return 0 if everything is okay, code <> 0 otherwise
+      */
+    int showConfig(std::queue<std::string> &args);
+
+    /**
+     * Helper method for showConfig
+     * Print out general info
+     * @param config
+     */
+    void printInfo(const json &config);
+
+    /**
+     * Helper method for showConfig.
+     * Check indexing docs
+     * @param paths
+     */
+    void printIndexingPath(const std::vector<std::string> &path);
+
+    /**
+     * Make search in indexed docs config.json upon
+     * request from requests.json
+     * @param args arguments
+     * @return 0 if everything is okay, code <> 0 otherwise
+     */
+    int find(args_t &args);
+
+    /**
+     * Helper method for find
+     * @param config_path
+     * @param requests_path
+     * @param explicit_flag
+     * @param recursive_flag
+     * @return 0 if everything is okay, code <> 0 otherwise
+     */
+    int makeSearch(std::string &config_path
+                   , std::string &requests_path
+                   , bool explicit_flag
+                   , bool recursive_flag);
+
+    int printAnswers();
+
+    void printWithFormatting(const json &answers);
+
+    /**
+     * Writes .txt files from specified dir in config.json
+     * @param args arguments
+     * @return 0 if everything is okay, code <> 0 otherwise
+     */
+    int index(std::queue<std::string> &args);
+
+    /**
+     * Helper method for index
+     * @param dir
+     * @param config_json
+     * @return 0 if everything is okay, code <> 0 otherwise
+     */
+    int addFiles(const std::string &dir, json &config_json);
+
+    /**
+     * Print out specified json file
+     * @param args arguments
+     * @return 0 if everything is okay, code <> 0 otherwise
+     */
+    int printJson(std::queue<std::string> &args);
+
+    /**
+     * Method for extracting arguments from args list
+     * @param args queue of args
+     * @return front of queue if !args.empty(),
+     * empty string otherwise
+     */
+    std::string getNext(args_t &args);
 
     /**
      * Method constructs ConverterJSON
@@ -69,101 +171,6 @@ private:
      */
     template<class... Args>
     static conv_ptr makeConverter(Args&&... args);
-
-    /**
-     * An alternative way to construct ConverterJSON
-     * through dialogue with the user
-     * @return unique_ptr to created ConverterJSON
-     */
-    conv_ptr handMakeConverter();
-
-    /**
-     * constructs ConverterJSON
-     * @return 0 if everything is fine, val <> 0 otherwise
-     */
-    int initialize();
-
-    /**
-     * Command handler
-     * @param command: format string representing a command
-     */
-    int handler(Cmd &command);
-
-    /**
-     * The method checks whether the config.json has changed
-     * since the last update or program launch;
-     * if so, it updates the file and extracts new information from it
-     */
-    void updateDB();
-
-    /**
-     * The method checks whether the requests.json has changed
-     * since the last update or program launch;
-     * if so, it updates the file and extracts new information from it
-     */
-    void updateRequests();
-
-    /**
-     * Checks if config.json or requests.json have been overwritten
-     * since last update or program launch
-     * @return
-     */
-    bool checkUpdate();
-
-    /**
-     * Prints the command's list
-     */
-    void showHelp();
-
-    /**
-     * Prints information about the current session:
-     * the name and version of the engine and the
-     * current configuration files
-     */
-    void showStat();
-
-    /**
-     * Prints the request's list
-     */
-    void showRequests();
-
-    /**
-     * Prints the list of current indexed documents
-     */
-    void showIndexedDocs();
-
-    /**
-     * Make search with current requests in current indexed documents
-     */
-    void find();
-
-    /**
-     * If the method finds a answers.json, it will printWithFormatting its
-     * contents, otherwise it will issue a warning
-     */
-    void printAnswers();
-
-    /**
-     * Helper method for printWithFormatting. Print contents
-     * of answers
-     * @param answers json object in answers form
-     */
-    void printWithFormatting(const json &answers);
-
-    /**
-     * The method replaces relative paths with absolute ones;
-     * if a file at that path does not exist, the path is
-     * deleted and a warning is printed
-     * @param paths: path's list
-     * @return list of absolute paths to existing files
-     */
-    std::vector<std::string> makeAbsolute(std::vector<std::string> paths);
-
-    /**
-     * The method sets the eof bit, preventing the resumption
-     * of dialogue with the user
-     */
-    void exit();
 };
 
 /**
