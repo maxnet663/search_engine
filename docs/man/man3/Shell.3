@@ -1,4 +1,4 @@
-.TH "Shell" 3 "Mon Oct 2 2023" "Search Engine" \" -*- nroff -*-
+.TH "Shell" 3 "Fri Oct 6 2023" "Search Engine" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -6,20 +6,32 @@ Shell
 .SH SYNOPSIS
 .br
 .PP
+.PP
+\fC#include <shell\&.h>\fP
 .SS "Public Member Functions"
 
 .in +1c
 .ti -1c
+.RI "\fBShell\fP (int argc, char **argv)"
+.br
+.ti -1c
 .RI "int \fBoperator()\fP ()"
 .br
 .in -1c
-.SS "Friends"
+.SH "Detailed Description"
+.PP 
+The shell provides an interface for interacting with program capabilities 
+.SH "Member Function Documentation"
+.PP 
+.SS "int Shell::operator() ()"
+Launches a shell 
+.PP
+\fBReturns\fP
+.RS 4
+0 if everything is okay, code <> 0 otherwise 
+.RE
+.PP
 
-.in +1c
-.ti -1c
-.RI "class \fBCmd\fP"
-.br
-.in -1c
 
 .SH "Author"
 .PP 

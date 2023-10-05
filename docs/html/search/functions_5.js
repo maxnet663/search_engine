@@ -1,5 +1,6 @@
 var searchData=
 [
-  ['makeunicodestring_90',['makeUnicodeString',['../namespaceformat_1_1unicode.html#a31d6593752b52b35dd5c08d3635f58a5',1,'format::unicode']]],
-  ['makeutfstring_91',['makeUtfString',['../namespaceformat_1_1unicode.html#a02ab0689f8268927f7bc639f9b01f619',1,'format::unicode']]]
+  ['is_5fopen_81',['is_open',['../classFileReader.html#a8ef804d664072fbfe080e2c385af7206',1,'FileReader']]],
+  ['isreadable_82',['isReadable',['../classFileReader.html#aa362a7ccc64e669fb9bde7121a5c882b',1,'FileReader']]],
+  ['iswriteable_83',['isWriteable',['../classFileReader.html#a2899f816a395bc0788cbb7f58b180581',1,'FileReader']]]
 ];

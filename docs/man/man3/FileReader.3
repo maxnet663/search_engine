@@ -1,4 +1,4 @@
-.TH "FileReader" 3 "Mon Oct 2 2023" "Search Engine" \" -*- nroff -*-
+.TH "FileReader" 3 "Fri Oct 6 2023" "Search Engine" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -18,19 +18,13 @@ FileReader
 .RI "\fBFileReader\fP & \fBoperator=\fP (const \fBFileReader\fP &right)=delete"
 .br
 .ti -1c
-.RI "\fBFileReader\fP (const std::string &file_path) noexcept"
+.RI "\fBFileReader\fP (const std::string &file_path)"
 .br
 .ti -1c
 .RI "void \fBopen\fP (const std::string &file_path)"
 .br
 .ti -1c
 .RI "bool \fBis_open\fP () const"
-.br
-.ti -1c
-.RI "std::string \fBgetPath\fP () const"
-.br
-.ti -1c
-.RI "std::string \fBgetExtension\fP () const"
 .br
 .ti -1c
 .RI "std::string \fBgetText\fP ()"
@@ -54,33 +48,15 @@ FileReader
 .in -1c
 .SH "Detailed Description"
 .PP 
-Wrapper over standard file reading stream 
+Wrapper over standard file reading stream with formatting extension for unicode strings 
 .SH "Member Function Documentation"
 .PP 
-.SS "std::string FileReader::getExtension () const\fC [inline]\fP"
-Extension getter 
-.PP
-\fBReturns\fP
-.RS 4
-extension of opened file 
-.RE
-.PP
-
 .SS "std::string FileReader::getFormattedText ()"
 Returns file's text formatted as unicode: deletes whitespaces, punctuation marks, converts all letters to lowercase 
 .PP
 \fBReturns\fP
 .RS 4
 utf-8 text 
-.RE
-.PP
-
-.SS "std::string FileReader::getPath () const\fC [inline]\fP"
-Path getter 
-.PP
-\fBReturns\fP
-.RS 4
-path to opened file 
 .RE
 .PP
 
@@ -103,7 +79,7 @@ true if fstream opened, false otherwise
 .PP
 
 .SS "bool FileReader::isReadable (const std::string & file_path)\fC [static]\fP"
-Checks permission to read from a file\&. Only owner rights are checked 
+Checks permission to read from a file\&. Only owner rights are checked if the program is not launched by the owner of the file, the result is incorrect 
 .PP
 \fBParameters\fP
 .RS 4
@@ -112,12 +88,12 @@ Checks permission to read from a file\&. Only owner rights are checked
 .PP
 \fBReturns\fP
 .RS 4
-true if the file is readable by the owner false otherwise 
+true if the file is readable by the owner, false otherwise 
 .RE
 .PP
 
 .SS "bool FileReader::isWriteable (const std::string & file_path)\fC [static]\fP"
-Checks permission to write to a file\&. Only owner rights are checked 
+Checks permission to write to a file\&. Only owner rights are checked if the program is not launched by the owner of the file, the result is incorrect 
 .PP
 \fBParameters\fP
 .RS 4
@@ -126,7 +102,7 @@ Checks permission to write to a file\&. Only owner rights are checked
 .PP
 \fBReturns\fP
 .RS 4
-true if the file is writeable by the owner false otherwise 
+true if the file is writeable by the owner, false otherwise 
 .RE
 .PP
 
@@ -136,6 +112,20 @@ Opens new filestream, if there is already an open fstream, it will be closed
 \fBParameters\fP
 .RS 4
 \fIfile_path\fP path to file 
+.RE
+.PP
+
+.SS "bool FileReader::operator>> (std::string & dest)"
+Extracts values from stored stream\&. String formatted as unicode chars 
+.PP
+\fBParameters\fP
+.RS 4
+\fIdest\fP where to extract 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+true if stream is not empty, false otherwise 
 .RE
 .PP
 

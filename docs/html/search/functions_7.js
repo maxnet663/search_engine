@@ -1,8 +1,7 @@
 var searchData=
 [
-  ['print_5fblue_94',['print_blue',['../namespacecustom.html#a6ca417def0c1eb1383a9b45e3087d47c',1,'custom']]],
-  ['print_5fgreen_95',['print_green',['../namespacecustom.html#aaade977125b462a4ae0bde45b4fee500',1,'custom']]],
-  ['print_5fred_96',['print_red',['../namespacecustom.html#a50edb4baa83d882c8077a0c330b12712',1,'custom']]],
-  ['print_5fyellow_97',['print_yellow',['../namespacecustom.html#a5beb2855b5974a79efd93615bbab7ef0',1,'custom']]],
-  ['putanswers_98',['putAnswers',['../classConverterJSON.html#a6710be8a8bfe86a4fde81ad05f1dc680',1,'ConverterJSON']]]
+  ['open_86',['open',['../classFileReader.html#a55c4073f243bc82f41148cb9083ff769',1,'FileReader']]],
+  ['openjson_87',['openJson',['../classConverterJSON.html#a68059b31a36ef4118246d0c087f8cff0',1,'ConverterJSON']]],
+  ['operator_28_29_88',['operator()',['../classShell.html#a498b9461206cce444fdcf12f4d0fff26',1,'Shell']]],
+  ['operator_3e_3e_89',['operator&gt;&gt;',['../classFileReader.html#a122cf345440fb29f6c6c3f59afb0ced7',1,'FileReader']]]
 ];

@@ -1,5 +1,7 @@
 var searchData=
 [
-  ['tolowerall_47',['toLowerAll',['../namespaceformat_1_1unicode.html#a9036168bb77d0f4413a4b1af7a88b9fb',1,'format::unicode']]],
-  ['tolowercase_48',['toLowerCase',['../namespaceformat_1_1utf.html#ae6b741ddcd95f1402500bbaeabef0a45',1,'format::utf']]]
+  ['search_44',['search',['../classSearchServer.html#a0a7be4af3075c96b7d00f58dbe799bf0',1,'SearchServer']]],
+  ['searchserver_45',['SearchServer',['../classSearchServer.html',1,'SearchServer'],['../classSearchServer.html#aa69993258440e3f613131956ea1625c5',1,'SearchServer::SearchServer()']]],
+  ['shell_46',['Shell',['../classShell.html',1,'']]],
+  ['str_47',['str',['../classCmd.html#a7edca39b9856907b3806f376a3720c6e',1,'Cmd']]]
 ];

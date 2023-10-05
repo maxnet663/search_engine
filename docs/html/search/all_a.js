@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['search_44',['search',['../classSearchServer.html#a0a7be4af3075c96b7d00f58dbe799bf0',1,'SearchServer']]],
-  ['searchserver_45',['SearchServer',['../classSearchServer.html',1,'SearchServer'],['../classSearchServer.html#aa69993258440e3f613131956ea1625c5',1,'SearchServer::SearchServer()']]],
-  ['shell_46',['Shell',['../classShell.html',1,'']]]
+  ['relativeindex_42',['RelativeIndex',['../structRelativeIndex.html',1,'']]],
+  ['round_43',['round',['../namespacecustom.html#a0b832cf2ed4ffdef25ade1aafc4b8245',1,'custom']]]
 ];

@@ -75,19 +75,6 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a154b2eb1b8410c20e0f03089f28bc61a"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classInvertedIndex.html#a154b2eb1b8410c20e0f03089f28bc61a">InvertedIndex</a> ()=default</td></tr>
-<tr class="separator:a154b2eb1b8410c20e0f03089f28bc61a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abe64a9f25fca4f5d97fdc086efa2471b"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classInvertedIndex.html#abe64a9f25fca4f5d97fdc086efa2471b">InvertedIndex</a> (const <a class="el" href="classInvertedIndex.html">InvertedIndex</a> &amp;other)</td></tr>
-<tr class="separator:abe64a9f25fca4f5d97fdc086efa2471b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a18f5135763b97d3e96cbb38957e505fc"><td class="memItemLeft" align="right" valign="top"><a id="a18f5135763b97d3e96cbb38957e505fc"></a>
-<a class="el" href="classInvertedIndex.html">InvertedIndex</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (const <a class="el" href="classInvertedIndex.html">InvertedIndex</a> &amp;right)</td></tr>
-<tr class="separator:a18f5135763b97d3e96cbb38957e505fc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a74edfdb6841a03e819be2f66a5038c68"><td class="memItemLeft" align="right" valign="top"><a id="a74edfdb6841a03e819be2f66a5038c68"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>InvertedIndex</b> (<a class="el" href="classInvertedIndex.html">InvertedIndex</a> &amp;&amp;other) noexcept</td></tr>
-<tr class="separator:a74edfdb6841a03e819be2f66a5038c68"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a65037a73f0181878d5d6e0527e42e4ef"><td class="memItemLeft" align="right" valign="top"><a id="a65037a73f0181878d5d6e0527e42e4ef"></a>
-<a class="el" href="classInvertedIndex.html">InvertedIndex</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><b>operator=</b> (<a class="el" href="classInvertedIndex.html">InvertedIndex</a> &amp;&amp;right) noexcept</td></tr>
-<tr class="separator:a65037a73f0181878d5d6e0527e42e4ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad8f0ea27fbb56e87d0b5c95b11e1fa83"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classInvertedIndex.html#ad8f0ea27fbb56e87d0b5c95b11e1fa83">updateDocumentBase</a> (const std::vector&lt; std::string &gt; &amp;input_docs)</td></tr>
 <tr class="separator:ad8f0ea27fbb56e87d0b5c95b11e1fa83"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a713e77291ebeab49fbf98514e9f3856d"><td class="memItemLeft" align="right" valign="top">const freq_t &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classInvertedIndex.html#a713e77291ebeab49fbf98514e9f3856d">getWordCount</a> (const std::string &amp;word) const</td></tr>
@@ -100,66 +87,7 @@ Static Public Attributes</h2></td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>The class is a dictionary which containing unique words from indexed documents </p>
-</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a154b2eb1b8410c20e0f03089f28bc61a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a154b2eb1b8410c20e0f03089f28bc61a">&#9670;&nbsp;</a></span>InvertedIndex() <span class="overload">[1/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">InvertedIndex::InvertedIndex </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">default</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Constructs empty dictionary </p>
-
-</div>
-</div>
-<a id="abe64a9f25fca4f5d97fdc086efa2471b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abe64a9f25fca4f5d97fdc086efa2471b">&#9670;&nbsp;</a></span>InvertedIndex() <span class="overload">[2/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">InvertedIndex::InvertedIndex </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="classInvertedIndex.html">InvertedIndex</a> &amp;&#160;</td>
-          <td class="paramname"><em>other</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Copy constructor without copying of mutex member </p><dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">other</td><td>another instance of <a class="el" href="classInvertedIndex.html">InvertedIndex</a> class </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<h2 class="groupheader">Member Function Documentation</h2>
+</div><h2 class="groupheader">Member Function Documentation</h2>
 <a id="a713e77291ebeab49fbf98514e9f3856d"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a713e77291ebeab49fbf98514e9f3856d">&#9670;&nbsp;</a></span>getWordCount()</h2>
 
@@ -234,8 +162,8 @@ Static Public Attributes</h2></td></tr>
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>include/<a class="el" href="inverted__index_8h_source.html">inverted_index.h</a></li>
-<li>src/inverted_index.cpp</li>
+<li>/home/maxnet/search_engine/include/<a class="el" href="inverted__index_8h_source.html">inverted_index.h</a></li>
+<li>/home/maxnet/search_engine/src/inverted_index.cpp</li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.9.1"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Search Engine: include/inverted_index.h Source File</title>
+<title>Search Engine: /home/maxnet/search_engine/include/inverted_index.h Source File</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -92,34 +92,19 @@ $(function() {
 <div class="line"><a name="l00031"></a><span class="lineno">   31</span>&#160; </div>
 <div class="line"><a name="l00035"></a><span class="lineno"><a class="line" href="classInvertedIndex.html#a5072ce57d56ff8b3280dd9012d0be6db">   35</a></span>&#160;    <span class="keyword">static</span> <span class="keyword">const</span> freq_t <a class="code" href="classInvertedIndex.html#a5072ce57d56ff8b3280dd9012d0be6db">nfound</a>;</div>
 <div class="line"><a name="l00036"></a><span class="lineno">   36</span>&#160; </div>
-<div class="line"><a name="l00040"></a><span class="lineno"><a class="line" href="classInvertedIndex.html#a154b2eb1b8410c20e0f03089f28bc61a">   40</a></span>&#160;    <a class="code" href="classInvertedIndex.html#a154b2eb1b8410c20e0f03089f28bc61a">InvertedIndex</a>() = <span class="keywordflow">default</span>;</div>
-<div class="line"><a name="l00041"></a><span class="lineno">   41</span>&#160; </div>
-<div class="line"><a name="l00046"></a><span class="lineno"><a class="line" href="classInvertedIndex.html#abe64a9f25fca4f5d97fdc086efa2471b">   46</a></span>&#160;    <a class="code" href="classInvertedIndex.html#abe64a9f25fca4f5d97fdc086efa2471b">InvertedIndex</a>(<span class="keyword">const</span> <a class="code" href="classInvertedIndex.html">InvertedIndex</a> &amp;other)</div>
-<div class="line"><a name="l00047"></a><span class="lineno">   47</span>&#160;    : freq_dictionary(other.freq_dictionary) {};</div>
-<div class="line"><a name="l00048"></a><span class="lineno">   48</span>&#160; </div>
-<div class="line"><a name="l00049"></a><span class="lineno">   49</span>&#160;    <a class="code" href="classInvertedIndex.html">InvertedIndex</a>&amp; operator=(<span class="keyword">const</span> <a class="code" href="classInvertedIndex.html">InvertedIndex</a> &amp;right);</div>
-<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160; </div>
-<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160;    <a class="code" href="classInvertedIndex.html#a154b2eb1b8410c20e0f03089f28bc61a">InvertedIndex</a>(<a class="code" href="classInvertedIndex.html">InvertedIndex</a>&amp;&amp; other) noexcept</div>
-<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;    : freq_dictionary(std::move(other.freq_dictionary)) {};</div>
+<div class="line"><a name="l00042"></a><span class="lineno">   42</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classInvertedIndex.html#ad8f0ea27fbb56e87d0b5c95b11e1fa83">updateDocumentBase</a>(<span class="keyword">const</span> std::vector&lt;std::string&gt; &amp;input_docs);</div>
+<div class="line"><a name="l00043"></a><span class="lineno">   43</span>&#160; </div>
+<div class="line"><a name="l00050"></a><span class="lineno">   50</span>&#160;    <span class="keyword">const</span> freq_t&amp; <a class="code" href="classInvertedIndex.html#a713e77291ebeab49fbf98514e9f3856d">getWordCount</a>(<span class="keyword">const</span> std::string &amp;word) <span class="keyword">const</span>;</div>
+<div class="line"><a name="l00051"></a><span class="lineno">   51</span>&#160; </div>
+<div class="line"><a name="l00052"></a><span class="lineno">   52</span>&#160;<span class="keyword">private</span>:</div>
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160; </div>
-<div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    <a class="code" href="classInvertedIndex.html">InvertedIndex</a>&amp; operator=(<a class="code" href="classInvertedIndex.html">InvertedIndex</a>&amp;&amp; right) noexcept;</div>
-<div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160; </div>
-<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160;    <span class="keywordtype">void</span> <a class="code" href="classInvertedIndex.html#ad8f0ea27fbb56e87d0b5c95b11e1fa83">updateDocumentBase</a>(<span class="keyword">const</span> std::vector&lt;std::string&gt; &amp;input_docs);</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160; </div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    <span class="keyword">const</span> freq_t&amp; <a class="code" href="classInvertedIndex.html#a713e77291ebeab49fbf98514e9f3856d">getWordCount</a>(<span class="keyword">const</span> std::string &amp;word) <span class="keyword">const</span>;</div>
-<div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160; </div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160; </div>
-<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    <span class="keywordtype">void</span> indexText(<span class="keyword">const</span> std::string &amp;doc_path, uint16_t doc_id);</div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160; </div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;};</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160; </div>
-<div class="line"><a name="l00082"></a><span class="lineno">   82</span>&#160;<span class="preprocessor">#endif </span><span class="comment">//INVERTED_INDEX_H</span></div>
+<div class="line"><a name="l00059"></a><span class="lineno">   59</span>&#160;    <span class="keywordtype">void</span> indexText(<span class="keyword">const</span> std::string &amp;doc_path, uint16_t doc_id);</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160;};</div>
+<div class="line"><a name="l00061"></a><span class="lineno">   61</span>&#160; </div>
+<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160;<span class="preprocessor">#endif </span><span class="comment">//INVERTED_INDEX_H</span></div>
 <div class="ttc" id="aclassInvertedIndex_html"><div class="ttname"><a href="classInvertedIndex.html">InvertedIndex</a></div><div class="ttdef"><b>Definition:</b> inverted_index.h:24</div></div>
-<div class="ttc" id="aclassInvertedIndex_html_a154b2eb1b8410c20e0f03089f28bc61a"><div class="ttname"><a href="classInvertedIndex.html#a154b2eb1b8410c20e0f03089f28bc61a">InvertedIndex::InvertedIndex</a></div><div class="ttdeci">InvertedIndex()=default</div></div>
 <div class="ttc" id="aclassInvertedIndex_html_a5072ce57d56ff8b3280dd9012d0be6db"><div class="ttname"><a href="classInvertedIndex.html#a5072ce57d56ff8b3280dd9012d0be6db">InvertedIndex::nfound</a></div><div class="ttdeci">static const freq_t nfound</div><div class="ttdef"><b>Definition:</b> inverted_index.h:35</div></div>
 <div class="ttc" id="aclassInvertedIndex_html_a713e77291ebeab49fbf98514e9f3856d"><div class="ttname"><a href="classInvertedIndex.html#a713e77291ebeab49fbf98514e9f3856d">InvertedIndex::getWordCount</a></div><div class="ttdeci">const freq_t &amp; getWordCount(const std::string &amp;word) const</div><div class="ttdef"><b>Definition:</b> inverted_index.cpp:39</div></div>
-<div class="ttc" id="aclassInvertedIndex_html_abe64a9f25fca4f5d97fdc086efa2471b"><div class="ttname"><a href="classInvertedIndex.html#abe64a9f25fca4f5d97fdc086efa2471b">InvertedIndex::InvertedIndex</a></div><div class="ttdeci">InvertedIndex(const InvertedIndex &amp;other)</div><div class="ttdef"><b>Definition:</b> inverted_index.h:46</div></div>
 <div class="ttc" id="aclassInvertedIndex_html_ad8f0ea27fbb56e87d0b5c95b11e1fa83"><div class="ttname"><a href="classInvertedIndex.html#ad8f0ea27fbb56e87d0b5c95b11e1fa83">InvertedIndex::updateDocumentBase</a></div><div class="ttdeci">void updateDocumentBase(const std::vector&lt; std::string &gt; &amp;input_docs)</div><div class="ttdef"><b>Definition:</b> inverted_index.cpp:14</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->

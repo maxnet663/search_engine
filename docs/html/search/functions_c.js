@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['wordscounter_107',['wordsCounter',['../namespacecustom.html#a915d7c77ebd0c29333cd2a94f99979b3',1,'custom']]],
-  ['writejsontofile_108',['writeJsonToFile',['../classConverterJSON.html#af5a600562f96ef5ed46adebfc3f16ee6',1,'ConverterJSON']]]
+  ['updatedocumentbase_105',['updateDocumentBase',['../classInvertedIndex.html#ad8f0ea27fbb56e87d0b5c95b11e1fa83',1,'InvertedIndex']]]
 ];

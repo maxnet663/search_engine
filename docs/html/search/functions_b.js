@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['updateconfig_104',['updateConfig',['../classConverterJSON.html#a257147fe4d4ed37b0491f3144bc77939',1,'ConverterJSON']]],
-  ['updatedocumentbase_105',['updateDocumentBase',['../classInvertedIndex.html#ad8f0ea27fbb56e87d0b5c95b11e1fa83',1,'InvertedIndex']]],
-  ['updaterequests_106',['updateRequests',['../classConverterJSON.html#a4fe375748392c29ecdbe92ec386c87d0',1,'ConverterJSON']]]
+  ['tolowerall_103',['toLowerAll',['../namespaceformat_1_1unicode.html#a9036168bb77d0f4413a4b1af7a88b9fb',1,'format::unicode']]],
+  ['tolowercase_104',['toLowerCase',['../namespaceformat_1_1utf.html#ae6b741ddcd95f1402500bbaeabef0a45',1,'format::utf']]]
 ];

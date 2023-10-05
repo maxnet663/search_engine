@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['open_92',['open',['../classFileReader.html#a55c4073f243bc82f41148cb9083ff769',1,'FileReader']]],
-  ['openjson_93',['openJson',['../classConverterJSON.html#a68059b31a36ef4118246d0c087f8cff0',1,'ConverterJSON']]]
+  ['makeunicodestring_84',['makeUnicodeString',['../namespaceformat_1_1unicode.html#a31d6593752b52b35dd5c08d3635f58a5',1,'format::unicode']]],
+  ['makeutfstring_85',['makeUtfString',['../namespaceformat_1_1unicode.html#a02ab0689f8268927f7bc639f9b01f619',1,'format::unicode']]]
 ];

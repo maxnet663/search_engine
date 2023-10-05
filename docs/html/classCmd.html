@@ -70,58 +70,178 @@ $(function() {
 <div class="title">Cmd Class Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
+
+<p><code>#include &lt;<a class="el" href="cmd_8h_source.html">cmd.h</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:af24704be4bfd0d88d76b9a73cdc3502d"><td class="memItemLeft" align="right" valign="top"><a id="af24704be4bfd0d88d76b9a73cdc3502d"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>Cmd</b> (std::string in_cmd)</td></tr>
-<tr class="separator:af24704be4bfd0d88d76b9a73cdc3502d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1d74b167a08898066d9f2bf07495bc86"><td class="memItemLeft" align="right" valign="top"><a id="a1d74b167a08898066d9f2bf07495bc86"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>Cmd</b> (const <a class="el" href="classCmd.html">Cmd</a> &amp;other)=default</td></tr>
-<tr class="separator:a1d74b167a08898066d9f2bf07495bc86"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acd33c950bd35afd5fae42ac70c5ab9fb"><td class="memItemLeft" align="right" valign="top"><a id="acd33c950bd35afd5fae42ac70c5ab9fb"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>operator std::string</b> () const</td></tr>
-<tr class="separator:acd33c950bd35afd5fae42ac70c5ab9fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afe3b5ead0f2871c3456942f6144f733a"><td class="memItemLeft" align="right" valign="top"><a id="afe3b5ead0f2871c3456942f6144f733a"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>set</b> (std::string value)</td></tr>
-<tr class="separator:afe3b5ead0f2871c3456942f6144f733a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae16d4f9acbb58d856bd45843c83ca0db"><td class="memItemLeft" align="right" valign="top"><a id="ae16d4f9acbb58d856bd45843c83ca0db"></a>
-std::string&#160;</td><td class="memItemRight" valign="bottom"><b>str</b> () const</td></tr>
-<tr class="separator:ae16d4f9acbb58d856bd45843c83ca0db"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad5a2e269ba07baa86f91129b0c8f4179"><td class="memItemLeft" align="right" valign="top"><a id="ad5a2e269ba07baa86f91129b0c8f4179"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>empty</b> () const</td></tr>
+<tr class="memitem:a87639e4c32141f0a83cc585983aa035f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCmd.html#a87639e4c32141f0a83cc585983aa035f">Cmd</a> (int argc, char **argv)</td></tr>
+<tr class="separator:a87639e4c32141f0a83cc585983aa035f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7edca39b9856907b3806f376a3720c6e"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCmd.html#a7edca39b9856907b3806f376a3720c6e">str</a> () const &amp;</td></tr>
+<tr class="separator:a7edca39b9856907b3806f376a3720c6e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad5a2e269ba07baa86f91129b0c8f4179"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCmd.html#ad5a2e269ba07baa86f91129b0c8f4179">empty</a> () const</td></tr>
 <tr class="separator:ad5a2e269ba07baa86f91129b0c8f4179"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae4ddd79e542fc7bc1759cf6c62580e6b"><td class="memItemLeft" align="right" valign="top"><a id="ae4ddd79e542fc7bc1759cf6c62580e6b"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>eof</b> () const</td></tr>
-<tr class="separator:ae4ddd79e542fc7bc1759cf6c62580e6b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae2a7763fab9a22d9e722aae91a983bb5"><td class="memItemLeft" align="right" valign="top"><a id="ae2a7763fab9a22d9e722aae91a983bb5"></a>
-size_t&#160;</td><td class="memItemRight" valign="bottom"><b>countWords</b> () const</td></tr>
-<tr class="separator:ae2a7763fab9a22d9e722aae91a983bb5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acd948612c0b644a2351972f4d368c176"><td class="memItemLeft" align="right" valign="top"><a id="acd948612c0b644a2351972f4d368c176"></a>
-std::queue&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>parseArgs</b> () const</td></tr>
+<tr class="memitem:acd948612c0b644a2351972f4d368c176"><td class="memItemLeft" align="right" valign="top">std::queue&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCmd.html#acd948612c0b644a2351972f4d368c176">parseArgs</a> () const</td></tr>
 <tr class="separator:acd948612c0b644a2351972f4d368c176"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a082e0f281afd4792a222f5765fb4850c"><td class="memItemLeft" align="right" valign="top"><a id="a082e0f281afd4792a222f5765fb4850c"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>getCommand</b> ()</td></tr>
-<tr class="separator:a082e0f281afd4792a222f5765fb4850c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac19dc92dde48aa54f8c71945f2f117a9"><td class="memItemLeft" align="right" valign="top"><a id="ac19dc92dde48aa54f8c71945f2f117a9"></a>
-int&#160;</td><td class="memItemRight" valign="bottom"><b>trap</b> (const std::string &amp;msg, const std::vector&lt; std::regex &gt; &amp;answers)</td></tr>
-<tr class="separator:ac19dc92dde48aa54f8c71945f2f117a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:aa38fe581fe60b68657dc3f5d548f8f9f"><td class="memItemLeft" align="right" valign="top"><a id="aa38fe581fe60b68657dc3f5d548f8f9f"></a>
-static std::queue&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>parseArgs</b> (const std::string &amp;arg_line)</td></tr>
+<tr class="memitem:aa38fe581fe60b68657dc3f5d548f8f9f"><td class="memItemLeft" align="right" valign="top">static std::queue&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classCmd.html#aa38fe581fe60b68657dc3f5d548f8f9f">parseArgs</a> (const std::string &amp;arg_line)</td></tr>
 <tr class="separator:aa38fe581fe60b68657dc3f5d548f8f9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa47f75f4ffbdc46ff3257b0e19e8311b"><td class="memItemLeft" align="right" valign="top"><a id="aa47f75f4ffbdc46ff3257b0e19e8311b"></a>
-static void&#160;</td><td class="memItemRight" valign="bottom"><b>printInvitation</b> ()</td></tr>
-<tr class="separator:aa47f75f4ffbdc46ff3257b0e19e8311b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a15bd20053a7e5ce139e45fd79404f6d4"><td class="memItemLeft" align="right" valign="top"><a id="a15bd20053a7e5ce139e45fd79404f6d4"></a>
-static AnswerCode&#160;</td><td class="memItemRight" valign="bottom"><b>ask</b> (const std::string &amp;what)</td></tr>
-<tr class="separator:a15bd20053a7e5ce139e45fd79404f6d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Simple wrapper over the standard string Designed to store arguments and parse strings into individual arguments </p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a87639e4c32141f0a83cc585983aa035f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a87639e4c32141f0a83cc585983aa035f">&#9670;&nbsp;</a></span>Cmd()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Cmd::Cmd </td>
+          <td>(</td>
+          <td class="paramtype">int&#160;</td>
+          <td class="paramname"><em>argc</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">char **&#160;</td>
+          <td class="paramname"><em>argv</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Make a string of args in C - style </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">argc</td><td>amount of arguments </td></tr>
+    <tr><td class="paramname">argv</td><td>pointer to args </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<h2 class="groupheader">Member Function Documentation</h2>
+<a id="ad5a2e269ba07baa86f91129b0c8f4179"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad5a2e269ba07baa86f91129b0c8f4179">&#9670;&nbsp;</a></span>empty()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool Cmd::empty </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Check if storage is empty </p><dl class="section return"><dt>Returns</dt><dd>true if stored string is empty, false otherwise </dd></dl>
+
+</div>
+</div>
+<a id="acd948612c0b644a2351972f4d368c176"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acd948612c0b644a2351972f4d368c176">&#9670;&nbsp;</a></span>parseArgs() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::queue&lt;std::string&gt; Cmd::parseArgs </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Make a queue of arguments from the stored string </p><dl class="section return"><dt>Returns</dt><dd>queue with separated words </dd></dl>
+
+</div>
+</div>
+<a id="aa38fe581fe60b68657dc3f5d548f8f9f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa38fe581fe60b68657dc3f5d548f8f9f">&#9670;&nbsp;</a></span>parseArgs() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::queue&lt; std::string &gt; Cmd::parseArgs </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>arg_line</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Make a queue of arguments from the specified string </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">arg_line</td><td>string to parse </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>queue with separated words </dd></dl>
+
+</div>
+</div>
+<a id="a7edca39b9856907b3806f376a3720c6e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7edca39b9856907b3806f376a3720c6e">&#9670;&nbsp;</a></span>str()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string Cmd::str </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td> const &amp;</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Getter to storage </p><dl class="section return"><dt>Returns</dt><dd>Stored string </dd></dl>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>include/<a class="el" href="cmd_8h_source.html">cmd.h</a></li>
-<li>src/cmd.cpp</li>
+<li>/home/maxnet/search_engine/include/<a class="el" href="cmd_8h_source.html">cmd.h</a></li>
+<li>/home/maxnet/search_engine/src/cmd.cpp</li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

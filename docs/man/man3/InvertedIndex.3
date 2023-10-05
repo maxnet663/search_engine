@@ -1,4 +1,4 @@
-.TH "InvertedIndex" 3 "Mon Oct 2 2023" "Search Engine" \" -*- nroff -*-
+.TH "InvertedIndex" 3 "Fri Oct 6 2023" "Search Engine" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -11,21 +11,6 @@ InvertedIndex
 .SS "Public Member Functions"
 
 .in +1c
-.ti -1c
-.RI "\fBInvertedIndex\fP ()=default"
-.br
-.ti -1c
-.RI "\fBInvertedIndex\fP (const \fBInvertedIndex\fP &other)"
-.br
-.ti -1c
-.RI "\fBInvertedIndex\fP & \fBoperator=\fP (const \fBInvertedIndex\fP &right)"
-.br
-.ti -1c
-.RI "\fBInvertedIndex\fP (\fBInvertedIndex\fP &&other) noexcept"
-.br
-.ti -1c
-.RI "\fBInvertedIndex\fP & \fBoperator=\fP (\fBInvertedIndex\fP &&right) noexcept"
-.br
 .ti -1c
 .RI "void \fBupdateDocumentBase\fP (const std::vector< std::string > &input_docs)"
 .br
@@ -43,19 +28,6 @@ InvertedIndex
 .SH "Detailed Description"
 .PP 
 The class is a dictionary which containing unique words from indexed documents 
-.SH "Constructor & Destructor Documentation"
-.PP 
-.SS "InvertedIndex::InvertedIndex ()\fC [default]\fP"
-Constructs empty dictionary 
-.SS "InvertedIndex::InvertedIndex (const \fBInvertedIndex\fP & other)\fC [inline]\fP"
-Copy constructor without copying of mutex member 
-.PP
-\fBParameters\fP
-.RS 4
-\fIother\fP another instance of \fBInvertedIndex\fP class 
-.RE
-.PP
-
 .SH "Member Function Documentation"
 .PP 
 .SS "const freq_t & InvertedIndex::getWordCount (const std::string & word) const"

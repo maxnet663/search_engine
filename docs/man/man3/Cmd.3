@@ -1,4 +1,4 @@
-.TH "Cmd" 3 "Mon Oct 2 2023" "Search Engine" \" -*- nroff -*-
+.TH "Cmd" 3 "Fri Oct 6 2023" "Search Engine" \" -*- nroff -*-
 .ad l
 .nh
 .SH NAME
@@ -6,41 +6,22 @@ Cmd
 .SH SYNOPSIS
 .br
 .PP
+.PP
+\fC#include <cmd\&.h>\fP
 .SS "Public Member Functions"
 
 .in +1c
 .ti -1c
-.RI "\fBCmd\fP (std::string in_cmd)"
+.RI "\fBCmd\fP (int argc, char **argv)"
 .br
 .ti -1c
-.RI "\fBCmd\fP (const \fBCmd\fP &other)=default"
-.br
-.ti -1c
-.RI "\fBoperator std::string\fP () const"
-.br
-.ti -1c
-.RI "void \fBset\fP (std::string value)"
-.br
-.ti -1c
-.RI "std::string \fBstr\fP () const"
+.RI "std::string \fBstr\fP () const &"
 .br
 .ti -1c
 .RI "bool \fBempty\fP () const"
 .br
 .ti -1c
-.RI "bool \fBeof\fP () const"
-.br
-.ti -1c
-.RI "size_t \fBcountWords\fP () const"
-.br
-.ti -1c
 .RI "std::queue< std::string > \fBparseArgs\fP () const"
-.br
-.ti -1c
-.RI "int \fBgetCommand\fP ()"
-.br
-.ti -1c
-.RI "int \fBtrap\fP (const std::string &msg, const std::vector< std::regex > &answers)"
 .br
 .in -1c
 .SS "Static Public Member Functions"
@@ -49,13 +30,66 @@ Cmd
 .ti -1c
 .RI "static std::queue< std::string > \fBparseArgs\fP (const std::string &arg_line)"
 .br
-.ti -1c
-.RI "static void \fBprintInvitation\fP ()"
-.br
-.ti -1c
-.RI "static AnswerCode \fBask\fP (const std::string &what)"
-.br
 .in -1c
+.SH "Detailed Description"
+.PP 
+Simple wrapper over the standard string Designed to store arguments and parse strings into individual arguments 
+.SH "Constructor & Destructor Documentation"
+.PP 
+.SS "Cmd::Cmd (int argc, char ** argv)"
+Make a string of args in C - style 
+.PP
+\fBParameters\fP
+.RS 4
+\fIargc\fP amount of arguments 
+.br
+\fIargv\fP pointer to args 
+.RE
+.PP
+
+.SH "Member Function Documentation"
+.PP 
+.SS "bool Cmd::empty () const\fC [inline]\fP"
+Check if storage is empty 
+.PP
+\fBReturns\fP
+.RS 4
+true if stored string is empty, false otherwise 
+.RE
+.PP
+
+.SS "std::queue<std::string> Cmd::parseArgs () const\fC [inline]\fP"
+Make a queue of arguments from the stored string 
+.PP
+\fBReturns\fP
+.RS 4
+queue with separated words 
+.RE
+.PP
+
+.SS "std::queue< std::string > Cmd::parseArgs (const std::string & arg_line)\fC [static]\fP"
+Make a queue of arguments from the specified string 
+.PP
+\fBParameters\fP
+.RS 4
+\fIarg_line\fP string to parse 
+.RE
+.PP
+\fBReturns\fP
+.RS 4
+queue with separated words 
+.RE
+.PP
+
+.SS "std::string Cmd::str () const &\fC [inline]\fP"
+Getter to storage 
+.PP
+\fBReturns\fP
+.RS 4
+Stored string 
+.RE
+.PP
+
 
 .SH "Author"
 .PP 
