@@ -37,7 +37,9 @@ namespace format {
 
         /**
          * Deletes punctuation marks
-         * @param s: UnicodeStrings
+         * Warning: some specific characters may
+         * leave behind whitespace artifacts
+         * @param s: UnicodeString
          * @return formatted Unicode string
          */
         icu::UnicodeString deletePunctuationMarks(const icu::UnicodeString &s);

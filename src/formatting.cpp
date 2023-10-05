@@ -41,14 +41,9 @@ void format::unicode::convertToPlainText(icu::UnicodeString &s) {
 }
 
 void format::utf::formatString(std::string &s)  {
-    if (s.length() == 0) {
-        return;
-    }
-
+    if (s.length() == 0) return;
     deletePunctuationMarks(s);
-
     toLowerCase(s);
-
     deleteExtraSpaces(s);
 }
 
@@ -84,7 +79,7 @@ void format::utf::deleteExtraSpaces(std::string &s) {
         // if met one space and prev ch not space
         // write the ch
         if (*front != ' ' || *(front - 1) != ' ') {
-            *back++ = std::move(*front);
+            *back++ = *front;
         }
         // move on the string
         front++;
