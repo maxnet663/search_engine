@@ -7,50 +7,49 @@
 
 #include "include/formatting.h"
 
-enum class AnswerCode {
-    Unclear = -1,
-    No = 0,
-    Yes = 1
-};
-class Shell;
+
+/**
+ * Simple wrapper over the standard string
+ * Designed to store arguments and parse
+ * strings into individual arguments
+ */
 class Cmd {
+
     std::string cmd;
+
 public:
 
-    Cmd() = default;
+    /**
+     * Make a string of args in C - style
+     * @param argc amount of arguments
+     * @param argv pointer to args
+     */
+    Cmd(int argc, char **argv);
 
-    Cmd(std::string in_cmd);
+    /**
+     * Getter to storage
+     * @return Stored string
+     */
+    std::string str() const & { return cmd; }
 
-    Cmd(const Cmd &other) = default;
-
-    explicit operator std::string() const { return cmd; }
-
-    void set(std::string value) { cmd = std::move(value); }
-
-    std::string str() const { return cmd; }
-
+    /**
+     * Check if storage is empty
+     * @return true if stored string is empty, false otherwise
+     */
     bool empty() const { return cmd.empty(); }
 
-    bool eof() const;
-
-    size_t countWords() const;
-
+    /**
+     * Make a queue of arguments from the specified string
+     * @param arg_line string to parse
+     * @return queue with separated words
+     */
     static std::queue<std::string> parseArgs(const std::string &arg_line);
 
+    /**
+     * Make a queue of arguments from the stored string
+     * @return queue with separated words
+     */
     std::queue<std::string> parseArgs() const { return parseArgs(cmd); }
-
-    int getCommand();
-
-    int trap(const std::string &msg, const std::vector<std::regex> &answers);
-
-    static void printInvitation();
-
-    static AnswerCode ask(const std::string &what);
-
-private:
-
-    int match(const std::vector<std::regex> &patterns);
-
 };
 
 #endif //CMD_H
