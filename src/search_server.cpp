@@ -36,7 +36,7 @@ SearchServer::getRelevantDocs(const std::vector<std::string> &unique_queries) {
         // get a list of documents that contain the query
         auto &query_freq = _index.getWordCount(query);
         for (const auto &entry : query_freq) {
-            // enter the document and its relevance
+            // insert the document and its relevance
             // relatively the query into the table
             if (result.find(entry.first) == result.end()) {
                 result[entry.first] = entry.second;

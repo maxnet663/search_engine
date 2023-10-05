@@ -4,7 +4,6 @@
 #include "include/inverted_index.h"
 
 struct RelativeIndex;
-struct DocRelevance;
 
 /**
  * List of the structures which represents answers to requests.
@@ -57,7 +56,7 @@ public:
     SearchServer(const SearchServer &other) = default;
 
     /**
-     * @param idx: pointer to the docs database
+     * @param idx: reference to the docs dictionary
      */
     explicit SearchServer(const InvertedIndex &idx) : _index(idx) {};
 
@@ -82,7 +81,7 @@ private:
 
     /**
      * Uses for async computing
-     * method makes request to the db, returns answer to the query
+     * method makes request to the dictionary, returns answer to the query
      * @param query: string which represents a request
      * @return list with relevant docs with their relevance
      */
