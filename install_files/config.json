@@ -2,17 +2,13 @@
   "config": {
     "name": "SearchEngine",
     "version": "0.1",
-    "max_responses":5
+    "max_responses": 5
   },
   "files": [
-    "resources/file001.txt",
-    "resources/file002.txt",
-    "resources/file003.txt",
-    "resources/file004.txt",
-    "non/existing/file",
     "resources/arab_text.txt",
+    "resources/chinese_text.txt",
+    "resources/english_text.txt",
     "resources/russian_text.txt",
-    "resources/spanish_text.txt",
-    "resources/chinese_text.txt"
+    "resources/spanish_text.txt"
   ]
 }

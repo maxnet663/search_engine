@@ -1,0 +1,49 @@
+{
+  "generate": {
+    "short form": "gen",
+    "description": "Generates default json files which are required for search engine.",
+    "arguments": [
+      { "none": "Generates files in current directory." },
+      { "/path/to/save": "Explicitly specifies path to save generated jsons." },
+      { "-h": "Print out help information about this command." }
+    ]
+  },
+  "config": {
+    "short form": "conf",
+    "description": "Print info about this program. Reports if indexed files do not exist.",
+    "arguments": [
+      { "none": "Tries to search for config.json in current dir and in json|jsons subdir." },
+      { "-r": "Optional. Same as calling without arguments, but searching recursively." },
+      { "/path/to/config": "Explicitly specifies path to config.json" },
+      { "-h": "Print out help information about this command." }
+    ]
+  },
+  "find": {
+    "short form": "f",
+    "description": "Performs searches for queries from requests.json among indexed documents. The response is written to answers.json in the executable directory.",
+    "arguments": [
+      { "none": "Tries to search for config.json and requests.json in current dir and in json|jsons subdir." },
+      { "-r": "Optional. Same as calling without arguments, but searching recursively."},
+      { "/path/to/config /path/to/requests": "Explicitly specifies paths to config.json and requests.json. The order of the arguments does not matter." },
+      { "-print": "Optional argument. In case of a successful search, asks to print out the received answers in standard output." },
+      { "-h": "Print out help information about this command." }
+    ]
+  },
+  "index": {
+    "short form": "idx",
+    "description": "Writes all files with .txt extension found (search is recursive) in the specified dir to the list of indexed files in the config.json.",
+    "arguments": [
+      { "/path/to/resources": "Required argument. Document search directory. config.json searched in the current directory and in json|jsons subir." },
+      { "-r": "Optional. Asks to search config.json recursively." },
+      { "/path/to/resources /path/to/config": "Explicitly specifies path to config.json" },
+      { "-h": "Print out help information about this command." }
+    ]
+  },
+  "print": {
+    "short form": "p",
+    "description": "Print out the content of json file.",
+    "arguments": [
+      { "/path/to/json": "Required argument. Document to print out." }
+    ]
+  }
+}
