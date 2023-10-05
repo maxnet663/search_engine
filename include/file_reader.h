@@ -9,6 +9,7 @@
 
 /**
  * Wrapper over standard file reading stream
+ * with formatting extension for unicode strings
  */
 class FileReader {
 
@@ -23,7 +24,7 @@ public:
 
     FileReader &operator=(const FileReader &right) = delete;
 
-    explicit FileReader(const std::string &file_path) noexcept
+    explicit FileReader(const std::string &file_path)
     : path(file_path), read_stream(file_path) {}
 
     /**
@@ -56,8 +57,10 @@ public:
     /**
      * Checks permission to read from a file.
      * Only owner rights are checked
+     * if the program is not launched by the
+     * owner of the file, the result is incorrect
      * @param file_path: path to file
-     * @return true if the file is readable by the owner
+     * @return true if the file is readable by the owner,
      * false otherwise
      */
     static bool isReadable(const std::string &file_path);
@@ -65,12 +68,20 @@ public:
     /**
      * Checks permission to write to a file.
      * Only owner rights are checked
+     * if the program is not launched by the
+     * owner of the file, the result is incorrect
      * @param file_path: path to file
-     * @return true if the file is writeable by the owner
+     * @return true if the file is writeable by the owner,
      * false otherwise
      */
     static bool isWriteable(const std::string &file_path);
 
+    /**
+     * Extracts values from stored stream.
+     * String formatted as unicode chars
+     * @param dest where to extract
+     * @return true if stream is not empty, false otherwise
+     */
     bool operator>>(std::string &dest);
 };
 

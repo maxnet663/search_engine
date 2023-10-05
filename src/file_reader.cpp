@@ -48,8 +48,7 @@ bool FileReader::isWriteable(const std::string &file_name) {
 }
 
 bool FileReader::operator>>(std::string &dest) {
-    if (read_stream.eof())
-        return false;
+    if (read_stream.eof()) return false;
     std::string word;
     read_stream >> word;
     auto uc_word = format::unicode::makeUnicodeString(word);
