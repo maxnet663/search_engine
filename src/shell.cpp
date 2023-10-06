@@ -1,6 +1,8 @@
 #include "include/shell.h"
 
 #include <regex> // regex regex_match
+#include <list>
+#include <algorithm>
 
 #include "include/file_reader.h"
 
@@ -17,7 +19,7 @@ Shell::Shell(int argc, char **argv) : cmd(argc, argv) {
     auto helper_path = ConverterJSON::findFile("help.json");
     if (helper_path.empty()) {
         custom::print_yellow("Could not find helper file. "
-                             "Did you do something to him?");
+                             "Has it been moved?");
     } else {
         helper = ConverterJSON::openJson(helper_path);
     }
@@ -126,6 +128,7 @@ int Shell::showConfig(std::queue<std::string> &args) {
     std::string config_path = CONFIG_FILE_NAME;
     bool recursive_search = false;
     bool explicit_path = false;
+    bool delete_invalid = false;
     while (!args.empty()) {
         auto arg = getNext(args);
         if (arg == "-h") {
@@ -134,42 +137,65 @@ int Shell::showConfig(std::queue<std::string> &args) {
         }
         if (arg == "-r") { // ignored if path indicated explicitly
             recursive_search = true;
-        } else {
+            continue;
+        }
+        if (arg == "-d") {
+            if (!delete_invalid) {
+                delete_invalid = true;
+                continue;
+            } else {
+                custom::print_yellow("Extra -d arg?");
+                return 1;
+            }
+        }
+        if (!explicit_path){
             explicit_path = true;
             config_path = arg;
+            continue;
         }
+        custom::print_yellow("Unknown argument " + arg);
+        return 1;
     }
     json config;
     if (!explicit_path) {
-        if (recursive_search)
-            config_path = ConverterJSON::findFileRecursive(config_path);
-        else
-            config_path = ConverterJSON::findFile(config_path);
-
+        config_path = ConverterJSON::findFile(config_path
+                                              , "."
+                                              , recursive_search);
     }
     if (config_path.empty()) {
-        custom::print_yellow("Could not find " CONFIG_FILE_NAME);
+        custom::print_yellow("Could not find " + config_path);
         return 1;
     }
     config = ConverterJSON::openJson(config_path);
     if(config.empty())
         return 1;
     printInfo(config);
+    printIndexingPath(config, delete_invalid);
+    if (delete_invalid)
+        ConverterJSON::writeJsonToFile(config, config_path);
     return 0;
 }
 
 void Shell::printInfo(const json &config) {
     std::cout << "Engine name: " << config["config"]["name"] << std::endl;
     std::cout << "Engine version: " << config["config"]["version"] << std::endl;
-    printIndexingPath(config["files"]);
 }
 
-void Shell::printIndexingPath(const std::vector<std::string> &path) {
-    for (const auto &p : path) {
+void Shell::printIndexingPath(json &config, bool delete_invalid) {
+    std::list<std::string> paths = config["files"];
+    std::for_each(paths.begin(), paths.end(), [](const std::string &p){
         if (!fs::exists(p))
             custom::print_yellow("File " + p + " does not exist");
         else
             custom::print_green(p + " ok");
+    });
+    if (delete_invalid) {
+        auto new_end = std::remove_if(paths.begin()
+                                                   , paths.end()
+                                                   ,[](const std::string &p)
+                                                   { return !fs::exists(p); });
+        paths.erase(new_end, paths.end());
+        config["files"] = paths;
     }
 }
 
@@ -228,13 +254,8 @@ int Shell::makeSearch(std::string &config_path
     if (explicit_flag) {
         pconverter = makeConverter(config_path, requests_path);
     } else {
-        if (recursive_flag) {
-            config_path = ConverterJSON::findFileRecursive(config_path);
-            requests_path = ConverterJSON::findFileRecursive(requests_path);
-            pconverter = makeConverter(config_path, requests_path);
-        } else {
-            pconverter = makeConverter(fs::current_path());
-        }
+        pconverter = makeConverter(fs::current_path().string()
+                                  , recursive_flag);
     }
     if (!pconverter)
         return 1;
@@ -260,25 +281,25 @@ int Shell::index(std::queue<std::string> &args) {
             return 0;
         }
         if (arg == "-r") {
-            recursive = true;
-            continue;
+            if (!recursive) {
+                recursive = true;
+                continue;
+            } else {
+                custom::print_yellow("Extra -r arg?");
+                return 1;
+            }
         }
         if (dir_to_indexing.empty()) {
             dir_to_indexing = arg;
             continue;
         }
         config_path = arg;
-        if (!arg.empty())
-            config_path = arg;
     }
     if (dir_to_indexing.empty()) {
         custom::print_yellow("Expected path to indexing docs");
         return 1;
     }
-    if (recursive)
-        config_path = ConverterJSON::findFileRecursive(config_path);
-    else
-        config_path = ConverterJSON::findFile(config_path);
+    config_path = ConverterJSON::findFile(config_path, ".", recursive);
     if (config_path.empty()) {
         custom::print_yellow("Could not find config.json");
         return 1;

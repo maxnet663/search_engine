@@ -104,8 +104,9 @@ private:
      * Helper method for showConfig.
      * Check indexing docs
      * @param paths
+     * @param delete_invalid
      */
-    void printIndexingPath(const std::vector<std::string> &path);
+    void printIndexingPath(json &config, bool delete_invalid);
 
     /**
      * Make search in indexed docs config.json upon
@@ -127,10 +128,6 @@ private:
                    , std::string &requests_path
                    , bool explicit_flag
                    , bool recursive_flag);
-
-    int printAnswers();
-
-    void printWithFormatting(const json &answers);
 
     /**
      * Writes .txt files from specified dir in config.json
