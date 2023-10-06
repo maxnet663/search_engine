@@ -12,7 +12,7 @@
 
 namespace fs = std::filesystem;
 
-ConverterJSON::ConverterJSON(const std::string &jsons_dir) {
+ConverterJSON::ConverterJSON(const std::string &jsons_dir, bool recursive) {
     if (!fs::is_directory(jsons_dir)) {
         throw fs::filesystem_error(
                 "Wrong path"
@@ -21,7 +21,9 @@ ConverterJSON::ConverterJSON(const std::string &jsons_dir) {
     }
 
     // try to find paths to json files
-    auto config_path = findFile(CONFIG_FILE_NAME, jsons_dir);
+    auto config_path = findFile(CONFIG_FILE_NAME
+                                      , jsons_dir
+                                      , recursive);
     if (config_path.empty()) {
         throw std::invalid_argument("Could not find " CONFIG_FILE_NAME);
     }
@@ -29,7 +31,9 @@ ConverterJSON::ConverterJSON(const std::string &jsons_dir) {
     custom::print_green("config.json found successfully");
 #endif
 
-    auto requests_path = findFile(REQUESTS_FILE_NAME, jsons_dir);
+    auto requests_path = findFile(REQUESTS_FILE_NAME
+                                        , jsons_dir
+                                        , recursive);
     if (requests_path.empty()) {
         throw std::invalid_argument("Could not find " REQUESTS_FILE_NAME);
     }
@@ -200,32 +204,31 @@ int ConverterJSON::writeJsonToFile(json &json_obj, const std::string &path) {
     return 0;
 }
 
-std::string ConverterJSON::findFileRecursive(const std::string &file_name
-                                             , const std::string &dir) {
-    auto dir_tree = fs::recursive_directory_iterator(dir);
-    for (const auto &entry : dir_tree) {
-        if (entry.path().filename() == file_name)
-            return fs::absolute(entry.path()).string();
-    }
-    return { };
-}
-
-std::string
-ConverterJSON::findFile(const std::string &file_name, const std::string &dir) {
-    std::regex json_pattern("(\\/|)json(|s)$", std::regex::icase);
-    //search in specified dir
-    for (const auto &entry : fs::directory_iterator(dir)) {
-        if (entry.path().filename().string() == file_name)
-            return fs::absolute(entry.path().string());
-    }
-    // if file has not found tries to find it in the expected directories
-    for(const auto &entry : fs::directory_iterator(dir)) {
-        if (is_directory(entry.path())
-        && std::regex_search(entry.path().filename().string(), json_pattern)) {
-            auto res = findFile(file_name
-                    , (entry.path()).string());
-            if (!res.empty())
-                return res;
+std::string ConverterJSON::findFile(const std::string &file_name
+                                    , const std::string &dir
+                                    , bool recursive) {
+    if (recursive) {
+        auto dir_tree = fs::recursive_directory_iterator(dir);
+        for (const auto &entry : dir_tree) {
+            if (entry.path().filename() == file_name)
+                return fs::absolute(entry.path()).string();
+        }
+    } else {
+        std::regex json_pattern("(\\/|)json(|s)$", std::regex::icase);
+        //search in specified dir
+        for (const auto &entry : fs::directory_iterator(dir)) {
+            if (entry.path().filename().string() == file_name)
+                return fs::absolute(entry.path().string());
+        }
+        // if file has not found tries to find it in the expected directories
+        for (const auto &entry : fs::directory_iterator(dir)) {
+            if (is_directory(entry.path())
+                && std::regex_search(entry.path().filename().string(),
+                                     json_pattern)) {
+                auto res = findFile(file_name, (entry.path()).string());
+                if (!res.empty())
+                    return res;
+            }
         }
     }
     return { };

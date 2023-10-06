@@ -27,8 +27,10 @@ public:
      * Constructs converter with searching configuration
      * files in jsons_dir
      * @param jsons_dir path to search in
+     * @param recursive flag indicates how to search jsons
      */
-    explicit ConverterJSON(const std::string &jsons_dir);
+    explicit ConverterJSON(const std::string &jsons_dir
+                           , bool recursive = false);
 
     /**
      * Constructs converter from specified files,
@@ -84,22 +86,16 @@ public:
     static int writeJsonToFile(json &json_obj, const std::string &path);
 
     /**
-     * Searches for file_name in directory tree with root in dir
-     * @param file_name: name of the file
-     * @param dir: start dir, default: current dir
-     * @return absolute path to a file or empty string
-     */
-    static std::string findFileRecursive(const std::string &file_name
-                                         , const std::string &dir = ".");
-
-    /**
      * Searches for file_name in current directory
      * and in directories such as json, jsons, JSON, JSONS
      * @param file_name name of the file to find
+     * @param dir directory where to search
+     * @param recursive flag indicates how to search file
      * @return absolute path to a file or empty string
      */
     static std::string findFile(const std::string &file_name
-                                , const std::string &dir = ".");
+                                , const std::string &dir = "."
+                                , bool recursive = false);
 
     /**
      * Print content of specified json file to standard output.
