@@ -15,6 +15,7 @@
       { "none": "Tries to search for config.json in current dir and in json|jsons subdir." },
       { "-r": "Optional. Same as calling without arguments, but searching recursively." },
       { "/path/to/config": "Explicitly specifies path to config.json" },
+      { "-d": "deletes invalid path from config.json files field"},
       { "-h": "Print out help information about this command." }
     ]
   },
