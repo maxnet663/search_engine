@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['docrelevance_55',['DocRelevance',['../structDocRelevance.html',1,'']]]
+  ['docrelevance_54',['DocRelevance',['../structDocRelevance.html',1,'']]]
 ];

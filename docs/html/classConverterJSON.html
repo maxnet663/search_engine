@@ -75,8 +75,8 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a8a1ff0fcf1dec36d5e0d36ed98da901c"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classConverterJSON.html#a8a1ff0fcf1dec36d5e0d36ed98da901c">ConverterJSON</a> (const std::string &amp;jsons_dir)</td></tr>
-<tr class="separator:a8a1ff0fcf1dec36d5e0d36ed98da901c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a167dc401334de0c889b9181252707aa9"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classConverterJSON.html#a167dc401334de0c889b9181252707aa9">ConverterJSON</a> (const std::string &amp;jsons_dir, bool recursive=false)</td></tr>
+<tr class="separator:a167dc401334de0c889b9181252707aa9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a666e45a37c98ae668a3eae5dd1616c70"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classConverterJSON.html#a666e45a37c98ae668a3eae5dd1616c70">ConverterJSON</a> (std::string path_first, std::string path_second)</td></tr>
 <tr class="separator:a666e45a37c98ae668a3eae5dd1616c70"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abedc9e5bdeab50909ea119fde144b284"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classConverterJSON.html#abedc9e5bdeab50909ea119fde144b284">getRequests</a> () const</td></tr>
@@ -94,18 +94,16 @@ Static Public Member Functions</h2></td></tr>
 <tr class="separator:a68059b31a36ef4118246d0c087f8cff0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af5a600562f96ef5ed46adebfc3f16ee6"><td class="memItemLeft" align="right" valign="top">static int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classConverterJSON.html#af5a600562f96ef5ed46adebfc3f16ee6">writeJsonToFile</a> (json &amp;json_obj, const std::string &amp;path)</td></tr>
 <tr class="separator:af5a600562f96ef5ed46adebfc3f16ee6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2f1ce288436e0cb871c1b3761f7f7441"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classConverterJSON.html#a2f1ce288436e0cb871c1b3761f7f7441">findFileRecursive</a> (const std::string &amp;file_name, const std::string &amp;dir=&quot;.&quot;)</td></tr>
-<tr class="separator:a2f1ce288436e0cb871c1b3761f7f7441"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a64e1725c4f3e08acbb1d1109c376828e"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classConverterJSON.html#a64e1725c4f3e08acbb1d1109c376828e">findFile</a> (const std::string &amp;file_name, const std::string &amp;dir=&quot;.&quot;)</td></tr>
-<tr class="separator:a64e1725c4f3e08acbb1d1109c376828e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a899123975205d1aae1fb6397f3df7fc1"><td class="memItemLeft" align="right" valign="top">static std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classConverterJSON.html#a899123975205d1aae1fb6397f3df7fc1">findFile</a> (const std::string &amp;file_name, const std::string &amp;dir=&quot;.&quot;, bool recursive=false)</td></tr>
+<tr class="separator:a899123975205d1aae1fb6397f3df7fc1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8b0b7ca7841480b45090a1d015834da5"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classConverterJSON.html#a8b0b7ca7841480b45090a1d015834da5">printJson</a> (const json &amp;source)</td></tr>
 <tr class="separator:a8b0b7ca7841480b45090a1d015834da5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Class for working with json files. Works like RAII </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a8a1ff0fcf1dec36d5e0d36ed98da901c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8a1ff0fcf1dec36d5e0d36ed98da901c">&#9670;&nbsp;</a></span>ConverterJSON() <span class="overload">[1/2]</span></h2>
+<a id="a167dc401334de0c889b9181252707aa9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a167dc401334de0c889b9181252707aa9">&#9670;&nbsp;</a></span>ConverterJSON() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -117,8 +115,18 @@ Static Public Member Functions</h2></td></tr>
           <td class="memname">ConverterJSON::ConverterJSON </td>
           <td>(</td>
           <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>jsons_dir</em></td><td>)</td>
+          <td class="paramname"><em>jsons_dir</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>recursive</em> = <code>false</code>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
         </tr>
       </table>
   </td>
@@ -130,6 +138,7 @@ Static Public Member Functions</h2></td></tr>
 <p>Constructs converter with searching configuration files in jsons_dir </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">jsons_dir</td><td>path to search in </td></tr>
+    <tr><td class="paramname">recursive</td><td>flag indicates how to search jsons </td></tr>
   </table>
   </dd>
 </dl>
@@ -172,8 +181,8 @@ Static Public Member Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a64e1725c4f3e08acbb1d1109c376828e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a64e1725c4f3e08acbb1d1109c376828e">&#9670;&nbsp;</a></span>findFile()</h2>
+<a id="a899123975205d1aae1fb6397f3df7fc1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a899123975205d1aae1fb6397f3df7fc1">&#9670;&nbsp;</a></span>findFile()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -191,7 +200,13 @@ Static Public Member Functions</h2></td></tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>dir</em> = <code>&quot;.&quot;</code>&#160;</td>
+          <td class="paramname"><em>dir</em> = <code>&quot;.&quot;</code>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool&#160;</td>
+          <td class="paramname"><em>recursive</em> = <code>false</code>&#160;</td>
         </tr>
         <tr>
           <td></td>
@@ -208,50 +223,8 @@ Static Public Member Functions</h2></td></tr>
 <p>Searches for file_name in current directory and in directories such as json, jsons, JSON, JSONS </p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">file_name</td><td>name of the file to find </td></tr>
-  </table>
-  </dd>
-</dl>
-<dl class="section return"><dt>Returns</dt><dd>absolute path to a file or empty string </dd></dl>
-
-</div>
-</div>
-<a id="a2f1ce288436e0cb871c1b3761f7f7441"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2f1ce288436e0cb871c1b3761f7f7441">&#9670;&nbsp;</a></span>findFileRecursive()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::string ConverterJSON::findFileRecursive </td>
-          <td>(</td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>file_name</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>dir</em> = <code>&quot;.&quot;</code>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Searches for file_name in directory tree with root in dir </p><dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">file_name</td><td>name of the file </td></tr>
-    <tr><td class="paramname">dir</td><td>start dir, default: current dir </td></tr>
+    <tr><td class="paramname">dir</td><td>directory where to search </td></tr>
+    <tr><td class="paramname">recursive</td><td>flag indicates how to search file </td></tr>
   </table>
   </dd>
 </dl>

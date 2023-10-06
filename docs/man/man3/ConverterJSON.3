@@ -12,7 +12,7 @@ ConverterJSON
 
 .in +1c
 .ti -1c
-.RI "\fBConverterJSON\fP (const std::string &jsons_dir)"
+.RI "\fBConverterJSON\fP (const std::string &jsons_dir, bool recursive=false)"
 .br
 .ti -1c
 .RI "\fBConverterJSON\fP (std::string path_first, std::string path_second)"
@@ -40,10 +40,7 @@ ConverterJSON
 .RI "static int \fBwriteJsonToFile\fP (json &json_obj, const std::string &path)"
 .br
 .ti -1c
-.RI "static std::string \fBfindFileRecursive\fP (const std::string &file_name, const std::string &dir='\&.')"
-.br
-.ti -1c
-.RI "static std::string \fBfindFile\fP (const std::string &file_name, const std::string &dir='\&.')"
+.RI "static std::string \fBfindFile\fP (const std::string &file_name, const std::string &dir='\&.', bool recursive=false)"
 .br
 .ti -1c
 .RI "static void \fBprintJson\fP (const json &source)"
@@ -54,12 +51,14 @@ ConverterJSON
 Class for working with json files\&. Works like RAII 
 .SH "Constructor & Destructor Documentation"
 .PP 
-.SS "ConverterJSON::ConverterJSON (const std::string & jsons_dir)\fC [explicit]\fP"
+.SS "ConverterJSON::ConverterJSON (const std::string & jsons_dir, bool recursive = \fCfalse\fP)\fC [explicit]\fP"
 Constructs converter with searching configuration files in jsons_dir 
 .PP
 \fBParameters\fP
 .RS 4
 \fIjsons_dir\fP path to search in 
+.br
+\fIrecursive\fP flag indicates how to search jsons 
 .RE
 .PP
 
@@ -76,28 +75,16 @@ Constructs converter from specified files, file order doesn't matter
 
 .SH "Member Function Documentation"
 .PP 
-.SS "std::string ConverterJSON::findFile (const std::string & file_name, const std::string & dir = \fC'\&.'\fP)\fC [static]\fP"
+.SS "std::string ConverterJSON::findFile (const std::string & file_name, const std::string & dir = \fC'\&.'\fP, bool recursive = \fCfalse\fP)\fC [static]\fP"
 Searches for file_name in current directory and in directories such as json, jsons, JSON, JSONS 
 .PP
 \fBParameters\fP
 .RS 4
 \fIfile_name\fP name of the file to find 
-.RE
-.PP
-\fBReturns\fP
-.RS 4
-absolute path to a file or empty string 
-.RE
-.PP
-
-.SS "std::string ConverterJSON::findFileRecursive (const std::string & file_name, const std::string & dir = \fC'\&.'\fP)\fC [static]\fP"
-Searches for file_name in directory tree with root in dir 
-.PP
-\fBParameters\fP
-.RS 4
-\fIfile_name\fP name of the file 
 .br
-\fIdir\fP start dir, default: current dir 
+\fIdir\fP directory where to search 
+.br
+\fIrecursive\fP flag indicates how to search file 
 .RE
 .PP
 \fBReturns\fP

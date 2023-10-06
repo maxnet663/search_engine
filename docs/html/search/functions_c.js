@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['updatedocumentbase_105',['updateDocumentBase',['../classInvertedIndex.html#ad8f0ea27fbb56e87d0b5c95b11e1fa83',1,'InvertedIndex']]]
+  ['updatedocumentbase_103',['updateDocumentBase',['../classInvertedIndex.html#ad8f0ea27fbb56e87d0b5c95b11e1fa83',1,'InvertedIndex']]]
 ];

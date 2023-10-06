@@ -111,26 +111,24 @@ $(function() {
 <div class="line"><a name="l00053"></a><span class="lineno">   53</span>&#160; </div>
 <div class="line"><a name="l00054"></a><span class="lineno">   54</span>&#160;    <a class="code" href="classSearchServer.html">SearchServer</a>() = <span class="keyword">delete</span>;</div>
 <div class="line"><a name="l00055"></a><span class="lineno">   55</span>&#160; </div>
-<div class="line"><a name="l00056"></a><span class="lineno">   56</span>&#160;    <a class="code" href="classSearchServer.html">SearchServer</a>(<span class="keyword">const</span> <a class="code" href="classSearchServer.html">SearchServer</a> &amp;other) = <span class="keywordflow">default</span>;</div>
-<div class="line"><a name="l00057"></a><span class="lineno">   57</span>&#160; </div>
-<div class="line"><a name="l00061"></a><span class="lineno"><a class="line" href="classSearchServer.html#aa69993258440e3f613131956ea1625c5">   61</a></span>&#160;    <span class="keyword">explicit</span> <a class="code" href="classSearchServer.html#aa69993258440e3f613131956ea1625c5">SearchServer</a>(<span class="keyword">const</span> <a class="code" href="classInvertedIndex.html">InvertedIndex</a> &amp;idx) : _index(idx) {};</div>
-<div class="line"><a name="l00062"></a><span class="lineno">   62</span>&#160; </div>
-<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;    std::vector&lt;answer_t&gt; <a class="code" href="classSearchServer.html#a0a7be4af3075c96b7d00f58dbe799bf0">search</a>(<span class="keyword">const</span> std::vector&lt;std::string&gt; &amp;queries_input);</div>
+<div class="line"><a name="l00059"></a><span class="lineno"><a class="line" href="classSearchServer.html#aa69993258440e3f613131956ea1625c5">   59</a></span>&#160;    <span class="keyword">explicit</span> <a class="code" href="classSearchServer.html#aa69993258440e3f613131956ea1625c5">SearchServer</a>(<span class="keyword">const</span> <a class="code" href="classInvertedIndex.html">InvertedIndex</a> &amp;idx) : _index(idx) {};</div>
+<div class="line"><a name="l00060"></a><span class="lineno">   60</span>&#160; </div>
+<div class="line"><a name="l00067"></a><span class="lineno">   67</span>&#160;    std::vector&lt;answer_t&gt; <a class="code" href="classSearchServer.html#a0a7be4af3075c96b7d00f58dbe799bf0">search</a>(<span class="keyword">const</span> std::vector&lt;std::string&gt; &amp;queries_input);</div>
+<div class="line"><a name="l00068"></a><span class="lineno">   68</span>&#160; </div>
+<div class="line"><a name="l00069"></a><span class="lineno">   69</span>&#160;<span class="keyword">private</span>:</div>
 <div class="line"><a name="l00070"></a><span class="lineno">   70</span>&#160; </div>
-<div class="line"><a name="l00071"></a><span class="lineno">   71</span>&#160;<span class="keyword">private</span>:</div>
-<div class="line"><a name="l00072"></a><span class="lineno">   72</span>&#160; </div>
-<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160;    std::vector&lt;DocRelevance&gt;</div>
-<div class="line"><a name="l00080"></a><span class="lineno">   80</span>&#160;    getRelevantDocs(<span class="keyword">const</span> std::vector&lt;std::string&gt; &amp;unique_queries);</div>
-<div class="line"><a name="l00081"></a><span class="lineno">   81</span>&#160; </div>
-<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;    answer_t makeRequest(<span class="keyword">const</span> std::string &amp;query);</div>
+<div class="line"><a name="l00077"></a><span class="lineno">   77</span>&#160;    std::vector&lt;DocRelevance&gt;</div>
+<div class="line"><a name="l00078"></a><span class="lineno">   78</span>&#160;    getRelevantDocs(<span class="keyword">const</span> std::vector&lt;std::string&gt; &amp;unique_queries);</div>
+<div class="line"><a name="l00079"></a><span class="lineno">   79</span>&#160; </div>
+<div class="line"><a name="l00086"></a><span class="lineno">   86</span>&#160;    answer_t makeRequest(<span class="keyword">const</span> std::string &amp;query);</div>
+<div class="line"><a name="l00087"></a><span class="lineno">   87</span>&#160; </div>
+<div class="line"><a name="l00088"></a><span class="lineno">   88</span>&#160;};</div>
 <div class="line"><a name="l00089"></a><span class="lineno">   89</span>&#160; </div>
-<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;};</div>
-<div class="line"><a name="l00091"></a><span class="lineno">   91</span>&#160; </div>
-<div class="line"><a name="l00092"></a><span class="lineno">   92</span>&#160;<span class="preprocessor">#endif </span><span class="comment">//SEARCH_SERVER_H</span></div>
+<div class="line"><a name="l00090"></a><span class="lineno">   90</span>&#160;<span class="preprocessor">#endif </span><span class="comment">//SEARCH_SERVER_H</span></div>
 <div class="ttc" id="aclassInvertedIndex_html"><div class="ttname"><a href="classInvertedIndex.html">InvertedIndex</a></div><div class="ttdef"><b>Definition:</b> inverted_index.h:24</div></div>
 <div class="ttc" id="aclassSearchServer_html"><div class="ttname"><a href="classSearchServer.html">SearchServer</a></div><div class="ttdef"><b>Definition:</b> search_server.h:48</div></div>
 <div class="ttc" id="aclassSearchServer_html_a0a7be4af3075c96b7d00f58dbe799bf0"><div class="ttname"><a href="classSearchServer.html#a0a7be4af3075c96b7d00f58dbe799bf0">SearchServer::search</a></div><div class="ttdeci">std::vector&lt; answer_t &gt; search(const std::vector&lt; std::string &gt; &amp;queries_input)</div><div class="ttdef"><b>Definition:</b> search_server.cpp:11</div></div>
-<div class="ttc" id="aclassSearchServer_html_aa69993258440e3f613131956ea1625c5"><div class="ttname"><a href="classSearchServer.html#aa69993258440e3f613131956ea1625c5">SearchServer::SearchServer</a></div><div class="ttdeci">SearchServer(const InvertedIndex &amp;idx)</div><div class="ttdef"><b>Definition:</b> search_server.h:61</div></div>
+<div class="ttc" id="aclassSearchServer_html_aa69993258440e3f613131956ea1625c5"><div class="ttname"><a href="classSearchServer.html#aa69993258440e3f613131956ea1625c5">SearchServer::SearchServer</a></div><div class="ttdeci">SearchServer(const InvertedIndex &amp;idx)</div><div class="ttdef"><b>Definition:</b> search_server.h:59</div></div>
 <div class="ttc" id="astructDocRelevance_html"><div class="ttname"><a href="structDocRelevance.html">DocRelevance</a></div><div class="ttdef"><b>Definition:</b> search_server.h:17</div></div>
 <div class="ttc" id="astructRelativeIndex_html"><div class="ttname"><a href="structRelativeIndex.html">RelativeIndex</a></div><div class="ttdef"><b>Definition:</b> search_server.h:36</div></div>
 </div><!-- fragment --></div><!-- contents -->
