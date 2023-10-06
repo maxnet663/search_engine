@@ -4,6 +4,7 @@
 #include <filesystem>
 #include <fstream>
 #include <string>
+#include <mutex>
 
 #include "include/formatting.h"
 
@@ -15,6 +16,7 @@ class FileReader {
 
     std::string path;
     std::ifstream read_stream;
+    std::mutex read_access;
 
 public:
 

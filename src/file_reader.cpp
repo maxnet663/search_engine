@@ -8,6 +8,7 @@ void FileReader::open(const std::string &file_path) {
 }
 
 std::string FileReader::getText() {
+    std::lock_guard<std::mutex> read_lock{read_access};
     if (read_stream.eof()) {
         read_stream.clear();
         read_stream.seekg(0, std::ios_base::beg);
@@ -48,9 +49,11 @@ bool FileReader::isWriteable(const std::string &file_name) {
 }
 
 bool FileReader::operator>>(std::string &dest) {
+    std::unique_lock<std::mutex> read_lock{read_access};
     if (read_stream.eof()) return false;
     std::string word;
     read_stream >> word;
+    read_lock.unlock();
     auto uc_word = format::unicode::makeUnicodeString(word);
     format::unicode::convertToPlainText(uc_word);
     dest.clear();
