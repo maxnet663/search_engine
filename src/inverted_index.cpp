@@ -4,7 +4,6 @@
 
 #include "include/custom_functions.h"
 #include "include/formatting.h"
-#include "include/file_reader.h"
 
 #define DEFAULT_THREADS_LIMIT 4
 
@@ -16,23 +15,49 @@ InvertedIndex::updateDocumentBase(const std::vector<std::string> &input_docs) {
         custom::print_yellow("DB: no documents to update");
         return;
     }
+    freq_dictionary.clear();
+
+    // reserves thread pool space
     std::vector<std::thread> threads_pool;
     auto threads_limit = std::thread::hardware_concurrency();
     if (!threads_limit)
         threads_limit = DEFAULT_THREADS_LIMIT;
     threads_pool.reserve(threads_limit);
+
     for (size_t i = 0; i < input_docs.size(); ++i) {
-        threads_pool.emplace_back(&InvertedIndex::indexText
-                                  , this
-                                  , std::cref(input_docs[i])
-                                  , static_cast<uint16_t>(i));
-        if (threads_pool.size() >= threads_limit
-        || i == input_docs.size() - 1) {
-            for (auto &thread : threads_pool) {
-                thread.join();
-            }
-            threads_pool.clear();
+        if (!FileReader::isReadable(input_docs[i])) {
+            custom::print_yellow("Could not read file "
+                                 + input_docs[i]
+                                 + ". Permission denied");
+            continue;
         }
+        if (!std::filesystem::exists(input_docs[i])) {
+            custom::print_yellow("File "
+                                 + input_docs[i]
+                                 + " does not exists");
+            continue;
+        }
+        FileReader reader(input_docs[i]);
+        if (!reader.is_open()) {
+            custom::print_yellow("Could not open file "
+                                 + input_docs[i]
+                                 + ". Something went wrong");
+            continue;
+        }
+
+        // if file has opened launch threads
+        while (threads_pool.size() <= threads_limit) {
+            threads_pool.emplace_back(&InvertedIndex::indexText
+                                      , this,
+                                      std::ref(reader),
+                                      static_cast<uint16_t>(i));
+        }
+
+        // we wait until they deal with him
+        for (auto &thread : threads_pool) {
+            thread.join();
+        }
+        threads_pool.clear();
     }
 }
 
@@ -41,26 +66,14 @@ const freq_t& InvertedIndex::getWordCount(const std::string &word) const {
     return it == freq_dictionary.end() ? nfound : it->second;
 }
 
-void InvertedIndex::indexText(const std::string &doc_path, uint16_t doc_id) {
-    if (std::filesystem::exists(doc_path)) {
-        FileReader reader(doc_path);
-        if (!reader.is_open()) {
-            std::lock_guard<std::mutex> horn{print_access};
-            custom::print_yellow("Could not open the file " + doc_path);
-        } else {
-            std::string buf;
-            while(reader >> buf) {
-                std::lock_guard lock{dict_access};
-                auto found = freq_dictionary.find(buf);
-                if (found == freq_dictionary.end()) {
-                    freq_dictionary[buf].insert({doc_id, 1});
-                } else {
-                    found->second[doc_id] += 1;
-                }
-            }
-        }
-    } else {
-        std::lock_guard<std::mutex> horn{print_access};
-        custom::print_yellow(doc_path + " does not exist");
+void InvertedIndex::indexText(FileReader &reader, uint16_t doc_id) {
+    std::string buf;
+    while (reader >> buf) {
+        std::lock_guard lock{dict_access};
+        auto found = freq_dictionary.find(buf);
+        if (found == freq_dictionary.end())
+            freq_dictionary[buf].insert({doc_id, 1});
+        else
+            found->second[doc_id] += 1;
     }
 }

@@ -6,6 +6,8 @@
 #include <string>
 #include <mutex>
 
+#include "include/file_reader.h"
+
 /**
  *  The representation of words frequency
  *  std::unordered_map<doc_id, occurrences>
@@ -25,7 +27,6 @@ class InvertedIndex {
 
     dict_t freq_dictionary;
     std::mutex dict_access; // mutex to manage access to freq_dictionary
-    std::mutex print_access; // mutex to access to standard output
 
 public:
 
@@ -56,7 +57,7 @@ private:
      * @param input_docs: list of paths to documents
      * @return list of texts in the same order
      */
-    void indexText(const std::string &doc_path, uint16_t doc_id);
+    void indexText(FileReader &reader, uint16_t doc_id);
 };
 
 #endif //INVERTED_INDEX_H
